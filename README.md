@@ -12,9 +12,50 @@ npm run dev       # http://localhost:5173
 ## 📦 Build
 
 ```bash
-npm run build     # Outputs to dist/
-npm run preview   # Preview the production build
+npm run build       # dist/index.html — ONE self-contained file. Double-click it to play.
+npm run build:web   # dist/ as ordinary web output (hashed assets, needs a server)
+npm run preview     # Preview the web build
 ```
+
+### Playing offline
+
+`npm run build` writes a single `dist/index.html` with all JavaScript and CSS
+inlined. Open it directly in a browser — no server, no install. Copy it anywhere
+and it still works.
+
+This exists because the game is an **ES module graph**, and a browser refuses to
+fetch a module script from a `file://` page (its origin is `null`). So opening the
+*development* `index.html` by double-clicking renders the full main menu but runs
+**no JavaScript at all** — every button is dead, and the console stays empty, which
+makes it look like a broken button rather than a page that never booted.
+`npm run build:web` has the same limitation, since its assets stay separate files
+behind absolute paths. Only the single-file build collapses the whole module graph
+into one classic script, which `file://` does allow.
+
+**To develop, use `npm run dev`** — it serves over HTTP, so modules load normally
+and you get hot reload. The offline build is for playing and sharing, not editing.
+
+### Deploying to GitHub Pages
+
+`.github/workflows/deploy-pages.yml` builds the game and publishes `dist/` on every
+push to `master`.
+
+**One setting must be changed by hand, once:** in the repository, go to
+**Settings → Pages → Build and deployment → Source** and select **GitHub Actions**.
+
+While that is left on *Deploy from a branch*, Pages serves the repository root —
+which is the **source**, and the source cannot run in a browser. That configuration
+is what produced a fully rendered main menu with no working buttons: `index.html`
+there requests `/src/main.js`, which resolves against the domain root, drops the
+`/Killstreak/` prefix, and 404s. Even if the path resolved it would still fail,
+because the source uses bare specifiers and `*.json` imports that Vite must
+transform. A build step is therefore mandatory, not an optimisation.
+
+The workflow publishes the **single-file** build on purpose: it is path-independent,
+so it works served from `/Killstreak/`, from a custom domain, or from disk, and
+nothing has to know the repository's name. The workflow also fails the deploy if the
+built page still references external files, which is the exact regression that
+broke it before.
 
 ## 🏗️ Architecture
 

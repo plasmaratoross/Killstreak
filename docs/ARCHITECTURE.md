@@ -321,8 +321,10 @@ see `scratch/phase7_dom_probe.js`.
   which survives review because it looks like text. Pass a defaultValue for anything
   data-derived, and add the string to both `en.json` and `vi.json` — run
   `scratch/verify_i18n_unit_keys.mjs` to confirm every NPC type resolves.
-- **`git` is not installed in this workspace.** Do not delete files; move them to
-  `scratch/backup/obsolete/`. Every refactor step so far is reversible this way.
+- **`git` is installed but not on `PATH`** — invoke it as
+  `C:\Program Files\Git\cmd\git.exe`. Even so, do not delete files: move them to
+  `scratch/backup/obsolete/`. The verifiers read those snapshots back, so deleting
+  one breaks the suite rather than just losing a copy.
 - **PowerShell:** a backtick inside a `Select-String -Pattern` argument opens a `>>`
   continuation prompt that swallows every following command. Use single-quoted
   patterns and avoid backticks.

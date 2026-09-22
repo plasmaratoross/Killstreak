@@ -1,9 +1,9 @@
 # ============================================================
 # Killstreak - ignored paths
 #
-# NOTE: `git` is not currently installed in this environment, so this file is
-# inert until the repository is initialised (`git init`). It is committed here so
-# the intent is recorded rather than rediscovered.
+# NOTE: this repository IS initialised (remote: plasmaratoross/Killstreak) and
+# `git` IS installed at C:\Program Files\Git\cmd\git.exe — it is simply not on
+# PATH, so invoke it with the full path. This file is live, not inert.
 # ============================================================
 
 # Dependencies

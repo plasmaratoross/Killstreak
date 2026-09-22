@@ -30,9 +30,12 @@ touch `src/core/SaveManager.js` or `js/storage.js`, read both end to end first.
 round them. Change them only when explicitly asked — and then say exactly which
 values you changed.
 
-**3. `git` is not installed here.**
-There is no undo. **Never delete a file** — move it to `scratch/backup/obsolete/`.
-Every step of this project has been kept reversible that way. Keep it that way.
+**3. Never delete a file — move it to `scratch/backup/obsolete/`.**
+`git` is installed at `C:\Program Files\Git\cmd\git.exe`, but it is **not on
+`PATH`**, so invoke it by full path. History does exist, so this is not about
+lacking an undo: the pre-refactor snapshots under `scratch/backup/` are read back
+by the verifiers, so deleting one breaks the suite rather than merely losing a
+copy. Retire files by moving them.
 
 ---
 
@@ -109,6 +112,13 @@ Adding a feature to `Game` is normal and correct. "While I'm here, let me split
    Enforced by `scratch/verify_phase7_innerhtml.mjs`. The escape hatch is building
    nodes through the DOM API instead.
 
+8. **ES modules cannot load over `file://`.** A `file://` page's origin is `null`, so
+   the module fetch is blocked: you get a fully rendered main menu, completely dead
+   JavaScript, and **no console error**. This shipped once and read as a broken
+   button. Only the inlined single-file build runs from disk — that is what
+   `npm.cmd run build` produces. To reproduce a user's "cannot enter game" report,
+   check `window.Killstreak` exists before testing any game logic.
+
 ---
 
 ## 5. Verify before you claim
@@ -120,6 +130,10 @@ Get-ChildItem scratch -Filter *.mjs | Where-Object { $_.Name -match '^(verify_|v
   node $_.FullName > $null 2>&1; if ($LASTEXITCODE -ne 0) { Write-Output ('FAIL ' + $_.Name) }
 }
 ```
+
+`npm.cmd run build` is the **offline single-file** target — it writes the
+`dist/index.html` players double-click. `npm.cmd run build:web` writes the ordinary
+multi-file output. Both must exit 0.
 
 Do **not** blanket-run every `*.mjs` in `scratch/`. `extract_*`, `splice_*` and
 `phase4_*`–`phase6_*` are one-shot generators that already ran; they throw on
