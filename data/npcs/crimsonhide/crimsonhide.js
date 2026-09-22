@@ -1,0 +1,29 @@
+/**
+ * Crimsonhide NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.crimsonhide = {
+    id: "crimsonhide",
+    name: "Crimsonhide",
+    description: "Apocalyptic apex behemoth encased in blood-crystalline dragon carapace, exuding an aura of annihilation.",
+    radius: 27,
+    speed: 140,
+    maxHp: 17000000,
+    damage: 850000,
+    attackRate: 0.68,
+    attackRange: 27,
+    killsAwarded: 8,
+    killstreakAwarded: 21000,
+    respawnDelay: 7.0,
+    color: "#450a0a",
+    glowColor: "rgba(220, 38, 38, 0.95)",
+    massScale: 0.04,
+    shoveRatio: 0.12,
+    barWidth: 84,
+    barColor: "#ef4444"
+  };
+})(window);

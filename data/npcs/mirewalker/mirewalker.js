@@ -1,0 +1,29 @@
+/**
+ * Mirewalker NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.mirewalker = {
+    id: "mirewalker",
+    name: "Mirewalker",
+    description: "Ancient behemoth of the submerged bogs, trailing virulent toxic spores and pulsing marsh miasma.",
+    radius: 24,
+    speed: 110,
+    maxHp: 1800000,
+    damage: 115000,
+    attackRate: 0.72,
+    attackRange: 24,
+    killsAwarded: 6,
+    killstreakAwarded: 3600,
+    respawnDelay: 6.0,
+    color: "#134e4a",
+    glowColor: "rgba(45, 212, 191, 0.90)",
+    massScale: 0.07,
+    shoveRatio: 0.20,
+    barWidth: 72,
+    barColor: "#2dd4bf"
+  };
+})(window);

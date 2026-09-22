@@ -1,0 +1,715 @@
+{
+  "project": {
+    "name": "Killstreak V1.3",
+    "version": "1.3.0",
+    "root": "D:\\Coding Project\\Killstreak V1.3",
+    "description": "2D top-down killstreak browser game featuring 7 swords across 60+ progressive phases, 22 enemy NPC types, unique skill abilities, Bloodmoon event system, and EN/VI localisation.",
+    "runtime": {
+      "node": ">=18.0.0",
+      "bundler": "Vite ^6.0.0",
+      "type": "module"
+    },
+    "commands": {
+      "dev": "npm run dev (starts Vite at http://localhost:5173)",
+      "build": "npm run build (bundles into dist/)",
+      "preview": "npm run preview"
+    }
+  },
+  "status": {
+    "build_status": "PASSING",
+    "build_metrics": "83 modules bundled, 0 errors, ~476KB output (476.25 kB JS, 40.11 kB CSS)",
+    "dev_server": "Run 'npm run dev' (port 5173, falls back if busy)",
+    "current_phase": "Phase 8 COMPLETE — responsive scaling (src/core/GameLoop.js resizeCanvasToFit + styles/responsive.css), docs/ARCHITECTURE.md written, README.md corrected. ALL 8 PHASES DONE. main.js: 2,179 -> 294 lines, 0 top-level functions, 0 addEventListener. Build 90 modules, 0 errors; 17 verifiers, 0 failures. All follow-ups are DONE — see post_refactor_followups_completed: the missing i18n unit key, formatNumber(Infinity), the dead js/i18n.js, the dead sibling JSON, the 180/184 + 880/890 canvas mismatch, and I18n.t() ignoring defaultValue. The suite is now 19 scripts. main.js: 2,179 -> 365 lines, zero top-level functions, and ZERO addEventListener calls (every listener now registers from the module that owns it). 9 wiring groups relocated: library (initLibraryWiring), sword stand (initSwordStandWiring), debug panel (initDebugWiring), language (initLanguageWiring), router/modals (initModalWiring), input (initInputWiring), settings (initSettingsWiring, new src/ui/settings.js), skills panel (initSkillsPanelWiring), cutscenes (initCutsceneWiring, new src/ui/cutsceneUI.js). WHAT REMAINS IN main.js IS THE COMPOSITION ROOT AND SHOULD STAY: the 13 `new Game(...)` callbacks (onKill/onPhaseChange/onAreaChange/onPrompt/onOpenSwordModal/onGameOver/onRespawn/onToast/onBadgesUpdated/onCutsceneStart|Step|End/onSkillsUpdate) and the I18n.onLanguageChange orchestrator — both fan out across many modules, so relocating them would just create a hub. CORRECTION: an earlier note listed a remaining 'minimap/map wiring' group in main.js. It never existed — js/map.js has always wired its own minimap and full-map buttons (map.js:84-117). That item was listed from assumption, not measurement. NEXT: Phase 7 (innerHTML audit — js/main.js is now small; the real targets are renderLibrary/renderBadges/src/ui/* and js/map.js) and Phase 8 (responsive.css + docs/ARCHITECTURE.md).",
+    "wiring_architecture_rule": "Because modals.js is the screen router and already imports updateSwordStandUI from swordStand.js, a panel module must NOT import openScreen/returnFromModal back — that closes the cycle. The pattern is to inject the router's action at init: initSwordStandWiring(game, () => returnFromModal(game)). Follow this for every remaining panel module. Panel-specific NAVIGATION (e.g. showSwordStand) belongs in modals.js, not in main.js and not in the panel.",
+    "phase7_dom_equivalence_baseline": "Phase 7's safety argument is that the rendered DOM is unchanged. Oracle: tag + sorted attributes + whitespace-collapsed visible text, computed on a save reset via game.resetAllProgress() for determinism. The probe needs a real DOM, so it lives in scratch/phase7_dom_probe.js and is run in-browser, NOT in the Node suite. STRONGEST EVIDENCE — the phase cards, where the canon string length is also identical, not just the hash: devourer 4c33d6dc/7604, overdrive afa112e7/3774, aquatic 6c119dc7/7036, soil f0bf58fe/5812, metallic 3ce90c61/5565, flora 58837983/5673, hellfire 386b78d5/5480 (7 tabs, 77 cards, hasScaled=true so the conditional scaledRow row is exercised). CAVEAT on the older numbers previously recorded here (achievements 1f517d4b:2399, library badges f51ce40b:2415, bestiary 3ca1880b:33236, phases-control 432aa5ee:8304, debug grid e3c3e0ca:2530): those were produced by a probe that walked the ROOT element while the current probe walks only its CHILDREN, so they are NOT comparable to current output and must not be cited as a before/after match. For the four class/attribute sites the evidence is instead a mechanism proof (classList.add and setAttribute serialise byte-identically to the interpolated template: 'badge-status-tag unlocked', 'npc-tier-pill tier-apex', '<button ... disabled=\"\">') plus direct value assertions on the live DOM (8+8 status tags, 22 tier pills distributed 4/4/4/5/5, debug grid 0 disabled when locked and 3 disabled with disabled=\"\" after granting 3).",
+    "phase7_behaviour_exception": "Phase 7 is the one place where 'zero behavioural change' is deliberately not absolute, and it must be stated rather than glossed: the old code interpreted data as HTML, so any string containing markup produced different DOM before than after. Measured on the map tooltip with a label of `<b>INJ</b>\" onmouseover=\"x`: the old template created a REAL <b> element (1 injected tag); the new code renders the same label as literal text (0 injected tags). For every string the game actually ships, the DOM is identical — that is what the canonical hashes prove. The exception only exists for data that was never valid input, which is exactly the bug Phase 7 removes.",
+    "phase7_verifier_note": "Two gates now guard this phase. (1) scratch/verify_slice.mjs's body-verbatim assertion is Phase 6's extraction-fidelity gate; Phase 7 deliberately rewrites those bodies, so the five functions it touched are SKIPped via an explicit PHASE7_REWRITTEN set (each prints SKIP + the reason) rather than by weakening the check, which still applies to every other function. (2) scratch/verify_phase7_innerhtml.mjs is new and enforces the phase's own invariant without needing a DOM: every `x.innerHTML =` must be a template literal containing NO ${}, or an empty-string clear; anything else (a concatenation, a variable, an interpolating template) fails, as do insertAdjacentHTML/outerHTML/document.write. It found four surviving skeletons that still interpolated a class or a disabled attribute, which is why it exists. Its scanner counts braces rather than regex-matching the file, because the skeletons are full of HTML braces and nest template literals inside template literals. Also fixed earlier: the failure detail diffed the RAW bodies while the verdict compared the NORMALISED ones, so it reported a token that was not the cause.",
+    "overall_completion_percent": 100,
+    "runtime_smoke_test": {
+      "date": "2026-09-22",
+      "result": "PASS",
+      "details": "0 console errors, no Vite error overlay across every phase check. Phase 4 pixel proof: with the game loop paused, ship state frozen and Math.random seeded, the canvas data URL hashes identically before and after the extraction for all four scenes — MENU 981087ed, LOBBY a97ac3b1, COMBAT 96d3001e, BEAM 8f788140 (BEAM covers the relocated Gluttony beam). Phase 3: aquatic_unlock plays end-to-end and the completion flag persists. Phase 2: 7/7 render strategies draw, KeyZ/KeyX fire with exact source cooldowns. Phase 5: summonEvent('bloodmoon') activates the event (banner 'entering', tint shown, NPC boosts applied) and toggles off cleanly; the aquatic_p13 cutscene grants aquatic_ascended through CutsceneSystem -> AchievementSystem with 0 errors."
+    }
+  },
+  "refactor_strategy": {
+    "goal": "Modernize legacy global IIFE architecture into a clean, modular ES module / Vite architecture following KILLSTREAK_REFACTOR_GUIDE.md with ZERO regressions to gameplay, math, balance, or visuals.",
+    "migration_approach": "Strangler Fig pattern: src/main.js acts as Vite bundle entry. Legacy scripts register on window.Killstreak. Pure data, utilities, and registries are extracted into src/ alongside legacy files, ensuring the game remains playable and build passes after every step."
+  },
+  "global_contract": {
+    "namespace": "window.Killstreak",
+    "attached_objects": {
+      "I18n": "js/i18n.js (2165 lines) - Handles language switching and translations",
+      "Swords": "data/swords/* (7 swords) - Sword definitions, phase stats, render callbacks, abilities",
+      "Npcs": "data/npcs/* (22 NPCs) - Enemy stats, tiers, behaviors, render callbacks",
+      "Maps": "data/maps/* (LOBBY, COMBAT/grassland) - Obstacles, zones, spawners, decor",
+      "Config": "js/config.js - Formations, viewport, gameplay constants, number units",
+      "Storage": "js/storage.js - LocalStorage persistence and save migrations",
+      "Entities": "js/entities.js - Particle, floating text, and entity pool managers",
+      "Map": "js/map.js - World grid, collision partition, zone rendering",
+      "Game": "js/game.js - Core game engine, loops, combat calculations",
+      "App": "js/main.js - UI event handlers, menus, panels, hud bindings"
+    }
+  },
+  "phases_status": {
+    "phase_0_safety_and_build": {
+      "name": "Phase 0 — Safety & Build Setup",
+      "status": "COMPLETED",
+      "deliverables": [
+        { "file": "package.json", "status": "Created with dev, build, preview scripts" },
+        { "file": "vite.config.js", "status": "Created with root at base, public dir support" },
+        { "file": "index.html", "status": "Replaced 46 legacy script tags with single <script type='module' src='/src/main.js'>" },
+        { "file": "src/main.js", "status": "Created module entry importing all modules in exact dependency order" },
+        { "file": "dist/", "status": "Generated output, NOT kept in the tree — verified that a from-clean `npm run build` recreates it (index.html + 2 hashed assets) with 0 errors. vite.config.js sets outDir: 'dist' and emptyOutDir: true, so it is disposable by construction; run the build when you need it." }
+      ]
+    },
+    "phase_1_extract_pure_data": {
+      "name": "Phase 1 — Extract Pure Data",
+      "status": "COMPLETED",
+      "completion_percent": 100,
+      "deliverables": [
+        { "target": "src/swords/<name>/<name>.data.json", "status": "COMPLETED", "note": "All 7 swords copied (devourer, overdrive, aquatic, soil, metallic, flora, hellfire)" },
+        { "target": "data/npcs/<name>/<name>.json", "status": "COMPLETED", "note": "Created 15 missing JSON schemas for legacy NPCs so all 22 have data files" },
+        { "target": "src/npcs/<name>/<name>.data.json", "status": "COMPLETED", "note": "All 22 NPC data JSONs copied into src/npcs/" },
+        { "target": "src/maps/lobby.data.js", "status": "COMPLETED", "note": "Pure ES module exporting LOBBY_MAP object" },
+        { "target": "src/maps/grassland.data.js", "status": "COMPLETED", "note": "Pure ES module exporting GRASSLAND_MAP object (expanded 200%)" },
+        { "target": "src/config/npcFormations.js", "status": "COMPLETED", "note": "Extracted NPC formation offsets + helper" },
+        { "target": "src/config/gameConfig.js", "status": "COMPLETED", "note": "Extracted VIEWPORT, PLAYER_DEFAULTS, BLOODMOON_CONFIG, etc." },
+        { "target": "src/swords/SwordRegistry.js", "status": "COMPLETED", "note": "Registry importing all 7 sword JSONs with getSword(), getAllSwords() helpers" },
+        { "target": "src/npcs/NpcRegistry.js", "status": "COMPLETED", "note": "Registry importing all 22 NPC JSONs with getNpc(), getNpcsByTier() helpers" },
+        { "target": "src/i18n/en.json", "status": "COMPLETED", "note": "761 leaf strings extracted verbatim from js/i18n.js (22 top-level sections)" },
+        { "target": "src/i18n/vi.json", "status": "COMPLETED", "note": "761 leaf strings, exact parity with en.json (0 missing / 0 extra)" },
+        { "target": "src/i18n/I18n.js", "status": "COMPLETED", "note": "ES module importing en.json + vi.json; logic carried over verbatim; still registers window.Killstreak.I18n; also exports default + named translations" },
+        { "target": "src/main.js (i18n import swap)", "status": "COMPLETED", "note": "Now imports ./i18n/I18n.js instead of ../js/i18n.js; legacy file retained on disk but unused" }
+      ]
+    },
+    "phase_2_sword_strategy": {
+      "name": "Phase 2 — Strategy Pattern for Swords",
+      "status": "COMPLETED",
+      "completion_percent": 100,
+      "description": "Blade/aura rendering and active abilities moved out of the js/entities.js and js/game.js monoliths into per-sword strategy modules.",
+      "deliverables": [
+        { "target": "src/swords/<name>/<name>.render.js (×7)", "status": "COMPLETED", "note": "Blade + aura drawing, moved verbatim; `this.` rebound to the `player` parameter. ~2,780 lines." },
+        { "target": "src/swords/<name>/<name>.ability.js (×6) + devourer.engulf.ability.js", "status": "COMPLETED", "note": "Ability bodies moved verbatim; `this.` rebound to `game`. ~278 lines. A one-line call-time preamble re-resolves the entity classes (Particle, FloatingText, TsunamiWave) that were file-scope bindings in js/game.js." },
+        { "target": "src/systems/AbilitySystem.js", "status": "COMPLETED", "note": "activatePrimary(game) / activateSecondary(game) dispatchers replicating the exact branch structure of the two js/main.js call sites, including the overdrive fall-through quirk." },
+        { "target": "src/swords/SwordRegistry.js", "status": "COMPLETED", "note": "data + render + ability wired per sword, with getSwordRenderer() falling back to Devourer exactly like the original `else` branch." },
+        { "target": "js/entities.js", "status": "COMPLETED", "note": "5,853 -> 3,115 lines. 14 draw methods deleted, both swordId dispatch chains collapsed to registry calls, registry import added." },
+        { "target": "js/game.js", "status": "COMPLETED", "note": "4,206 -> 3,819 lines. 7 activate methods deleted." },
+        { "target": "js/main.js", "status": "COMPLETED", "note": "Both ability call sites (skill button handlers + KeyZ/KeyX) now call AbilitySystem; UI-level guards such as isSwordEquipped stay in place." }
+      ],
+      "verification": [
+        "scratch/verify_sword_strategy.mjs — all 21 modules match the legacy source statement-for-statement",
+        "scratch/analyze_free_vars.mjs — no unbound IIFE-scope references remain",
+        "scratch/verify_splice.mjs — spliced files are byte-identical to the documented transform of their backups",
+        "Runtime: 7/7 render strategies + 2 fallback paths draw without throwing; both abilities fire with exact source cooldowns (10s / 45s)"
+      ]
+    },
+    "phase_3_cutscenes": {
+      "name": "Phase 3 — Data-Driven Cutscene System",
+      "status": "COMPLETED",
+      "completion_percent": 100,
+      "description": "The 15 cutscene methods in js/game.js were replaced by one data table plus a single engine.",
+      "deliverables": [
+        { "target": "src/systems/cutscenes.data.js", "status": "COMPLETED", "note": "11 cutscene definitions. Dialogue arrays and completion-effect blocks moved verbatim. `lines()` is a factory (not a frozen literal) because each entry resolves its i18n keys at call time, exactly as the original methods did." },
+        { "target": "src/systems/CutsceneSystem.js", "status": "COMPLETED", "note": "start(game, id) / advance(game) / skip(game) / finish(game) / getLines(id), replacing Game.getCutsceneDialogue + 11 start* methods + advance/skip/finish." },
+        { "target": "js/game.js", "status": "COMPLETED", "note": "3,819 -> 2,582 counted lines. 15 methods deleted (-853 lines), 12 call sites rewired to CutsceneSystem, namespace import added." },
+        { "target": "js/main.js", "status": "COMPLETED", "note": "4 call sites (overlay click + keyboard, advance and skip) rewired to CutsceneSystem." }
+      ],
+      "preserved_behaviours": [
+        "The 10 guarded `if (cutsceneType === X)` completion blocks keep their exact save/effects ordering; a keyed lookup is equivalent because each type appears at most once.",
+        "devourer_p17 has no guarded block and intentionally falls through to the unguarded default completion block, which also runs for any unrecognised cutsceneType. Preserved via onFinish: null.",
+        "start() effect order is flags -> dialogue -> beforeShake -> shake -> achievement -> onCutsceneStart, matching every original method.",
+        "advanceCutscene's/skipCutscene's internal `this.finishCutscene()` self-call was rewired to the engine's own `finish(game)` and asserted at extraction time."
+      ],
+      "verification": [
+        "scratch/verify_cutscenes.mjs — 27/27 checks: each original method run against a stubbed Game and compared with the new system for state, saveData mutations and the full ordered effect log (camera.shake args, achievement ids, Particle/FloatingText constructor args, callbacks). Math.random is seeded so particle arguments are comparable. Confirms behavioural identity, not just textual similarity.",
+        "scratch/verify_splice_cutscenes.mjs — exactly the 15 methods removed, all 11 start call sites rewired, no stale calls, surrounding systems intact",
+        "Runtime: aquatic_unlock played end-to-end from equipSword() through to the persisted completion flag with 0 console errors"
+      ]
+    },
+    "phase_4_world_renderers": {
+      "name": "Phase 4 — Extract World/Lobby Renderers",
+      "status": "COMPLETED",
+      "completion_percent": 100,
+      "description": "World and lobby rendering moved out of js/game.js into two render modules, plus the Devourer beam visual relocated to its sword module.",
+      "deliverables": [
+        { "target": "src/render/WorldRenderer.js", "status": "COMPLETED", "note": "drawMapWorld, drawVillageStructures, drawSafeRoundRect. The round-rect helper is a pure function (its original body never used `this`) so it kept its ctx signature and is imported by LobbyRenderer." },
+        { "target": "src/render/LobbyRenderer.js", "status": "COMPLETED", "note": "drawAmbientMenuBg, drawLobbyFloor, drawLobbyFurnitureAndProps, drawLobbyDecorations." },
+        { "target": "src/swords/devourer/devourer.render.js", "status": "COMPLETED", "note": "Gained drawBeam(ctx, game) — the Gluttony beam, moved verbatim from Game.drawGluttonyBeam. This closes the last outstanding Phase 2 deliverable." },
+        { "target": "js/game.js", "status": "COMPLETED", "note": "2,582 -> 2,167 counted lines. 8 methods deleted (-804 lines), 6 call sites rewired, 3 imports added." }
+      ],
+      "preserved_behaviours": [
+        "drawLobbyDecorations is not called anywhere in the codebase, but is still exported rather than dropped — the refactor must not remove existing features.",
+        "Internal self-calls were rewired explicitly and count-asserted: 10 x drawSafeRoundRect, plus drawLobbyFloor/drawLobbyFurnitureAndProps inside drawLobbyDecorations (the latter two now thread the `game` parameter through).",
+        "Note: the Phase 2 extractor (scratch/extract_sword_strategy.mjs) is now superseded — js/entities.js and js/game.js no longer contain the methods it read, so its emitted modules are the source of truth."
+      ],
+      "verification": [
+        "Pixel equivalence (strongest available): the same frozen scene rendered by the pre-Phase-4 backup and by the new modules produces an identical canvas data-URL hash for MENU, LOBBY, COMBAT and BEAM.",
+        "scratch/verify_splice_renderers.mjs — all 8 methods gone, all 6 call sites rewired, extracted modules export the expected functions",
+        "scratch/verify_inventory.mjs — cumulative check that exactly 30 game.js and 14 entities.js methods are gone across all phases, with none added or silently lost"
+      ]
+    },
+    "phase_5_bloodmoon_and_achievements": {
+      "name": "Phase 5 — Extract Bloodmoon & Achievement Systems",
+      "status": "COMPLETED",
+      "completion_percent": 100,
+      "description": "The Bloodmoon event and the achievement/badge system moved out of js/game.js into two systems modules.",
+      "deliverables": [
+        { "target": "src/systems/AchievementSystem.js", "status": "COMPLETED", "note": "checkFirstSessionAchievement(game), unlockAchievement(game, achId), checkAchievements(game). Bodies moved verbatim; Config re-resolved from window.Killstreak.Config." },
+        { "target": "src/systems/BloodmoonEventSystem.js", "status": "COMPLETED", "note": "updateBloodmoon(game, dt), startBloodmoon, endBloodmoon, summonEvent, showBloodmoonBanner, applyBloodmoonNpcBoosts, restoreBloodmoonNpcStats. Event state stays on game.bloodmoon — the module only owns behaviour." },
+        { "target": "js/game.js", "status": "COMPLETED", "note": "2,167 -> 1,871 counted lines. 10 methods deleted (-298), 12 call sites rewired, 2 imports added." },
+        { "target": "js/main.js", "status": "COMPLETED", "note": "5 call sites rewired (debug button, debug key, window.summonEvent, window.toggleBloodmoon)." },
+        { "target": "src/systems/CutsceneSystem.js", "status": "COMPLETED", "note": "Its `game.unlockAchievement(def.achieve)` grant now routes through AchievementSystem, since that method no longer exists on Game." }
+      ],
+      "verification": [
+        "scratch/verify_systems.mjs — 23/23 checks. Each original method is run against a stubbed Game (with the REAL js/config.js loaded) and compared with the new system for return value, full state mutation, DOM classList/textContent changes and the ordered effect log.",
+        "scratch/verify_inventory.mjs — cumulative accounting plus the new cross-module check (see critical_findings.cutscene-achievement-dangling-call)",
+        "Runtime: bloodmoon summon/toggle and the aquatic_p13 cutscene grant both work with 0 console errors"
+      ]
+    },
+    "phase_6_ui_modularization": {
+      "name": "Phase 6 — Split main.js into UI Modules",
+      "status": "COMPLETED",
+      "completion_percent": 100,
+      "description": "DONE. js/main.js went from a 2,179-line IIFE of 26 functions closing over 124 module-level constants to a 294-line composition root with ZERO top-level functions and ZERO addEventListener calls. 13 slices moved every function out; 9 wiring groups then moved each module's own event registration into that module (the option-2 rule the user chose). What remains in main.js is deliberate: the 13 new Game(...) callbacks and the I18n.onLanguageChange orchestrator, both of which fan out across many modules, so moving them would only create a new hub.",
+      "completed_tasks": [
+        "src/ui/domRefs.js — the 122 `document.getElementById` refs hoisted out of the main.js IIFE (slice 1)",
+        "js/main.js now imports those refs by name instead of declaring them; no function body needed to change",
+        "Consumed src/utils/format.js and src/utils/dom.js in js/main.js, deleting 87 lines of duplicate code (slice 2)",
+        "src/ui/hud.js — updateHudCounters / updateStatsUI / updateHudPhaseTracking extracted, 33 call sites rewired to pass `game` (slice 3)",
+        "formatPlaytime finally swapped in slice 3, after scratch/verify_utils.mjs confirmed it identical across 38 inputs",
+        "src/ui/skillsPanel.js — updateSkillsUI (215 lines, the largest single function) extracted, 4 call sites rewired (slice 4)",
+        "Reusable slice tooling: scratch/phase6_slice.mjs extracts any function group and records a manifest in scratch/slices/; scratch/verify_slice.mjs verifies every recorded slice automatically, so new slices need no new verifier",
+        "scratch/analyze_main_state.mjs and scratch/analyze_main_deps.mjs map mutable-state ownership and the intra-file call graph, so the next slice can be chosen by data rather than guesswork",
+        "src/ui/badges.js — renderBadges + renderDebugBadges (slice 5); renderBadges keeps its `targetElement = badgesList` default, resolved against the imported ref",
+        "src/ui/toast.js — replaced the earlier speculative module with main.js's original closure-capturing showToast (slice 6). This resolves the last unreconciled duplicate: the two implementations no longer diverge.",
+        "src/core/InputManager.js — updateMouseCoordinates (slice 7)",
+        "src/ui/language.js — updateLanguageUI (slice 8)",
+        "Tool gained CALLBACK WRAPPING: functions registered via addEventListener / requestAnimationFrame are referenced bare, so args cannot be inserted — the registration is wrapped instead, e.g. canvas.addEventListener(\"mousemove\", (e) => updateMouseCoordinates(game, e)). This is needed by most of the functions still to move.",
+        "src/utils/format.js (formatNumber, parseNumberInput, units)",
+        "src/utils/collision.js (checkLineCircleCollision)",
+        "src/utils/dom.js (setNumContent, formatPlaytime, qs)",
+        "src/core/SaveManager.js (port of storage.js with named export)",
+        "src/ui/toast.js (showToast implementation — still NOT consumed by main.js, see remaining_tasks)"
+      ],
+      "key_technique": "ES module named imports bind the SAME identifiers, so a declaration can move into a module and be imported back under its original name. That is what made the 122-ref hoist possible without rewriting a single reference.\n\nThe second lever: the function bodies already referenced a module-level `let game`. Making `game` a *parameter* of the extracted function means every `game.x` inside keeps resolving — to the parameter — so the bodies needed no editing at all. Only an internal self-call had to thread the parameter through.",
+      "remaining_tasks": [],
+      "verification": [
+        "scratch/verify_domrefs.mjs — proves all 122 name->element-id pairs match the originals, none lost or invented, and main.js imports exactly those names",
+        "scratch/verify_utils.mjs — formatNumber compared over 37 numeric + 8 coercion inputs, parseNumberInput over 45 inputs, setNumContent incl. the null-element no-op",
+        "scratch/compare_ui_utils.mjs — the gate that decides what is safe to swap (token-level diff)",
+        "Runtime: HUD renders 15K/15,000 and 2.5M/2,500,000 through the swapped modules with 0 console errors",
+        "scratch/verify_slice.mjs — body-verbatim check, ref-import hygiene, definition removal and call-site rewiring for every recorded slice",
+        "Runtime (slice 4): all 7 sword branches of the skills panel render the correct label, lock phase and Engulf-button visibility (devourer/overdrive show X, the other five hide it), and the VI labels resolve — with 0 console errors"
+      ]
+    },
+    "phase_7_inner_html_audit": {
+      "name": "Phase 7 — innerHTML Audit & XSS Hardening",
+      "status": "COMPLETED",
+      "description": "DONE. The plan said '12 innerHTML template-string uses'; the truth is 6 interpolating templates + 6 empty-string clears. All 6 were converted to a static-skeleton-plus-DOM-API shape, and the rule is now a machine-checked invariant: every `x.innerHTML =` must be a clear or a template containing NO ${} (scratch/verify_phase7_innerhtml.mjs, which also rejects insertAdjacentHTML / outerHTML / document.write). The invariant's first run FAILED 4 of 6 skeletons — they still interpolated a class attribute whose value was a ternary, and one disabled attribute — so 'complete' would have been false without a check that could fail. Equivalence was proved against a canonical DOM form per site; see status.phase7_dom_equivalence_baseline and status.phase7_behaviour_exception.",
+      "sites": [
+        "src/ui/badges.js — renderBadges, renderDebugBadges",
+        "src/ui/library.js — renderLibrary (badge items), renderLibraryNpcs (22 cards), renderLibrarySwords (phase cards)",
+        "js/map.js — MapSystem.showTooltip"
+      ]
+    },
+    "phase_8_polish_and_docs": {
+      "name": "Phase 8 — Responsive CSS + Documentation",
+      "status": "COMPLETED",
+      "completed_tasks": [
+        "src/core/GameLoop.js — resizeCanvasToFit() publishes --game-scale; initResponsiveWiring() registers resize + orientationchange HERE, not in js/main.js, per the Phase 6 ownership rule (main.js still has 0 addEventListener). Capped at 1x because the canvas is a fixed bitmap, so upscaling would only blur.",
+        "styles/responsive.css — turns --game-scale into transform: translate(-50%, -50%) scale(var(--game-scale)). The translate-then-scale order plus position:absolute keeps the visual centre pinned to the viewport centre even when the unscaled 1000px box overflows, which is the whole case this exists for. Also 100dvh fallback and a < 1000px breakpoint.",
+        "js/main.js — imports and calls initResponsiveWiring(); still 0 top-level functions and 0 listeners (294 lines).",
+        "js/map.js — new canvasPointFromEvent() makes minimap hover, full-map hover, wheel zoom and drag pan scale-aware. Divides by the TRANSFORM scale (rect.width / canvas.offsetWidth), NOT canvas.width / rect.width — see critical_findings.canvas-layout-vs-bitmap-mismatch for why that distinction matters.",
+        "docs/ARCHITECTURE.md — written. Covers the entry point, the four ownership rules, the sword Strategy Pattern, the accurate SIX-step add-a-sword recipe (the plan's four steps plus the AbilitySystem dispatch branch and the i18n keys), the responsive model, the verifier suite, and dead code / traps.",
+        "README.md — corrected. It still described the refactor as mid Phase 2–6, listed line counts that were two refactors out of date, labelled js/i18n.js 'Active — Phase 6 target' when it is dead, and its src/ tree omitted core/GameLoop.js, core/InputManager.js, systems/, render/, i18n/ and all of ui/ except toast.js."
+      ],
+      "verification": {
+        "viewport_fit": "5 sizes (1400x900, 1000x650, 800x600, 500x400, 1200x500): scale exactly min(1, vw/1000, vh/650); box = 1000x650 x scale; centre == viewport centre; aspect preserved; no scrollbars.",
+        "input_under_scale": "Gameplay aim maps the visual centre to (500,325) exactly at scale 1, 0.8 and 0.5. canvasPointFromEvent returns exactly the original expression at scale 1, and 37/scale at 0.8 and 0.5, on both canvases.",
+        "hit_testing_equivalence": "1,012-point sweep of the full map at scale 1 vs 0.5 with 12 injected zones: 966 zone hits, 12 distinct zones, 0 mismatches. Crosses every zone boundary.",
+        "bundled": "The transform rule, the 999px breakpoint and the dvh fallback are all present in the minified dist CSS."
+      }
+    }
+  },
+  "created_files_manifest": [
+    { "path": "package.json", "purpose": "Vite scripts and configuration" },
+    { "path": "vite.config.js", "purpose": "Vite dev server and build configuration" },
+    { "path": "README.md", "purpose": "Architecture and developer reference" },
+    { "path": "docs/ARCHITECTURE.md", "purpose": "Phase 8 — patterns, the add-a-sword recipe, responsive model, verifier suite, dead code and traps" },
+    { "path": "styles/responsive.css", "purpose": "Phase 8 — applies --game-scale as a CSS transform on #game-container" },
+    { "path": "src/main.js", "purpose": "Vite entry point loading modules in safe order" },
+    { "path": "src/config/gameConfig.js", "purpose": "Core viewport, player, bloodmoon configuration" },
+    { "path": "src/config/npcFormations.js", "purpose": "NPC zone formation offsets" },
+    { "path": "src/utils/format.js", "purpose": "Number suffix formatting up to Googol" },
+    { "path": "src/utils/collision.js", "purpose": "Line-circle collision utility" },
+    { "path": "src/utils/dom.js", "purpose": "DOM manipulation helpers" },
+    { "path": "src/core/SaveManager.js", "purpose": "LocalStorage save/load management" },
+    { "path": "src/i18n/en.json", "purpose": "English string catalog (761 leaves)" },
+    { "path": "src/i18n/vi.json", "purpose": "Vietnamese string catalog (761 leaves)" },
+    { "path": "src/i18n/I18n.js", "purpose": "I18n engine: t(), init(), interpolation, DOM binding, helper lookups" },
+    { "path": "src/ui/toast.js", "purpose": "In-game notification toasts" },
+    { "path": "src/maps/lobby.data.js", "purpose": "Lobby map data ES module" },
+    { "path": "src/maps/grassland.data.js", "purpose": "Grassland combat map data ES module" },
+    { "path": "src/swords/SwordRegistry.js", "purpose": "Central registry for sword data JSONs" },
+    { "path": "src/npcs/NpcRegistry.js", "purpose": "Central registry for NPC data JSONs" },
+    { "path": "src/swords/*/*.data.json", "purpose": "7 sword config JSON files" },
+    { "path": "src/npcs/*/*.data.json", "purpose": "22 NPC config JSON files" },
+    { "path": "data/npcs/*/*.json", "purpose": "15 newly created JSON files for legacy NPC folders", "note": "REMOVED — these were the stale siblings; quarantined to scratch/backup/dead-data-json/ and then deleted" },
+    { "path": "scratch/extract_i18n.mjs", "purpose": "Phase 1 one-shot extractor: js/i18n.js -> src/i18n/{en,vi}.json", "note": "REMOVED — applied one-shot generator; deleted as junk once the refactor completed" },
+    { "path": "scratch/verify_i18n.mjs", "purpose": "Phase 1 parity harness: proves new i18n is behaviourally identical to legacy" },
+    { "path": "scratch/validate_phase1.mjs", "purpose": "Phase 1 artifact validator: proves all extracted data deep-equals the live legacy source" },
+    { "path": "scratch/diagnose_data_drift.mjs", "purpose": "Root-cause tool for the stale-data defect below", "note": "MOVED to scratch/backup/obsolete/ — it read the sibling JSON paths that had been quarantined away" },
+    { "path": "scratch/fix_extracted_data.mjs", "purpose": "Repairs drifted src/ data files by re-extracting from the live legacy scripts (dry-run by default)" },
+    { "path": "scratch/extract_sword_strategy.mjs", "purpose": "Phase 2 extractor: Player.draw*/Game.activate* -> per-sword render/ability strategy modules", "note": "REMOVED — applied one-shot generator; it reads methods that no longer exist in the legacy files, so it cannot run" },
+    { "path": "scratch/verify_sword_strategy.mjs", "purpose": "Phase 2 fidelity harness: statement-level comparison of all 21 modules vs the legacy source" },
+    { "path": "scratch/analyze_free_vars.mjs", "purpose": "Proves no extracted body still depends on an IIFE-scope binding" },
+    { "path": "scratch/splice_legacy.mjs", "purpose": "Phase 2 splice: removes moved methods from entities.js/game.js and wires dispatch (backs up first)", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_splice.mjs", "purpose": "Proves the spliced files are byte-identical to the documented transform of their backups" },
+    { "path": "scratch/backup/entities.js.bak", "purpose": "Pre-splice entities.js (5,853 lines) for rollback and diffing" },
+    { "path": "scratch/backup/game.js.bak", "purpose": "Pre-splice game.js (4,206 lines) for rollback and diffing" },
+    { "path": "src/swords/<name>/<name>.render.js (×7)", "purpose": "Per-sword blade + aura rendering strategies" },
+    { "path": "src/swords/<name>/<name>.ability.js (×6) + devourer.engulf.ability.js", "purpose": "Per-sword active ability strategies" },
+    { "path": "src/systems/AbilitySystem.js", "purpose": "Primary/secondary ability dispatch replicating the legacy branch structure" },
+    { "path": "src/systems/cutscenes.data.js", "purpose": "Phase 3: 11 cutscene definitions (dialogue factories + completion blocks)" },
+    { "path": "src/systems/CutsceneSystem.js", "purpose": "Phase 3: single cutscene engine (start/advance/skip/finish/getLines)" },
+    { "path": "scratch/analyze_cutscenes.mjs", "purpose": "Phase 3 reconnaissance: effect sequences, engine methods, call sites", "note": "MOVED to scratch/backup/obsolete/ (see the entry for its new path)" },
+    { "path": "scratch/extract_cutscenes.mjs", "purpose": "Phase 3 extractor: 15 Game methods -> cutscenes.data.js + CutsceneSystem.js", "note": "REMOVED — applied one-shot generator; throws 'method not found' because the methods are gone" },
+    { "path": "scratch/verify_cutscenes.mjs", "purpose": "Phase 3 behavioural equivalence harness (runs original vs new on stubbed Games)" },
+    { "path": "scratch/splice_cutscenes.mjs", "purpose": "Phase 3 splice: removes the 15 methods and rewires 16 call sites", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_splice_cutscenes.mjs", "purpose": "Phase 3 splice verification" },
+    { "path": "scratch/backup/game.js.phase3.bak", "purpose": "Pre-Phase-3 game.js for rollback and diffing" },
+    { "path": "scratch/backup/main.js.phase3.bak", "purpose": "Pre-Phase-3 main.js for rollback and diffing" },
+    { "path": "scratch/backup/dead-data-json/", "purpose": "The 31 unreferenced sibling JSON files removed from data/ (see critical_findings.dead-sibling-json)", "note": "REMOVED — deleted after proving no code referenced those paths" },
+    { "path": "src/render/WorldRenderer.js", "purpose": "Phase 4: combat-map + village rendering" },
+    { "path": "src/render/LobbyRenderer.js", "purpose": "Phase 4: sanctuary lobby rendering" },
+    { "path": "scratch/phase4_renderers.mjs", "purpose": "Phase 4 extractor + splice (one script, backs up first)", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_splice_renderers.mjs", "purpose": "Phase 4 splice verification" },
+    { "path": "scratch/verify_inventory.mjs", "purpose": "Cumulative method-inventory check across all phases — replaces the per-phase diffs that went stale" },
+    { "path": "scratch/backup/game.js.phase4.bak", "purpose": "Pre-Phase-4 game.js" },
+    { "path": "scratch/backup/game.js.phase4.new", "purpose": "Post-Phase-4 game.js (used to restore after the pixel-equivalence swap)" },
+    { "path": "src/systems/AchievementSystem.js", "purpose": "Phase 5: achievement/badge granting and evaluation" },
+    { "path": "src/systems/BloodmoonEventSystem.js", "purpose": "Phase 5: Bloodmoon event lifecycle" },
+    { "path": "scratch/phase5_systems.mjs", "purpose": "Phase 5 extractor + splice across game.js, main.js and CutsceneSystem.js", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_systems.mjs", "purpose": "Phase 5 behavioural equivalence harness (23 scenarios)" },
+    { "path": "scratch/backup/game.js.phase5.bak", "purpose": "Pre-Phase-5 game.js" },
+    { "path": "scratch/backup/main.js.phase5.bak", "purpose": "Pre-Phase-5 main.js" },
+    { "path": "scratch/backup/CutsceneSystem.js.phase5.bak", "purpose": "Pre-Phase-5 CutsceneSystem.js" },
+    { "path": "src/ui/domRefs.js", "purpose": "Phase 6 slice 1: the 122 DOM refs hoisted out of the main.js IIFE" },
+    { "path": "scratch/phase6_domrefs.mjs", "purpose": "Phase 6 slice 1: hoists the DOM refs and splices main.js", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_domrefs.mjs", "purpose": "Phase 6 slice 1 verification (name/id fidelity)" },
+    { "path": "scratch/compare_ui_utils.mjs", "purpose": "Phase 6 slice 2 gate: token-level diff of duplicated utilities" },
+    { "path": "scratch/phase6_utils.mjs", "purpose": "Phase 6 slice 2: swaps in src/utils/{format,dom}.js", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_utils.mjs", "purpose": "Phase 6 slice 2 verification (input-range equivalence)" },
+    { "path": "scratch/backup/main.js.phase6-domrefs.bak", "purpose": "main.js before the DOM ref hoist" },
+    { "path": "scratch/backup/main.js.phase6-utils.bak", "purpose": "main.js before the utility dedupe" },
+    { "path": "src/ui/hud.js", "purpose": "Phase 6 slice 3: HUD counters, stats panel, phase tracker" },
+    { "path": "scratch/phase6_hud.mjs", "purpose": "Phase 6 slice 3: extracts the HUD group and rewires 33 call sites", "note": "REMOVED — applied one-shot generator, deleted as junk" },
+    { "path": "scratch/verify_hud.mjs", "purpose": "Phase 6 slice 3 verification (body fidelity + module hygiene)" },
+    { "path": "scratch/backup/main.js.phase6-hud.bak", "purpose": "main.js before the HUD extraction" },
+    { "path": "src/ui/skillsPanel.js", "purpose": "Phase 6 slice 4: updateSkillsUI (all seven sword branches)" },
+    { "path": "scratch/phase6_slice.mjs", "purpose": "Phase 6 reusable slice tool: extract function group + rewire call sites + record manifest" },
+    { "path": "scratch/verify_slice.mjs", "purpose": "Phase 6 slice verifier, data-driven from scratch/slices/*.json" },
+    { "path": "scratch/slices/", "purpose": "One manifest per recorded slice" },
+    { "path": "scratch/analyze_main_state.mjs", "purpose": "Mutable-state ownership map for the remaining main.js functions" },
+    { "path": "scratch/analyze_main_deps.mjs", "purpose": "Intra-file call graph to pick the next slice safely" },
+    { "path": "scratch/backup/main.js.skillsPanel.bak", "purpose": "main.js before the skills panel extraction" },
+    { "path": "src/ui/badges.js", "purpose": "Phase 6 slice 5: renderBadges + renderDebugBadges" },
+    { "path": "src/ui/language.js", "purpose": "Phase 6 slice 8: updateLanguageUI (deviates from the guide, which targets src/i18n/I18n.js)" },
+    { "path": "src/core/InputManager.js", "purpose": "Phase 6 slice 7: updateMouseCoordinates" },
+    { "path": "scratch/backup/main.js.toast.bak", "purpose": "main.js before the toast slice" },
+    { "path": "scratch/backup/main.js.badges.bak", "purpose": "main.js before the badges slice" },
+    { "path": "scratch/backup/main.js.language.bak", "purpose": "main.js before the language slice" },
+    { "path": "scratch/backup/main.js.InputManager.bak", "purpose": "main.js before the input manager slice" },
+    { "path": "src/ui/library.js", "purpose": "Phase 6 slice 9: renderLibrary + renderLibraryNpcs (190L) + renderLibrarySwords + the selectedLibrarySword state and its setter" },
+    { "path": "scratch/backup/main.js.library.bak", "purpose": "main.js before the library extraction" },
+    { "path": "scratch/backup/obsolete/analyze_cutscenes.mjs", "purpose": "Stale since Phase 3 — it targets the start*Cutscene functions in js/game.js that moved to src/systems/cutscenes.data.js, and had been failing the suite with 'startAquaticUnlockCutscene not found'", "note": "moved, not deleted (no git in this environment)" },
+    { "path": "src/ui/debugPanel.js", "purpose": "Phase 6 slice 10: updateDebugQuickButtons, updateDebugModeUI, handleDebugPasswordSubmit, handleApplyDebugKillstreak, plus isDebugUnlocked as an exported live binding with setIsDebugUnlocked()" },
+    { "path": "scratch/backup/main.js.debugPanel.bak", "purpose": "main.js before the debug panel extraction" },
+    { "path": "src/ui/swordStand.js", "purpose": "Phase 6 slice 11: updateSwordStandUI + inspectedSwordId as a live binding with setInspectedSwordId()" },
+    { "path": "scratch/backup/main.js.swordStand.bak", "purpose": "main.js before the sword stand extraction" },
+    { "path": "src/ui/modals.js", "purpose": "Phase 6 slice 12: closeAllModals, openScreen, returnFromModal, promptReturnToLobby + private panelOrigin and exported cogClickCount/setCogClickCount" },
+    { "path": "scratch/backup/main.js.modals.bak", "purpose": "main.js before the modals extraction" },
+    { "path": "src/core/GameLoop.js", "purpose": "Phase 6 slice 13: loop() + private lastTimestamp. The last function to leave main.js." },
+    { "path": "scratch/backup/main.js.GameLoop.bak", "purpose": "main.js before the game loop extraction" },
+    { "path": "scratch/verify_cutscene_keys.mjs", "purpose": "Guards every cutscene key referenced in src/**/*.js AND index.html's data-i18n attributes against both dictionaries; also flags orphaned keys" },
+    { "path": "scratch/resync_cutscene_dialogue.mjs", "purpose": "Extracts canonical dialogue from cutscenes.data.js and re-syncs the dictionaries to it (dry-run by default, round-trip guarded). Embeds the Vietnamese first-pass table." },
+    { "path": "scratch/verify_phase_names_translated.mjs", "purpose": "Asserts every phases.*.shortName and .name in vi.json actually differs from en.json — catches English copied into the Vietnamese dictionary" },
+    { "path": "scratch/resync_phase_names.mjs", "purpose": "Translates the 77 vi phase names from ordered per-sword arrays, aligning them with the ability names already in skills.*", "note": "Vietnamese is a machine first pass awaiting native review" }
+  ],
+  "critical_findings": [
+    {
+      "id": "stale-data-drift",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "All src/swords/*/*.data.json and src/npcs/*/*.data.json had been copied from the stale sibling JSON files sitting next to each legacy script, instead of from the live legacy scripts that the game actually loads via src/main.js.",
+      "impact": "117 leaf values diverged from live gameplay data across 10 files. Included NPC maxHp / damage / speed / radius for arcanist, bloodfang, colossus, ironborn, starforged, and rounded arcAngle floats for devourer/overdrive/aquatic/soil plus one hellfire glowColor. Would have silently changed balance and visuals the moment Phase 2 wired the registries into the live path.",
+      "detection": "scratch/validate_phase1.mjs (deep-equality of extracted data vs legacy source loaded in a stubbed window)",
+      "resolution": "Re-extracted the 10 affected files from the live legacy scripts with scratch/fix_extracted_data.mjs --write. Validation now reports ALL PHASE 1 ARTIFACTS VALIDATED with 22/22 NPC entries represented.",
+      "affected_files": [
+        "src/swords/devourer/devourer.data.json (17 values)",
+        "src/swords/overdrive/overdrive.data.json (7 values)",
+        "src/swords/aquatic/aquatic.data.json (13 values)",
+        "src/swords/soil/soil.data.json (10 values)",
+        "src/swords/hellfire/hellfire.data.json (1 value)",
+        "src/npcs/arcanist/arcanist.data.json (15 values)",
+        "src/npcs/bloodfang/bloodfang.data.json (15 values)",
+        "src/npcs/colossus/colossus.data.json (12 values)",
+        "src/npcs/ironborn/ironborn.data.json (14 values)",
+        "src/npcs/starforged/starforged.data.json (13 values)"
+      ],
+      "unresolved_question": "The 14 data/npcs/<name>/<name>.json sibling files that were newly created during Phase 1 are not derived from source. They remain stale/unused, but should be deleted or regenerated before anyone copies from them again."
+    },
+    {
+      "id": "orphaned-registries",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "src/swords/SwordRegistry.js and src/npcs/NpcRegistry.js are not imported by any module, so Vite tree-shakes them and never parses them.",
+      "impact": "A broken import path or corrupt JSON in these files would not be caught by npm run build. They only become validated when Phase 2 wires them into the live path.",
+      "mitigation": "scratch/validate_phase1.mjs statically checks that every import path declared by both registries resolves on disk. Long-term fix is Phase 2 wiring.",
+      "resolution": "FIXED in Phase 2 — SwordRegistry is now imported by js/entities.js and NpcRegistry remains validated by scratch/validate_phase1.mjs. The sword registry is therefore parsed and bundled by Vite."
+    },
+    {
+      "id": "guide-ability-mapping-error",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "KILLSTREAK_REFACTOR_GUIDE.md maps `activateEngulf` to the Overdrive sword, but the function body guards on `swordId !== \"devourer\"` and `phase.phase < 17`. Devourer is the sword with 17 phases, so Engulf is Devourer's secondary (X) ability, not Overdrive's.",
+      "impact": "Following the guide literally would have produced a misleading file layout (src/swords/overdrive/overdrive.ability.js containing Devourer's ability) and invited a future 'fix' that changed gameplay.",
+      "resolution": "Extraction was driven by the guards inside each body instead of the guide's table, and the guide has now been corrected in place. Changes made to KILLSTREAK_REFACTOR_GUIDE.md: (1) the ability-mapping sentence now carries an explicit correction block naming devourer.engulf.ability.js; (2) the directory tree no longer lists overdrive.ability.js and notes Devourer's two abilities; (3) the Phase 2 dispatcher snippet was replaced with the real activatePrimary/activateSecondary API, with a warning that a swordId-keyed dispatcher would silently grant Overdrive a new skill; (4) '10 hàm start*Cutscene' was corrected to 11 in both places; (5) Phase 3 gained a note that the real scope also includes getCutsceneDialogue, advance, skip and the ~348-line finishCutscene with its unguarded phase-17 fall-through.",
+      "related_behaviour": "Because Overdrive has no ability module, its Z input falls through to Gluttony, whose `swordId !== \"devourer\"` guard rejects it. Overdrive therefore has no functional Z or X ability. This is pre-existing behaviour and was preserved deliberately, not fixed."
+    },
+    {
+      "id": "dead-sibling-json",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "31 sibling JSON files (7 swords, 22 NPCs, 2 maps) sat next to the legacy .js data scripts but were never referenced by anything: no `.json`, `fetch(` or `XMLHttpRequest` reference exists anywhere in js/ or index.html. The guide nevertheless instructs copying from the sword ones, and that is exactly what produced the stale-data-drift bug.",
+      "impact": "Dead weight that actively misleads the refactor — the sword JSONs were the documented (and actual) source of 117 drifted values.",
+      "resolution": "Moved out of data/ into scratch/backup/dead-data-json/, preserving their relative paths, so the trap is gone but nothing is destroyed. data/ now contains only the 31 .js data scripts the game actually loads. Verified: npm run build unaffected, runtime unaffected. FINAL: that quarantine directory has since been DELETED outright on explicit instruction — verified first that no code referenced those paths (only docs and the tracker mentioned them), that data/ held zero .json files, and that the authoritative data lives in src/**/*.data.json, derived from the data/**/*.js scripts which remain. The spent scratch/diagnose_data_drift.mjs, which read the pre-move sibling paths and was already broken by the move, went to scratch/backup/obsolete/ with it.",
+      "note": "Moved rather than deleted because git is not installed in this environment, so a hard delete would have been unrecoverable. The folder can be deleted outright once the user is satisfied."
+    },
+    {
+      "id": "stale-phase-verifiers",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "Each phase's splice verifier diffed the method inventory of its own backup against the live file, so it went stale the moment a later phase edited that file again. verify_splice lost its game.js assertions after Phase 3; verify_splice_cutscenes failed after Phase 4.",
+      "impact": "A red verifier that no longer means anything — noise that trains you to ignore failures.",
+      "resolution": "Added scratch/verify_inventory.mjs, which compares the live files against the ORIGINAL pre-Phase-2 backups and asserts the removed set equals the union of every phase's removals (40 methods in game.js, 14 in entities.js). The per-phase verifiers now only assert their own methods are absent plus their call-site rewrites, both of which stay true across phases. All 10 harnesses exit 0."
+    },
+    {
+      "id": "cutscene-achievement-dangling-call",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "Phase 3 had moved the ten finishCutscene completion blocks into cutscenes.data.js, where `this.unlockAchievement(...)` became `game.unlockAchievement(...)`. Phase 5 then deleted that method from Game, leaving five dangling calls (aquatic/soil/metallic/flora/hellfire *_ascended) inside the cutscene onFinish bodies.",
+      "impact": "A runtime TypeError every time one of those five cutscenes completed. It was masked in the observable outcome because the same achievement is also granted from onSwordPhaseUp, so the badge still appeared — the error was only visible in the console.",
+      "why_checks_missed_it": "Every existing check passed. `npm run build` does not resolve runtime method lookups; the verify_cutscenes stub supplied an unlockAchievement method, so the new path worked in the harness while production had removed it.",
+      "resolution": "The five calls in cutscenes.data.js now route through AchievementSystem. More importantly, scratch/verify_inventory.mjs gained a static cross-module check: it enumerates the live Game methods and asserts every `game.<name>()` call anywhere under src/ resolves to a real one (28 files scanned, comments stripped first). That check fails on exactly this class of bug.",
+      "lesson": "A stubbed harness tests equivalence, not availability. Cross-module call targets need their own static check."
+    },
+    {
+      "id": "formatnumber-infinity-overflow",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "formatNumber() recurses into itself for the Googol tier (`if (threshold === 1e100 && val >= 1000) return formatNumber(val).short + ' Googol'`). With `Infinity` as input, val stays Infinity and the recursion never terminates — RangeError: Maximum call stack size exceeded.",
+      "impact": "Any code path that formats a non-finite number crashes the frame. Not reachable from normal play (kills/streak are finite), so it is latent rather than live.",
+      "found_by": "scratch/verify_utils.mjs, which deliberately included ±Infinity in its input set",
+      "resolution": "FIXED after the refactor, on explicit instruction, once behaviour preservation stopped being the priority. formatNumber now guards `if (!Number.isFinite(n))` and returns { short: s, full: s } with s = '∞' or '-∞'. Two details worth keeping: (1) only +Infinity actually recursed — -Infinity FAILS the `val >= 1000` Googol guard, so it fell through to the garbage suffix '-Infinity Googol' instead of crashing. I asserted a crash for both and the verifier corrected me. (2) NaN's output is unchanged ('NaN'), because it never matched a threshold and already reached the same literal through the toExponential path. verify_utils.mjs now excludes ±Infinity from the parity list and asserts them as an INTENTIONAL divergence with the legacy outcomes recorded, so the difference is a documented decision rather than a silently skipped input."
+    },
+    {
+      "id": "dangling-inner-call",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "When a moved function's body calls ANOTHER function in the same slice, the call site is inside the emitted module, not js/main.js. The slice tool only rewired call sites in main.js, so the argument that the callee now takes as a parameter was never supplied. Two instances: src/ui/library.js line 40 called renderLibrarySwords() from renderLibrary, and src/ui/badges.js called renderDebugBadges() from inside its own 'Grant' click handler.",
+      "impact": "Silent TypeError at runtime. renderLibrarySwords(game) with game undefined throws on game.player.swordId, so opening the Library modal would have crashed. The badges one is worse to spot: it only fires when a user clicks 'Grant' in the debug badge grid, and then throws on game.saveData.badges.",
+      "why_checks_missed_it": "verify_slice.mjs asserted only that each body was verbatim and that main.js's call sites passed the new argument, and the manifest had no field describing an internal rewrite. The badges instance had already shipped in slice 5 and survived a full verifier run plus a runtime pass — the runtime pass missed it because renderDebugBadges is only reachable once isDebugUnlocked is set, which that probe never did.",
+      "resolution": "The tool now rewrites cross-calls inside the moved bodies (per body, never across the whole source, because `export function renderLibrary(game)` would otherwise match as a call). verify_slice.mjs gained a check that no argument-less inner call to a parameterised sibling survives in any module, plus an undoInternal() normalisation so the rewrite is not mistaken for a body edit. That new check immediately caught the latent badges.js instance, which was then fixed to renderDebugBadges(game).",
+      "lesson": "'Body verbatim' is necessary but not sufficient. A mechanical transform can be verbatim and still wrong — the transform's own edits have to be asserted, not just the parts that did not change. A runtime probe that never reaches the code path proves nothing about it."
+    },
+    {
+      "id": "rewire-trailing-comma",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "The call-site rewiring inserted the argument unconditionally, turning an argument-less call into `f(game, )`. Harmless to the parser but it is noise in a refactor whose whole selling point is that the output is clean.",
+      "impact": "Cosmetic only. Four instances had accumulated in js/main.js (renderDebugBadges) plus twelve from the library slice.",
+      "resolution": "rewireCallArgs() now does a single pass that peeks at what follows the opening parenthesis, emitting `f(game)` for an empty argument list and `f(game, ` otherwise. Single pass is load-bearing: a second pass would re-match the text the first had just written. The four pre-existing artifacts were cleaned up by hand. verify_slice.mjs accepts both forms."
+    },
+    {
+      "id": "dead-npc-avatar",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "The bestiary avatar rendering in renderLibraryNpcs is guarded by `if (canvas && window.Killstreak && window.Killstreak.NPC)`. window.Killstreak.NPC does not exist — the namespace exposes Config, Data, Entities, Game, GameInstance, I18n, MapSystem, Storage, formatNumber, game, parseNumberInput. So the guard is always false and every NPC avatar canvas stays blank.",
+      "impact": "The bestiary renders 22 correct cards with correct stats and zones, but each avatar box is empty. Since the block is dead, the gradient fill, the circular clip and the dummy-NPC draw never run.",
+      "evidence": "Measured in the browser: reading the avatar canvas gives 0 painted pixels, while painting the same canvas manually through the identical code path gives 1434. So the canvas is fine and the block is simply never entered.",
+      "resolution": "FIXED after the refactor, on explicit instruction, once behaviour preservation stopped being the priority. Both references now go through the namespace that actually exists: the guard checks window.Killstreak.Entities.NPC and the constructor call is new window.Killstreak.Entities.NPC(...). Verified that Entities.NPC exists and that its signature (x, y, zoneIndex, type, slotIndex) is an exact match for the existing call (22, 22, 0, npc.id, 0) BEFORE changing anything — the parameters already lined up, which is why the dropped reference was almost certainly a namespace rename rather than a mismatch. The surrounding try/catch still degrades to a flat circle if the draw ever throws. Verified live: all 22 avatars now paint, 1434 pixels each, 0 blank — 1434 being exactly the figure recorded in this finding's original evidence, so the output matches the known-good reference rather than merely being non-zero."
+    },
+    {
+      "id": "stale-analyze-cutscenes",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "scratch/analyze_cutscenes.mjs was a one-off exploration script from Phase 3. It reads the start*Cutscene function bodies out of js/game.js, which Phase 3 emptied into src/systems/cutscenes.data.js, so it had been throwing 'startAquaticUnlockCutscene not found' ever since.",
+      "impact": "Same class as stale-phase-verifiers: a permanently red script in a directory the developer scans for signal. It does not gate the build, but it makes 'run the suite' unreliable as a habit.",
+      "resolution": "Moved to scratch/backup/obsolete/. The full scratch suite is green again: 16 scripts, 0 failures."
+    },
+    {
+      "id": "stale-hud-count",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "verify_hud.mjs asserted a hardcoded '33 call sites rewired in total', counting HUD call sites in js/main.js alone. Phase 6 slice 10 moved handleApplyDebugKillstreak — which called all three HUD functions — into src/ui/debugPanel.js, so the main.js count fell to 30 and the check went red.",
+      "impact": "Third instance of the stale-phase-verifiers class: a per-phase verifier whose scope no longer matches where the code actually lives. Nothing was broken — three call sites had simply moved.",
+      "why_it_matters": "That count is a real invariant, not bookkeeping. It is the guard against a call site being silently dropped while rewiring arguments during extraction. The tempting 'fix' — loosening it or deleting it — would have thrown away genuine protection.",
+      "resolution": "The check now counts across main.js plus all of src/**/*.js, excluding src/ui/hud.js where the functions are defined, and still asserts exactly 33. It keeps working as call sites continue migrating out of main.js while preserving the original guarantee that none are lost. Suite is back to 16/16.",
+      "lesson": "When a counter guards an invariant, widen its SCOPE as code moves; do not relax the COUNT. Those are very different edits and only one of them keeps the protection."
+    },
+    {
+      "id": "bare-listener-unwrapped",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "returnFromModal was registered as a BARE listener on 10 modal close buttons (addEventListener(\"click\", returnFromModal)). Once the function took `game` as a parameter, each click delivered the MouseEvent as that argument. The event object is truthy, so the `if (game)` guard passed and game.setPaused(false) threw TypeError: game.setPaused is not a function.",
+      "impact": "Every one of the 10 modal close buttons threw instead of navigating — the Library, Sword Stand, Achievements, Settings and Stats modals all became un-closable. Caught by a runtime probe, not by any static check.",
+      "why_checks_missed_it": "The tool has a `callbacks` mechanism for exactly this, but returnFromModal was declared in `callArgs` ONLY. The verifier then compared counts of `returnFromModal(` — the 2 real calls matched the 2 rewrites, and a bare reference contains no `(` at all, so it was invisible to a call-site count. `game.setPaused` exists on the Game prototype, so the cross-module method check in verify_inventory also had nothing to report: the method was fine, the VALUE was wrong.",
+      "resolution": "returnFromModal moved into callbacks as `{ args: 'game' }`, the 10 registrations were wrapped to `() => returnFromModal(game)`, and the slice was regenerated from its backup. verify_slice.mjs gained a check that every moved function with parameters has every bare reference in main.js wrapped (imports stripped first, since an import list mentions every name bare). Re-run across all 12 slices: returnFromModal's 10 were the only instance in the whole refactor.",
+      "lesson": "A call-site count cannot see a registration, because a registration has no call. 'Called with the wrong argument' and 'registered as a listener' are different shapes and need different checks."
+    },
+    {
+      "id": "verifier-undo-one-sided",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "verify_slice.mjs's undoInternal() normalises away the argument a slice inserted, so the module body still compares equal to its backup. It was applied to the module side only. But main.js.modals.bak was taken AFTER slice 11, so it already contained updateSwordStandUI(game) — and this slice deliberately left that call alone. Undoing one side invented a difference that did not exist, and openScreen reported as 'not verbatim'.",
+      "impact": "A false failure on a correct slice, which is the dangerous direction: it invites weakening a real check to make it green.",
+      "resolution": "undoInternal() is now applied to BOTH sides. It is idempotent for calls a previous slice already rewired (nothing to undo) and still normalises the ones this slice changed, so the comparison holds either way."
+    },
+    {
+      "id": "dropped-raf-timestamp",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-22",
+      "summary": "loop(game, currentTimestamp) takes the requestAnimationFrame timestamp as its SECOND parameter, but rAF hands it to the callback as its FIRST argument. The callback wrapper inserted for slice 13 was `() => loop(game)` — it forwarded `game` and dropped the timestamp, so currentTimestamp was undefined on every frame. `dt = Math.min(0.1, (undefined - lastTimestamp) / 1000)` is therefore NaN, and Game.update(NaN) propagated NaN through the player and camera.",
+      "impact": "Total, silent corruption of the simulation: game.player.x/y and game.camera.x/y were NaN from the first frame, and the NaN persisted because lastTimestamp was reassigned to undefined each pass. Nothing threw. The HUD still looked correct because the HP/damage portions of the loop do not use dt — which is exactly why my own runtime probe PASSED while the game was broken.",
+      "how_it_was_caught": "Not by the probe. The probe asserted HP text and bar widths, and reported all-pass with errors: []. It was caught by noticing 'X: NaN | Y: NaN' in the minimap coordinate widget in the page snapshot, then tracing that readout to js/map.js:177, which prints Math.round(game.player.x) — the player's position, not the mouse. That is the only reason this did not ship.",
+      "resolution": "The wrapper now forwards the timestamp: `callbacks: { loop: { event: 'ts', args: 'game' } }` produces `(ts) => loop(game, ts)`. Verified at runtime: player position is 450/650 and finite, KeyD moves x to 587.22, KeyW moves y to 512.71, and the readout tracks it as 'X: 587 | Y: 513'.",
+      "lesson": "Two of them. (1) A wrapped callback must forward EVERY argument the original received, not just the one being injected — an extra leading parameter is a silent trap. (2) Asserting on a function's OUTPUT is not enough when the output has two independent input paths: the HUD half of loop() was fine while the simulation half was NaN. Find a signal that depends on the part you changed — reading an unrelated widget in the page snapshot is what saved this."
+    },
+    {
+      "id": "innerhtml-class-attribute-residue",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "The first four Phase 7 conversions left ${} inside four remaining skeletons: `class=\"badge-status-tag ${isUnlocked ? \"unlocked\" : \"locked\"}\"` in both badges.js and library.js, `class=\"npc-tier-pill ${tier.cls}\"` in the bestiary, and `class=\"btn-debug-grant\" ${isUnlocked ? \"disabled\" : \"\"}` in the debug grid. The last of those interpolates an ATTRIBUTE, which is the sharpest edge of innerHTML because it can escape the attribute rather than merely the text node.",
+      "impact": "Not exploitable with shipped data, but it meant 'Phase 7 complete' would have been false: the invariant was still violated in the exact shape the phase exists to remove. A future badge or tier name reaching one of those ternaries would have been able to break out of the attribute.",
+      "how_it_was_caught": "By writing the invariant as a machine check (verify_phase7_innerhtml.mjs) instead of trusting a hand-written completion note. Its first run failed 4 of 6 skeletons, and because I had already fixed the failure detail to name the offending expression, it printed the ternaries directly. A note in the tracker would have claimed done.",
+      "resolution": "Converted to classList.add(...) and setAttribute('disabled','') . Verified that the DOM-API path serialises byte-identically to the template: classList.add('unlocked') on <div class=\"badge-status-tag\"> gives exactly 'badge-status-tag unlocked'; setAttribute('disabled','') gives exactly <button ... disabled=\"\">. Live values asserted: 8 achievement + 8 library status tags, 22 tier pills (4 novice/4 adept/4 elite/5 dread/5 apex, matching the rank thresholds), debug grid 0 disabled when all locked and 3 disabled after granting 3 badges.",
+      "lesson": "When a phase claims to establish an invariant, encode the invariant as a check that can fail, then believe the check over your own note. Do not relax the check to make it pass — the honest fix was four more small conversions, and the strict rule is what surfaced them."
+    },
+    {
+      "id": "style-attribute-cssom-normalisation",
+      "severity": "LOW",
+      "status": "AVOIDED",
+      "discovered": "2026-09-23",
+      "summary": "The phase-card title carried style=\"color: ${p.color};\". The obvious conversion, el.style.color = p.color, is NOT equivalent: the HTML parser keeps a style attribute's text verbatim ('color: #38bdf8;') while the CSSOM re-serialises it ('color: rgb(56, 189, 248);').",
+      "impact": "The computed colour is identical, so nothing would have looked wrong, but the serialised DOM would have differed on every phase card — turning the equivalence check into an argument about which differences are allowed instead of a clean equality.",
+      "how_it_was_caught": "By asking the browser directly before choosing, rather than assuming: parse-via-innerHTML gives 'color: #38bdf8;', .style.color gives 'color: rgb(56, 189, 248);', setAttribute gives 'color: #38bdf8;'.",
+      "resolution": "Used setAttribute('style', 'color: ' + p.color + ';') for the one data-derived style. The other two inline styles in that template (the weak badge and the scaled row) are constants, so they are set as literal strings.",
+      "lesson": "Two DOM paths that look interchangeable can differ in serialisation while agreeing in rendering. Check which one the *verifier* will see, not just which one the user will see."
+    },
+    {
+      "id": "recorded-hash-canon-mismatch",
+      "severity": "LOW",
+      "status": "CORRECTED",
+      "discovered": "2026-09-23",
+      "summary": "The Phase 7 equivalence hashes recorded mid-session were produced by a probe that included the container element itself, while the probe kept in scratch/phase7_dom_probe.js walks only its children. The two canons give different numbers for the same DOM, and the earlier figures were about to be re-used as a before/after test.",
+      "impact": "Would have produced a false regression signal: re-measuring the phase cards under the child-walking canon gave 4c33d6dc where the tracker recorded 432aa5ee, which looks like a broken refactor and is actually a changed oracle.",
+      "how_it_was_caught": "Noticed that the lengths differed by hundreds of characters, far more than the root element's own attributes could account for — the hash alone would have been ambiguous, but a hash plus its canonical length is much harder to fool.",
+      "resolution": "Re-baselined under one documented canon and recorded the canon in the probe's header and in status.phase7_dom_equivalence_baseline, including an explicit warning that the older numbers are superseded and must not be cited as a match. Stored the canonical string LENGTH alongside every hash from then on.",
+      "lesson": "A hash is only meaningful together with the function that produced it. Record the oracle with the number — and carry a secondary value like the input length, because two different oracles can otherwise be mistaken for a real difference."
+    },
+    {
+      "id": "missing-i18n-key-unit-normal",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "The full-map tooltip builds its unit line with I18n.t('zones.unit_' + zone.npcType). src/i18n/en.json defines unit_sentry, unit_fairy, unit_thug and so on, but there is no unit_normal — and the NPC type that maps to the 'Sentries' label is 'normal'.",
+      "impact": "For the commonest NPC type the tooltip displays the raw key 'zones.unit_normal' instead of 'Sentries [100 HP • 1 Streak]'. Cosmetic, and it appears before and after the Phase 7 edit, so it is NOT a regression this refactor introduced.",
+      "how_it_was_caught": "Incidentally, while comparing the tooltip's DOM before and after: the value read out of the live DOM was the literal string 'zones.unit_normal'. Confirmed by grepping src/i18n/en.json for unit_ keys. Note the t() helper returned the key rather than honouring the {defaultValue} the call passes, which is why it fails silently instead of falling back.",
+      "resolution": "FIXED after the refactor, on explicit instruction. js/map.js now maps the type the way WorldRenderer already did: `zones.unit_${zone.npcType === \"normal\" ? \"sentry\" : zone.npcType}`. Verified live: the tooltip shows 'Sentries [100 HP • 1 Streak]' for a normal zone, 'Fairies [250 HP • 2 Streak]' for fairy, 'Thugs [750 HP • 5 Streak]' for thug. A new verifier, scratch/verify_i18n_unit_keys.mjs, guards the whole class rather than this instance: every one of the 22 npcTypes must resolve to a unit label either directly or through an explicit ALIASES table (currently just normal -> sentry), en and vi must define identical unit_* key sets, and js/map.js must still apply the alias. Its first run reported 'aliased: normal -> sentry', confirming unit_normal genuinely did not exist. Note the alias table is deliberately NOT 'whatever map.js computes' — mirroring map.js could never fail. WorldRenderer is the precedent that makes sentry the right target.",
+      "lesson": "An i18n helper that returns the key on a miss turns a missing translation into plausible-looking output that survives review. A defaultValue argument is not a safety net unless the helper actually applies it."
+    },
+    {
+      "id": "canvas-layout-vs-bitmap-mismatch",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "Two canvases are laid out larger than their bitmap: #minimap-canvas is width=180 rendered at 184 CSS px, and #full-map-canvas is width=880 rendered at 890. js/map.js divides screen offsets by canvas.width, so it already ignores the difference — meaning its zone hit-testing is off by ~2.2% horizontally (and exact vertically, where 460 == 460).",
+      "impact": "Had I used the obvious canvas.width / rect.width correction in canvasPointFromEvent, it would have been 0.978 / 0.989 EVEN WITH NO TRANSFORM, silently shifting minimap and full-map hit-testing by ~2% as a side effect of a responsive-layout change. This was very close to shipping as an unnoticed behaviour change.",
+      "how_it_was_caught": "By printing rect.width and offsetWidth next to canvas.width while verifying the helper, and noticing 184 vs 180. The first version of the helper did use canvas.width / rect.width, and the numbers are what exposed it.",
+      "resolution": "First mitigated, then FIXED on explicit instruction. Mitigation: canvasPointFromEvent divides by the TRANSFORM scale — rect.width / canvas.offsetWidth, exactly 1 when unscaled — so the responsive work preserved the existing arithmetic bit-for-bit. Final fix: both canvases now render 1:1 with their bitmaps. The root cause was a 2px arithmetic error repeated through the layout chain — .minimap-widget is 196 with a 1px border and 6px padding, so its content box is 182, and the wrapper and canvas were BOTH declared 184. Corrected to wrapper 182 / height 127 and canvas 180x125 (the bitmap size); full map to wrapper 882x462 with align-self center to absorb the 8px spare in the card's 890 content box, and canvas 880x460. Verified live: minimap bitmap [180,125] == CSS [180,125] inside a [182,127] wrapper, full map [880,460] == [880,460] inside [882,462], neither clipped, and canvasPointFromEvent now returns the exact client offset. The 1,012-point scale sweep improved from 966 to 989 zone hits with 0 mismatches — the extra hits are the ~2% error disappearing — and the tooltip unit label resolves correctly for every type.",
+      "lesson": "When adding a correction factor to existing coordinate maths, check what that factor equals at rest. If it is not 1, the 'fix' is also a behaviour change — and a ~2% one is small enough to pass review and large enough to move boundaries."
+    },
+    {
+      "id": "verifier-comment-false-positive",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "verify_slice.mjs's 'no ref used by the body is missing from the import' check scanned the raw module text, so a domRefs name appearing only in PROSE counted as a use. Adding JSDoc that said 'the canvas is a fixed 1000x650 bitmap' made the check demand an import of `canvas` for src/core/GameLoop.js, which never touches that element.",
+      "impact": "A false failure that would have been 'fixed' by importing an unused ref, or by wording the comment around the checker. Both are the wrong repair. It also masked the real signal: with comments counted as usage, a ref that had genuinely become unused would report as used.",
+      "how_it_was_caught": "The failure detail named the identifier — 'canvas' — which does not appear anywhere in GameLoop.js's code, only in the comment I had just written. Naming the offending identifier in the message is what made this a two-minute diagnosis.",
+      "resolution": "Comments are now blanked before the scan (stripComments). A name occurring only in a comment IS unused, so this makes the check stricter rather than looser.",
+      "lesson": "Same trap as before, now confirmed a third time: any regex-based source check must blank comments and strings first, and any doc comment that names a symbol is a false input to it. Write the failure message to name the offending token, not just the assertion that failed."
+    },
+    {
+      "id": "guide-omits-ability-dispatch-step",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "The guide's 'add a new sword' recipe lists 4 steps (data json, render js, ability js, register in SwordRegistry). It omits that src/systems/AbilitySystem.js dispatches the Z ability through an explicit if-chain and its own direct imports — the registry's `ability` field is not consulted.",
+      "impact": "Follow the recipe as written and the new sword's Z key does nothing at all, with no error: activatePrimary falls through to Devourer's Gluttony, whose own guard rejects it because swordId !== 'devourer'. A silent no-op is the worst failure mode to debug from a recipe.",
+      "how_it_was_caught": "By reading AbilitySystem.js to document the pattern accurately rather than transcribing the guide. The guide's own Phase 2 text does warn against wiring abilities via getSword(id).ability, but never states the consequence for the add-a-sword recipe.",
+      "resolution": "Fixed in BOTH places. docs/ARCHITECTURE.md §4 documents it as a mandatory step 5, with the exact two lines to add and why skipping it is silent; step 6 (the i18n strings) is spelled out too. The guide's section 6 has since been corrected as well, with an explicit '4 bước là chưa đủ — cần 6 bước' note, because that prose description is what someone reads before opening ARCHITECTURE.md.",
+      "lesson": "A recipe is only as good as the last person who followed it. Documenting a pattern means finding the dispatch sites, not restating the plan — the plan and the code disagreed, and the code is what a new contributor will hit."
+    },
+    {
+      "id": "unused-sword-registry-accessors",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "SwordRegistry.js exports getSword(), getSwordData() and getSwordAbility(); none is called anywhere in the codebase. Only getSwordRenderer() is used (js/entities.js, js/game.js). Consequently the `ability` field of every registry entry is never read either.",
+      "impact": "The registry looks like the ability dispatch point but is not, which is exactly what makes the guide's recipe incomplete (see guide-omits-ability-dispatch-step). Dead exports also invite a future contributor to start using the `ability` field, which would hand Overdrive a skill it has never had.",
+      "how_it_was_caught": "Grepping for each exported helper while writing docs/ARCHITECTURE.md — the three names appeared only at their own definitions.",
+      "resolution": "FIXED after the refactor, on explicit instruction. Removed getSword(), getSwordData() and getSwordAbility(), AND the `ability` field they exposed, along with the seven ability-module imports that existed only to populate it. The registry is now swordId -> { data, render }, which is what is actually consumed (getSwordRenderer only). This went further than the finding originally proposed: keeping the field while deleting its accessor would have left unreachable data that a future contributor could still pick up and use — and using it is the exact bug AbilitySystem.js's header warns about, so the object now carries a comment saying why there is no ability field. Before changing anything: confirmed verify_sword_strategy.mjs does not assert the field or the accessors, and confirmed the seven ability modules are imported by AbilitySystem.js anyway, so no import-time side effect became unreachable. Verified at runtime — render loop healthy (player moved 70px, so Player.draw -> getSwordRenderer(path) still runs) and Z on phase 17 set gluttonyCooldown to 9.73s with the HUD showing '[ Z — GLUTTONY ] 9.7s'. Build stayed at 90 modules, i.e. nothing was tree-shaken away.",
+      "lesson": "An exported helper that nothing calls is a documented lie waiting to happen: it advertises an extension point that does not work. Either use it, or say plainly in the docs that it is not the dispatch path."
+    },
+    {
+      "id": "readme-stale-refactor-status",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "README.md still said the legacy files were 'imported ... until Phase 2–6 refactoring is complete', listed line counts that were two refactors out of date (js/entities.js 5853 vs an actual 2735, js/game.js 4206 vs 1592), labelled js/i18n.js 'Active IIFE — Phase 6 target' when it has been dead since Phase 1, and its src/ tree omitted core/GameLoop.js, core/InputManager.js, systems/, render/, i18n/ and all of ui/ except toast.js.",
+      "impact": "The README is the first thing a new contributor reads, and it pointed at the wrong files with wrong sizes — most dangerously at js/i18n.js as the i18n implementation.",
+      "how_it_was_caught": "By reading it while writing docs/ARCHITECTURE.md and cross-checking the line counts, which came back roughly half the sizes claimed.",
+      "resolution": "Directory tree completed, legacy table corrected with measured line counts and the dead-file warning, and a Responsive section plus a link to docs/ARCHITECTURE.md added.",
+      "lesson": "Documentation rots silently and specifically: every number in that table was true when written. Prefer claims that cannot rot (what a file IS) over counts that can (how long it is), or state the date they were measured."
+    },
+    {
+      "id": "i18n-defaultvalue-ignored",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "I18n.t(key, params) fell back to the raw key when a lookup missed and never read params.defaultValue. 21 call sites already pass a defaultValue — every sword unlock toast, floating text and cutscene line — so they were all dead arguments. They happened to work only because those keys exist.",
+      "impact": "This is the mechanism that turned missing-i18n-key-unit-normal from a visible error into invisible text: the tooltip rendered the string 'zones.unit_normal', which reads like a key rather than like a failure, so it survived review. Any future typo or half-added translation would fail the same silent way, in 21 places that look protected by a defaultValue.",
+      "how_it_was_caught": "By reading t() to explain why the unit-label bug was silent, and noticing that the fallback chain was language -> English -> key, with params used only for {interpolation}.",
+      "resolution": "t() now returns `typeof params.defaultValue === 'string' ? params.defaultValue : key`. Keys that resolve are unaffected, and a miss with no defaultValue still returns the key, so nothing that relies on the old behaviour changes. scratch/verify_i18n.mjs gained an explicit INTENTIONAL DIVERGENCE block asserting all four properties: the legacy copy ignored defaultValue, the new copy honours it, a miss with no defaultValue still yields the key, and defaultValue cannot override a key that resolves. The 761-key behavioural parity assertion still passes untouched.",
+      "lesson": "A fallback argument that is silently ignored is worse than no fallback argument, because it advertises protection that does not exist — 21 call sites were written as though they were safe. When adding a guard, assert that it fires."
+    },
+    {
+      "id": "dead-code-retired",
+      "severity": "LOW",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "Two quarantined dead artifacts were disposed of on explicit instruction: js/i18n.js (2,134 lines, dead since Phase 1 when src/main.js switched to src/i18n/I18n.js) and scratch/backup/dead-data-json/ (31 unreferenced sibling JSONs).",
+      "impact": "js/i18n.js was the largest remaining trap in the repo: a 2,000-line file named exactly like the live i18n implementation, inviting an edit that would have had no effect. The dead JSON was a stale near-duplicate of the authoritative src/**/*.data.json files.",
+      "how_it_was_caught": "Not a bug — a deliberate cleanup, gated on verification rather than assumption: confirmed no code imported or read either path, that data/ contained zero .json files, and that the only readers of js/i18n.js were the two parity scripts.",
+      "resolution": "js/i18n.js moved to scratch/backup/obsolete/js-i18n.js, and scratch/verify_i18n.mjs + scratch/validate_phase1.mjs were re-pointed at the preserved copy so the check proving the extracted dictionaries were not altered still runs — retiring the file must not lose the evidence. dead-data-json/ deleted outright. scratch/diagnose_data_drift.mjs, whose sibling paths no longer exist, moved to obsolete/ with them. Suite stayed green at 19 scripts and the build at 90 modules.",
+      "lesson": "Deleting dead code is only safe if you first prove nothing reads it, and only correct if you keep whatever still holds evidence. The i18n parity scripts were the reason to preserve a copy rather than delete outright; without them this would have destroyed the only reference the extraction could be checked against."
+    },
+    {
+      "id": "cutscene-dialogue-dictionary-drift",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "Ten cutscene keys referenced by src/systems/cutscenes.data.js did not exist in src/i18n/{en,vi}.json — seven dialogue lines (flora_unlock_4, flora_p10_11, metallic_unlock_4, metallic_p10_10, hellfire_unlock_4, hellfire_p10_10, hellfire_p10_11) and three speaker names (speaker_grove, speaker_anvil, speaker_abyss). I18n.t() returns the key it was given when a lookup misses, so the player saw the literal text 'cutscene.flora_unlock_4' as dialogue and 'cutscene.speaker_grove' as the speaker name. Worse, the keys that DID exist for those six cutscenes held a DIFFERENT, older script, so lines 1..N showed text that did not match the code.",
+      "impact": "A raw key on screen is the worst shape of a missing translation: 'cutscene.flora_unlock_4' reads like a label rather than an error, so it survives review, and it is what shipped. Six cutscenes were affected — the flora, metallic and hellfire unlock and phase-10 scenes, i.e. the three latest swords. The user reported it as 'flora dialogue name still not right', which was the same bug on the speaker keys.",
+      "how_it_was_caught": "Reported by the user with a screenshot of the cutscene overlay. There was no automated check: the string is a perfectly valid translation as far as the dictionaries are concerned, and the code's `: \"fallback\"` branch never runs because I18n IS available — so nothing threw and nothing looked wrong to any existing verifier. Once a check existed, it found all ten on its first run.",
+      "resolution": "Re-synced the dictionaries to the code, which the user confirmed is the authoritative script (evidence: for every cutscene EXCEPT these six, the dictionary text matches the code's fallback exactly, which proves the extraction was faithful and these six simply drifted; and soil_unlock_4 exists, so a 4-line unlock scene is normal). The 38 en and 37 vi values were written by scratch/resync_cutscene_dialogue.mjs, which extracts the code's string literals directly so en cannot be mistyped, inserts the 7 new keys beside their siblings rather than at the end of the object, and refuses to run unless re-stringifying both files reproduces them byte-for-byte. The 3 speaker names were added to both languages (ELDER GROVE / ANVIL OF WILL / INFERNAL ABYSS -> RỪNG CỔ THỤ / ĐE SẮT Ý CHÍ / VỰC THẲM HỎA NGỤC), following the existing convention that descriptive speaker names are translated while sword names stay English. THE VIETNAMESE IS A MACHINE FIRST PASS AND NEEDS A NATIVE SPEAKER'S REVIEW. verify_i18n.mjs and validate_phase1.mjs now exclude exactly these keys from their legacy deep-equality check, and assert that every other dictionary value still matches — a scoped, self-checking allowance rather than a blanket one.",
+      "lesson": "Three of them. (1) A missing-key fallback that returns the key turns a broken translation into plausible-looking text; the fix is not just adding the key but making the class detectable. (2) Verify a claim about which artefact is stale before acting on it: the decisive evidence here was that every OTHER cutscene matched exactly — without that comparison, 'the code is newer' would have been an assumption, and acting on it would have destroyed a script. (3) My new checker initially reported btn_skip and hint as orphans because it only scanned src/; they are wired from index.html via data-i18n. A false positive in a fresh check is a bug in the check — widen the scan, do not silence the finding."
+    },
+    {
+      "id": "phase-names-untranslated-in-vi",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "discovered": "2026-09-23",
+      "summary": "Every phases.*.shortName in src/i18n/vi.json held the English text copied verbatim from en.json (all 77 of them, across devourer, overdrive, aquatic, soil, metallic, flora and hellfire), and the name portion of phases.*.name was left English too, so the string read 'Giai đoạn 10: Indestructible Soil Fortress'. A Vietnamese player saw 'GIAI ĐOẠN: SPROUT' in the HUD on every sword.",
+      "impact": "Player-visible in Vietnamese mode on the HUD, the Library and the sword stand. It is worse than a missing key because it looks deliberate: the word 'GIAI ĐOẠN' was translated, so the line reads as finished Vietnamese at a glance while the one word that carries the meaning stays English. Reported by the user as a screenshot of 'GIAI ĐOẠN: SPROUT'.",
+      "how_it_was_caught": "Reported by the user. No verifier could see it: en.json and vi.json were structurally identical with identical key sets, so every parity check passed, and the values were valid strings, so nothing fell back to a key. The dictionaries matched the legacy originals exactly too — the phase names had never been translated, rather than having regressed.",
+      "resolution": "Wrote scratch/resync_phase_names.mjs: 77 translations as per-sword ordered arrays, applied so that each vi name agrees with the ability name already in skills.* rather than being invented twice (e.g. soil.10 'Indestructible Soil Fortress' -> 'Pháo Đài Thổ Nhưỡng Bất Diệt', matching achievements.soil_ascended.title). Two names whose English text could not be located inside the formatted 'Giai đoạn N: X' string are handled by an explicit per-key override ('soil.10', 'hellfire.10') instead of a looser regex. en.json was NOT touched. Scratch/verify_phase_names_translated.mjs now asserts that all 154 fields differ from en — a check that would have failed on all 154 before this fix. verify_i18n.mjs and validate_phase1.mjs were upgraded from a cutscene-only allowance to a leaf-path diff whose allowlist is exactly two documented scopes (cutscene resync, both languages; phase names, vi only), so any future drift outside them still fails. THE VIETNAMESE IS A MACHINE FIRST PASS AND NEEDS A NATIVE SPEAKER'S REVIEW.",
+      "lesson": "Two of them. (1) Key-set parity is not translation: two dictionaries can have identical keys, identical shape and valid values while the Vietnamese one is English, so a translator you never diffs is a translator you do not have. The check that finds it must compare VALUES across languages, which is the opposite of what a parity verifier does. (2) The allowance in a parity script has to be as narrow as the change it excuses — replacing a cutscene-only regex with a cutscene-OR-phase-names predicate scoped per language is what keeps the new exception from becoming a blanket licence to edit the dictionaries. Verified end-to-end in the running game: the HUD now renders 'GIAI ĐOẠN: MẦM NON', 'PHẾ LIỆU', 'TÀN LỬA', 'ĐÓI KHÁT', 'GIỌT NƯỚC', 'LƯỠI ĐẤT' and 'THỦY NGÂN' with no English leaking."
+    }
+  ],
+  "immediate_next_steps": [],
+  "post_refactor_followups_completed": [
+    {
+      "task": "Phase 8 — responsive CSS + docs/ARCHITECTURE.md",
+      "status": "DONE",
+      "details": "resizeCanvasToFit() + initResponsiveWiring() in src/core/GameLoop.js publish --game-scale; styles/responsive.css applies it as transform: translate(-50%,-50%) scale(var(--game-scale)). Canvas resolution untouched. docs/ARCHITECTURE.md written, including the corrected SIX-step add-a-sword recipe. README.md corrected (it still described the refactor as mid Phase 2-6)."
+    },
+    {
+      "task": "Correct KILLSTREAK_REFACTOR_GUIDE.md",
+      "status": "DONE",
+      "details": "Phase 7 section rewritten (stale line numbers removed; the '12 innerHTML uses' figure corrected to 6 interpolating templates + 6 clears). Section 5 rewritten to describe what was actually built and the three deliberate deviations. updateLanguageUI's location corrected. js/i18n.js marked retired in the file table."
+    },
+    {
+      "task": "Retire the dead js/i18n.js",
+      "status": "DONE",
+      "details": "Moved to scratch/backup/obsolete/js-i18n.js. scratch/verify_i18n.mjs and scratch/validate_phase1.mjs re-pointed at the preserved copy so the dictionary-parity evidence is not lost."
+    },
+    {
+      "task": "formatNumber's Infinity overflow",
+      "status": "DONE",
+      "details": "Finite guard added; ±Infinity now return ∞ / -∞. NaN unchanged. verify_utils.mjs records the divergence explicitly. Note only +Infinity used to recurse — -Infinity produced '-Infinity Googol'."
+    },
+    {
+      "task": "The missing i18n key zones.unit_normal",
+      "status": "DONE",
+      "details": "js/map.js now aliases normal -> sentry, matching WorldRenderer. New verifier scratch/verify_i18n_unit_keys.mjs guards every npcType, en/vi key parity, and the alias itself."
+    },
+    {
+      "task": "Delete scratch/backup/dead-data-json/",
+      "status": "DONE",
+      "details": "Deleted after verifying no code referenced those paths. Also quarantined the spent scratch/diagnose_data_drift.mjs, which read the now-removed sibling paths."
+    },
+    {
+      "task": "The 180/184 and 880/890 canvas layout mismatch",
+      "status": "DONE",
+      "details": "Both canvases now render 1:1 with their bitmaps and are no longer clipped. Hit-testing is exact (sweep zone hits 966 -> 989, 0 cross-scale mismatches)."
+    },
+    {
+      "task": "I18n.t() ignored params.defaultValue",
+      "status": "DONE",
+      "details": "Not on the original list, but it is the mechanism that made the missing unit label silent, and 21 call sites already passed a defaultValue. t() now honours it; verify_i18n.mjs asserts the divergence."
+    }
+  ],
+  "developer_notes": {
+    "suite_command": "Get-ChildItem scratch -Filter '*.mjs' | Where-Object { $_.Name -match '^(verify_|validate_|analyze_)' } | ForEach-Object { node $_.FullName }  — currently 21 scripts and ALL must exit 0. Do NOT blanket-run every *.mjs in scratch/. Phase6_slice.mjs is the only remaining generator: it is the reusable slice tool and prints usage when run without a slice name, which is it refusing to guess, not a failure. The applied one-shot extract_*/splice_*/phase4_*/phase5_*/phase6_* scripts were deleted as junk after the refactor completed — their purposes are preserved in created_files_manifest with a REMOVED note, so the record of how each phase transformed the code survives without the dead files.",
+    "scratch_contents": "scratch/ is 27 top-level files and every one has a live purpose: 21 suite scripts (3 analyze_*, 1 validate_*, 17 verify_*), plus compare_ui_utils.mjs (the token-level gate that decided which duplicated utilities were safe to swap), fix_extracted_data.mjs (a working repair tool that re-derives src/**/*.data.json from the live data/**/*.js scripts), phase6_slice.mjs (the reusable slice tool), resync_cutscene_dialogue.mjs and resync_phase_names.mjs (the two dictionary re-sync tools, dry-run by default and round-trip guarded), and phase7_dom_probe.js (the DOM-equivalence oracle, which needs a real browser and so cannot join the Node suite). scratch/slices/ holds the one manifest per recorded slice that verify_slice.mjs reads. scratch/backup/ holds the pre-phase snapshots — several are read directly by the verifiers and, with no git in this environment, they are the only copies.",
+    "important_rules": [
+      "DO NOT modify game balance, damage multipliers, NPC health, or drop rates.",
+      "Keep window.Killstreak populated while legacy files still depend on it.",
+      "Always verify changes by running 'npm run build' before ending a task.",
+      "All math formulas in game.js and config.js must remain identical.",
+      "NEVER copy data from the sibling .json files under data/**. The LIVE source of truth is the .js file next to it (that is what src/main.js loads). See critical_findings.stale-data-drift."
+    ],
+    "verification_commands": [
+      "node scratch/validate_phase1.mjs    — deep-equality of every extracted data file vs the live legacy source",
+      "node scratch/verify_i18n.mjs        — behavioural parity of src/i18n vs the preserved copy at scratch/backup/obsolete/js-i18n.js",
+      "node scratch/verify_sword_strategy.mjs — statement-level fidelity of the 21 sword strategy modules",
+      "node scratch/analyze_free_vars.mjs  — no strategy module depends on a stray IIFE-scope binding",
+      "node scratch/verify_cutscenes.mjs   — original cutscene methods vs CutsceneSystem, behaviour-for-behaviour",
+      "node scratch/verify_splice.mjs      — entities.js matches the documented Phase 2 transform of its backup",
+      "node scratch/verify_splice_cutscenes.mjs — game.js/main.js match the documented Phase 3 transform",
+      "node scratch/verify_slice.mjs      — every Phase 6 slice: body verbatim vs its backup, ref-import hygiene, definition removal, call-site rewiring, no argument-less inner call, no unwrapped bare listener, and no argument-less call to a parameterised function ANYWHERE on the live surface",
+      "node scratch/verify_inventory.mjs   — cumulative removal accounting + static cross-module call-target check",
+      "npm run build                       — must stay at 0 errors"
+    ],
+    "agent_charter": "The project charter lives at `.github/agents/KILLSTREAK.agent.md` — it was moved there from `.agent/KILLSTREAK.agent`, which VS Code does not auto-discover, so it can be selected in the agent picker instead of being pasted in each session. It was rewritten for post-refactor development; the refactor-era charter, which instructed the agent to continue the migration, is archived at scratch/backup/obsolete/KILLSTREAK.agent.refactor-era. The new charter is scoped to development rather than migration: the three non-negotiables (frozen save key killstreak_v1_data, frozen gameplay constants, no git so never delete), the js/ vs src/ two-layer model with an explicit warning that js/ is still LIVE (entities.js holds Player, game.js holds Game, main.js is the composition root — the refactor strangled them rather than deleting them), a statement that the refactor is CLOSED so a future agent does not resume extracting Game/Player unprompted, the seven traps that have actually caused bugs here, the verification contract, and a reference map that names KILLSTREAK_REFACTOR_GUIDE.md as historical so it is not read to learn the current structure."
+  }
+}

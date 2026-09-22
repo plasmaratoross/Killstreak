@@ -1,0 +1,48 @@
+{
+  "out": "src/ui/swordStand.js",
+  "backup": "scratch/backup/main.js.swordStand.bak",
+  "fns": [
+    {
+      "name": "updateSwordStandUI",
+      "params": [
+        "game"
+      ],
+      "lines": 118
+    }
+  ],
+  "callArgs": {
+    "updateSwordStandUI": "game"
+  },
+  "callbacks": {},
+  "neededRefs": [
+    "standSwordName",
+    "standSwordPhase",
+    "standSwordBase",
+    "standSwordScaling",
+    "standSwordDamage",
+    "standEquipBtn",
+    "standSwordIcon",
+    "standWeaponTitle",
+    "standSwordLockHint"
+  ],
+  "refsImport": "./domRefs.js",
+  "neededUtils": [
+    {
+      "file": "format",
+      "names": [
+        "formatNumber"
+      ]
+    }
+  ],
+  "needsI18n": true,
+  "needsConfig": true,
+  "moduleState": [
+    "export let inspectedSwordId = \"devourer\";"
+  ],
+  "stateSetters": {
+    "inspectedSwordId": "setInspectedSwordId"
+  },
+  "excludeRefs": [],
+  "extraImports": [],
+  "recordedAt": "2026-09-22T15:42:28.265Z"
+}

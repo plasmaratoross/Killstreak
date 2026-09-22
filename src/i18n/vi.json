@@ -1,0 +1,1059 @@
+{
+  "menu": {
+    "title": "KILLSTREAK",
+    "play": "CHƠI",
+    "library": "THƯ VIỆN",
+    "achievements": "THÀNH TỰU",
+    "settings": "CÀI ĐẶT",
+    "return_lobby": "QUAY VỀ SẢNH",
+    "controls_footer": "Di chuyển: WASD / Phím Mũi Tên • Ngắm: Chuột • Tấn công: Chuột Trái / Phím Cách"
+  },
+  "hud": {
+    "hp": "MÁU",
+    "dmg_tag": "⚔️ {damage} SÁT THƯƠNG",
+    "no_sword": "🛡️ CHƯA TRANG BỊ KIẾM",
+    "scale_streak": "Cơ bản: {dmg} Sát thương • {hp} Máu (+{streak} chuỗi)",
+    "scale_base": "Cơ bản: {dmg} Sát thương • {hp} Máu",
+    "unequipped": "Chưa trang bị",
+    "killstreak": "CHUỖI HẠ GỤC",
+    "kills": "MẠNG HẠ GỤC",
+    "phase_prefix": "GIAI ĐOẠN: {name}",
+    "unequipped_caps": "CHƯA TRANG BỊ",
+    "no_sword_caps": "CHƯA CÓ KIẾM",
+    "area_prefix": "KHU VỰC: {name}",
+    "stats_btn": "📊 THỐNG KÊ",
+    "stats_btn_title": "Xem bảng thống kê",
+    "library_btn": "📖 THƯ VIỆN",
+    "library_btn_title": "Mở thư viện tra cứu",
+    "lobby_btn": "🏠 SẢNH",
+    "lobby_btn_title": "Quay về Sảnh Thánh Địa",
+    "menu_btn": "MENU [ESC]",
+    "menu_btn_title": "Tạm dừng / Menu",
+    "debug_streak_label": "Debug Chuỗi Hạ Gục:",
+    "debug_streak_placeholder": "số lượng",
+    "debug_apply_btn": "ÁP DỤNG"
+  },
+  "skills": {
+    "gluttony_label": "[ Z — PHÀM ĂN ]",
+    "gluttony_title": "Phàm Ăn [Z] — Tia năng lượng công phá (Giai đoạn 10+)",
+    "engulf_label": "[ X — NUỐT CHỬNG ]",
+    "engulf_title": "Nuốt Chửng [X] — Hào quang hủy diệt Devourer (Giai đoạn 17)",
+    "fortitude_label": "[ Z — KIÊN CƯỜNG ]",
+    "fortitude_title": "Kiên Cường [Z] — Tạo khiên bằng 15% Máu hiện tại trong 5s (GĐ 4+, 20s hồi chiêu)",
+    "tsunami_label": "[ Z — SÓNG THẦN ]",
+    "tsunami_title": "Sóng Thần [Z] — Đợt sóng quét gây sát thương gấp 4 lần kiếm (GĐ 9+)",
+    "iron_will_label": "[ Z — Ý CHÍ THÉP ]",
+    "iron_will_title": "Ý Chí Thép [Z] — Giảm 46% sát thương nhận vào trong 6.9s và phản kích mảnh thép (GĐ 4+, 17s hồi chiêu)",
+    "worldroot_label": "[ Z — THẾ GIỚI CĂN ]",
+    "worldroot_title": "Thế Giới Căn [Z] — Gai rễ giam hãm kẻ địch trong 2.9s và hồi 23% Máu tối đa trong 4s (GĐ 4+, 19s hồi chiêu)",
+    "cataclysm_label": "[ Z — ĐẠI HỌA DIỆT THẾ ]",
+    "cataclysm_title": "Đại Họa Diệt Thế [Z] — Cắm kiếm bộc phát cột dung nham gây sát thương gấp 5.75 lần kiếm (GĐ 4+, 15.3s hồi chiêu)",
+    "locked_p4": "KHÓA (GĐ4)",
+    "locked_p9": "KHÓA (GĐ9)",
+    "locked_p10": "KHÓA (GĐ10)",
+    "locked_p17": "KHÓA (GĐ17)",
+    "locked": "ĐANG KHÓA",
+    "active": "ĐANG BẬT",
+    "ready": "SẴN SÀNG"
+  },
+  "floating": {
+    "aquatic_unlocked": "ĐÃ MỞ KHÓA THỦY LINH!",
+    "soil_unlocked": "ĐÃ MỞ KHÓA ĐẤT MẸ!",
+    "soil_p10": "PHÁO ĐÀI BẤT DIỆT!",
+    "metallic_unlocked": "ĐÃ MỞ KHÓA Ý CHÍ KIM THÉP!",
+    "metallic_p10": "THÉP VĨNH HẰNG!",
+    "flora_unlocked": "ĐÃ MỞ KHÓA BÁCH THẢO!",
+    "flora_p10": "VẠN VẬT TÁI SINH!",
+    "hellfire_unlocked": "ĐÃ MỞ KHÓA ĐỊA NGỤC HỎA!",
+    "hellfire_p10": "CHÚA TỂ HỎA NGỤC!",
+    "all_devourer": "THE ALL DEVOURER THĂNG HOA!",
+    "fortitude": "KIÊN CƯỜNG!",
+    "tsunami": "SÓNG THẦN!",
+    "iron_will": "Ý CHÍ THÉP!",
+    "worldroot": "THẾ GIỚI CĂN!",
+    "cataclysm": "ĐẠI HỌA!",
+    "gluttony": "PHÀM ĂN!",
+    "engulf": "NUỐT CHỬNG!"
+  },
+  "prompts": {
+    "inspect": "Khảo sát {sword} [E]",
+    "enter_grassland": "Vào Thảo Nguyên [E]",
+    "return_to_lobby": "Trở về Sảnh [E]",
+    "confirm_return_lobby": "Quay về Sảnh Thánh Địa? Chuỗi hạ gục hiện tại ({streak}) sẽ được đặt lại về 0."
+  },
+  "pedestal": {
+    "tag": "BỆ VŨ KHÍ",
+    "weapon_label": "Vũ khí:",
+    "current_phase_label": "Giai đoạn hiện tại:",
+    "phase_desc": "GIAI ĐOẠN {phase}: {name} ({kills} CHUỖI HẠ GỤC)",
+    "phase_pedestal": "GIAI ĐOẠN {phase}: {name} (BỆ VŨ KHÍ)",
+    "phase_locked": "ĐANG KHÓA (CẦN {kills} MẠNG TÍCH LŨY)",
+    "base_stats_label": "Chỉ số cơ bản:",
+    "base_stats_val": "{damage} Sát thương • {hp} Máu",
+    "scaling_label": "Tăng tiến chuỗi:",
+    "scaling_val": "+{kills} Mạng giai đoạn{bonus}",
+    "scaling_pedestal": "+0 Mạng giai đoạn (Bệ vũ khí)",
+    "scaled_bonus": " (+{pct}% tăng tiến)",
+    "active_power_label": "Sức mạnh thực tế:",
+    "active_power_val": "{damage} Sát thương • {hp} Máu • {speed} Tốc độ • Tầm đánh: {reach}px",
+    "lock_hint": "🔒 Yêu cầu {req} Mạng tích lũy để trang bị (Hiện tại: {kills})",
+    "btn_equip": "TRANG BỊ",
+    "btn_equipped": "ĐÃ TRANG BỊ ✓",
+    "btn_switch": "CHUYỂN SANG {name}",
+    "btn_locked": "ĐANG KHÓA 🔒",
+    "btn_close": "Đóng [Esc]"
+  },
+  "library": {
+    "tag": "KHO LƯU TRỮ THÁNH ĐỊA",
+    "title": "📖 THƯ VIỆN",
+    "subtitle": "Kho lưu trữ chính thức về các thanh kiếm đã biết, các giai đoạn biến đổi và huy hiệu đạt được.",
+    "tab_swords": "⚔️ VŨ KHÍ",
+    "tab_badges": "🏆 HUY HIỆU",
+    "tab_npcs": "👾 QUÁI VẬT",
+    "npc_count": "{count} SINH VẬT ĐÃ BIẾT",
+    "npc_sort_hint": "Sắp xếp từ Yếu nhất đến Mạnh nhất",
+    "stat_hp": "MÁU",
+    "stat_damage": "SÁT THƯƠNG",
+    "stat_attack_speed": "TỐC ĐỘ ĐÁNH",
+    "stat_streak": "CHUỖI",
+    "stat_kills": "MẠNG",
+    "stat_respawn": "HỒI SINH",
+    "stat_location": "KHU VỰC",
+    "tier_1": "BẬC I • TÂN THỦ",
+    "tier_2": "BẬC II • THÀNH THẠO",
+    "tier_3": "BẬC III • TINH ANH",
+    "tier_4": "BẬC IV • NGUY HIỂM",
+    "tier_5": "BẬC V • TỐI THƯỢNG",
+    "final_badge": "👑 BIẾN ĐỔI CUỐI CÙNG",
+    "transitional_hurdle": "GIAI ĐOẠN QUÁ ĐỘ",
+    "deliberate_collapse": "SỰ SỤP ĐỔ CÓ CHỦ ĐÍCH",
+    "speed_unit": "TỐC ĐỘ",
+    "req_streak": "Yêu cầu: {kills} Chuỗi hạ gục",
+    "active_scaled": "Tăng tiến thực tế: {damage} Sát thương • {hp} Máu (+{kills} mạng trong giai đoạn)",
+    "badge_unlocked": "ĐÃ MỞ",
+    "badge_locked": "ĐANG KHÓA",
+    "btn_close": "Đóng [Esc]"
+  },
+  "achievements": {
+    "title": "🏆 Thành Tựu",
+    "subtitle": "Các cột mốc và vinh quang mở khóa trong các trận chiến của bạn.",
+    "btn_back": "Quay lại [Esc]",
+    "status_unlocked": "Đã mở khóa",
+    "status_locked": "Đang khóa",
+    "items": {
+      "getting_started": {
+        "title": "Khởi Đầu Nan",
+        "description": "Tham gia và bắt đầu hành trình của bạn cùng Devourer."
+      },
+      "all_devourer": {
+        "title": "All Devourer",
+        "description": "Đánh dấu việc hoàn thành giai đoạn Devourer cuối cùng (75,000 chuỗi hạ gục)."
+      },
+      "overdrive_ascended": {
+        "title": "Overdrive Thăng Hoa",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Overdrive (25,000 chuỗi hạ gục)."
+      },
+      "aquatic_ascended": {
+        "title": "Aquatic Thăng Hoa",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Aquatic (145,000 chuỗi hạ gục)."
+      },
+      "soil_ascended": {
+        "title": "Pháo Đài Thổ Nhưỡng Bất Diệt",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Soil (160,000 chuỗi hạ gục)."
+      },
+      "metallic_ascended": {
+        "title": "Thép Vĩnh Hằng",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Metallic (198,000 chuỗi hạ gục)."
+      },
+      "flora_ascended": {
+        "title": "Vạn Vật Sinh Sôi",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Flora (230,000 chuỗi hạ gục)."
+      },
+      "hellfire_ascended": {
+        "title": "Hỏa Ngục Tuyệt Diệt",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Hellfire (264,375 chuỗi hạ gục)."
+      }
+    }
+  },
+  "settings": {
+    "title": "Cài Đặt Trò Chơi",
+    "language": "Ngôn Ngữ",
+    "lang_en": "English",
+    "lang_vi": "Vietnamese",
+    "shake": "Hiệu Ứng Rung Màn Hình",
+    "damage_numbers": "Hiển Thị Sát Thương Bay",
+    "damage_taken": "Hiển Thị Sát Thương Nhận Vào",
+    "reset_title": "Đặt Lại Tiến Trình",
+    "reset_desc": "Xóa toàn bộ số mạng tích lũy, chuỗi hạ gục cao nhất và huy hiệu.",
+    "reset_btn": "Xóa Dữ Liệu Lưu",
+    "reset_confirm": "Đặt lại toàn bộ số mạng hạ gục tích lũy, chuỗi hạ gục cao nhất và các huy hiệu đã mở khóa?",
+    "btn_back": "Quay lại [Esc]"
+  },
+  "debug": {
+    "auth_title": "Xác Thực Nhà Phát Triển",
+    "auth_desc": "Nhập mật khẩu ủy quyền để truy cập bảng điều khiển nhà phát triển.",
+    "password_placeholder": "Mật khẩu",
+    "unlock_btn": "Mở Khóa",
+    "error_msg": "Mật khẩu không đúng. Quyền truy cập bị từ chối.",
+    "title": "CHẾ ĐỘ DEBUG",
+    "status_on": "[ BẬT ]",
+    "status_off": "[ TẮT ]",
+    "set_add_kills": "⚡ Thiết Lập / Thêm Mạng (Chỉ Mạng Tích Lũy)",
+    "custom_placeholder": "Số lượng tùy chỉnh",
+    "add_kills_btn": "Thêm Mạng",
+    "set_total_btn": "Đặt Tổng Mạng",
+    "badge_actions": "🏆 Hành Động Huy Hiệu (Thành Tựu)",
+    "grant_all_btn": "Mở Khóa Mọi Huy Hiệu",
+    "grant_btn": "Cấp",
+    "granted_btn": "Đã Cấp",
+    "quick_add_kills": "+{n} Mạng"
+  },
+  "stats": {
+    "title": "📊 Thống Kê Trò Chơi",
+    "subtitle": "Hồ sơ chiến đấu tích lũy và các chỉ số tiến trình.",
+    "total_playtime": "Tổng Thời Gian Chơi",
+    "total_kills": "Tổng Số Mạng",
+    "highest_streak": "Chuỗi Hạ Gục Cao Nhất",
+    "current_phase": "Giai Đoạn Hiện Tại",
+    "none_unequipped": "Không có (Chưa trang bị)",
+    "btn_back": "Quay lại [Esc]"
+  },
+  "game_over": {
+    "title": "BẠN ĐÃ TỬ TRẬN",
+    "subtitle": "Chuỗi hạ gục của bạn đã kết thúc trên thảo nguyên.",
+    "streak_reached": "Chuỗi Đạt Được",
+    "weapon": "Vũ Khí",
+    "phase_reached": "Giai Đoạn Đạt Được",
+    "best_streak": "Chuỗi Kỷ Lục",
+    "btn_fight_again": "Tái Đấu [Phím Cách]",
+    "btn_return_lobby": "Trở Về Sảnh"
+  },
+  "cutscene": {
+    "speaker_transcendence": "DEVOURER — SIÊU PHÀM",
+    "speaker_all_devourer": "THE ALL DEVOURER",
+    "speaker_spring": "SUỐI NGUỒN NGUYÊN THỦY",
+    "speaker_aquatic_unlock": "AQUATIC — THỦY TRIỀU NHẤN CHÌM",
+    "speaker_aquatic_p13": "AQUATIC — THỦY TRIỀU VÔ TẬN",
+    "speaker_ocean": "ĐẠI DƯƠNG NGUYÊN THỦY",
+    "speaker_core": "LÕI ĐỊA LINH",
+    "speaker_soil": "SOIL",
+    "speaker_soil_p10": "SOIL — GIAI ĐOẠN 10: PHÁO ĐÀI BẤT DIỆT",
+    "speaker_metallic": "METALLIC",
+    "speaker_metallic_p10": "METALLIC — GIAI ĐOẠN 10: THÉP VĨNH HẰNG",
+    "speaker_flora": "FLORA",
+    "speaker_flora_p10": "FLORA — GIAI ĐOẠN 10: VẠN VẬT TÁI SINH",
+    "speaker_hellfire": "HELLFIRE",
+    "speaker_hellfire_p10": "HELLFIRE — GIAI ĐOẠN 10: CHÚA TỂ HỎA NGỤC",
+    "speaker_grove": "RỪNG CỔ THỤ",
+    "speaker_anvil": "ĐE SẮT Ý CHÍ",
+    "speaker_abyss": "VỰC THẲM HỎA NGỤC",
+    "dialogue_1": "Cơn đói vô tận thôi rung chuyển. Mọi sinh linh từng hít thở tại cõi này... đều đã bị nuốt trọn.",
+    "dialogue_2": "Bảy mươi lăm nghìn linh hồn đã dâng hiến bản nguyên để tôi luyện nên hình thái tối hậu này.",
+    "dialogue_3": "Lưỡi kiếm vượt thoát khỏi xác thịt phàm trần, xương tủy và sắt thép. Hiện thực đang cúi mình trước mệnh lệnh thiêng liêng của bạn.",
+    "dialogue_4": "HÃY CHIÊM NGƯỠNG — ĐỈNH CAO NUỐT CHỬNG ĐÃ HOÀN THÀNH. TA CHÍNH LÀ THE ALL DEVOURER.",
+    "aquatic_unlock_1": "Thuở ban sơ, chỉ có sự tĩnh lặng... cùng một giọt nước nhẹ rơi.",
+    "aquatic_unlock_2": "Hai nghìn năm trăm linh hồn đã ngã xuống. Bản nguyên của họ quy tụ thành cội nguồn đại dương.",
+    "aquatic_unlock_3": "Những gợn sóng tĩnh lặng đã bắt đầu chuyển mình. Hãy cầm lấy thanh kiếm... và để cơn đại hồng thủy bắt đầu.",
+    "aquatic_p13_1": "Các đại lục chìm sâu dưới vực thẳm vô tận và tàn khốc.",
+    "aquatic_p13_2": "Một trăm bốn mươi lăm nghìn sinh linh đã bị cuốn trôi vào ngọn triều vô tận.",
+    "aquatic_p13_3": "Mọi giọt nước trong cõi này giờ đây đáp lại từng nhịp đập của bạn. Giai đoạn 13 — Thủy Triều Vô Tận. Đại hồng thủy đã hoàn tất.",
+    "soil_unlock_1": "Sâu dưới lòng đất, những chiếc rễ cổ xưa bắt đầu thức tỉnh.",
+    "soil_unlock_2": "Ba nghìn năm trăm trận chiến đã nuôi dưỡng mảnh đất dưới chân bạn.",
+    "soil_unlock_3": "Ta... chỉ là bùn đất. Nhưng ta sẽ bảo vệ những gì có thể.",
+    "soil_unlock_4": "Hãy cầm lấy ta. Chúng ta sẽ cùng nhau đảm bảo không thứ gì có thể chạm tới kho báu của ngươi.",
+    "soil_p10_1": "[Màn hình tối dần trong giây lát.]\n\nNgươi nghĩ rằng ta đã gục ngã ư?",
+    "soil_p10_2": "[Lưỡi kiếm vỡ vụn chìm dần vào lòng đất.]\n\nKhông.\n\nTa chỉ quay trở về nơi ta bắt đầu.",
+    "soil_p10_3": "[Mặt đất bắt đầu rung chuyển. Những vết nứt lan rộng từ thanh kiếm.]\n\nTừng hạt đất...\nTừng mảnh vụn...\nTừng phần vỡ nát của ta...",
+    "soil_p10_4": "[Lớp đất vương vãi từ các giai đoạn trước bắt đầu bay lơ lửng về phía lưỡi kiếm.]\n\n...vẫn luôn là của ta.",
+    "soil_p10_5": "[Các tầng địa chất khổng lồ trồi lên từ mặt đất bao bọc lấy thanh kiếm.]\n\nTa đã dùng từng trận chiến để học cách kiên cường nhẫn nại.\nTừng thất bại đã dạy ta cách tái tạo bản thân.",
+    "soil_p10_6": "[Đất đá nhanh chóng nén chặt lại, trở nên dày đặc và sừng sững.]\n\nTa không còn là lớp bùn đất rời rạc.\nTa không còn chỉ là một lưỡi kiếm đơn thuần.",
+    "soil_p10_7": "[Toàn bộ cấu trúc bùng nổ thành một thanh cự kiếm tựa pháo đài khổng lồ.]\n\nTa chính là mặt đất dưới chân ngươi.\nLà bức tường thành chắn giữa kho báu của ngươi và mọi kẻ thù toan tính cướp đoạt.",
+    "soil_p10_8": "[Pháo đài chìm vào sự tĩnh lặng tuyệt đối.]\n\nĐến đây.\nHãy tự đập tan chính mình trước ta.",
+    "soil_p10_9": "Chừng nào ta còn đứng vững...\nKho báu của ngươi sẽ không bao giờ bị cướp đoạt.",
+    "metallic_unlock_1": "Từ sắt thô và lửa chảy, một ý chí bất khuất thành hình.",
+    "metallic_unlock_2": "Năm nghìn kẻ thù đã gục ngã trước ý chí của ngươi. Thép đã nhận ra chủ nhân của nó.",
+    "metallic_unlock_3": "Ta từng bị vứt bỏ. Giờ đây, ta có một mục đích khác.",
+    "metallic_unlock_4": "Hãy nắm ta thật chặt. Chúng ta sẽ không cúi mình trước gian khổ hay cái chết.",
+    "metallic_p10_1": "[Thanh kiếm ngừng mọi rung động. Không khí quanh nó nặng nề một cách bất thường.]\n\nKhông còn gì để tôi luyện nữa.",
+    "metallic_p10_2": "[Những vết xước trên lưỡi kiếm bắt đầu phát sáng thứ ánh trắng lạnh.]\n\nMỗi đòn đánh vào ta...\nMỗi cú giáng định đập tan ta...",
+    "metallic_p10_3": "[Những vết nứt và vết móp được lấp đầy, không phải bằng cách hàn gắn, mà bằng cách gấp lại thành thép đặc hơn.]\n\n...chỉ đơn thuần là một nhát búa nữa.",
+    "metallic_p10_4": "[Một tiếng vang ngân lên—như tiếng đe bị đập giữa thánh đường trống không.]\n\nTa từng là phế liệu.\nTa đã trở thành vũ khí.",
+    "metallic_p10_5": "[Lưỡi kiếm biến thành thép bạc sẫm, được đánh bóng hoàn hảo. Không một bóng phản chiếu nào hiện lên trên bề mặt.]\n\nGiờ thì...",
+    "metallic_p10_6": "[Ánh sáng trắng lắng sâu vào tận lõi của lưỡi kiếm.]\n\nTa là chuẩn mực để mọi sức mạnh được đo lường.",
+    "metallic_p10_7": "[Thanh kiếm phát ra tiếng ngân trầm ổn, không hề tắt đi.]\n\nHãy mang đến điều tồi tệ nhất.\nMang đến tất cả.",
+    "metallic_p10_8": "[Màn hình lóe trắng trong tích tắc.]\n\nTa sẽ không cúi.\nTa sẽ không gãy.",
+    "metallic_p10_9": "Ta là Thép Vĩnh Hằng.",
+    "metallic_p10_10": "Và ta sẽ tồn tại lâu hơn tất cả các ngươi.",
+    "flora_unlock_1": "Lá xào xạc khi những rễ cây cổ xưa cựa mình bên dưới đồng cỏ ngọc bích.",
+    "flora_unlock_2": "Bảy nghìn cuộc tàn sát đã bồi đắp cho khu rừng vượt thời gian. Rừng xanh đang thức giấc.",
+    "flora_unlock_3": "Một mầm non giữa bão tố... nhưng sự kiên nhẫn sống lâu hơn mọi cuồng phong.",
+    "flora_unlock_4": "Hãy bén rễ cùng ta. Cùng nhau, chúng ta sẽ trường tồn lâu hơn cả núi non.",
+    "flora_p10_1": "[Những rễ cây chậm rãi rút về lòng đất. Thế giới chìm vào tĩnh lặng hoàn toàn.]\n\nNgươi đã chiến đấu rất cố gắng.",
+    "flora_p10_2": "[Ánh sáng xanh nhịp nhàng lan tỏa qua mặt đất, tỏa ra mọi hướng.]\n\nNgươi đã chinh phục các đế chế.\nNgươi đã dựng nên những tượng đài.\nNgươi đã vung vũ khí với cơn thịnh nộ tột cùng.",
+    "flora_p10_3": "[Dây leo bắt đầu phủ kín mọi thứ—đấu trường, vũ khí, những kẻ đã ngã xuống.]\n\nVậy mà...",
+    "flora_p10_4": "[Hoa nở trong những vết nứt của bộ giáp vỡ.]\n\n...cỏ vẫn luôn quay trở lại.",
+    "flora_p10_5": "[Những rễ cổ thụ khổng lồ trồi lên khỏi mặt đất, đan cài thành một thanh kiếm sống vĩ đại.]\n\nTa không cần đánh bại ngươi.\nTa chỉ cần tồn tại.",
+    "flora_p10_6": "[Những chiếc lá lìa cành, phát sáng thứ ánh xanh nhạt, tĩnh tại.]\n\nSức mạnh của ngươi sẽ phai tàn.\nSắt của ngươi sẽ han gỉ.\nLửa của ngươi sẽ tắt.",
+    "flora_p10_7": "[Thanh kiếm sống nhịp nhàng tỏa hơi ấm chậm rãi, như nhịp tim.]\n\nVà khi mọi thứ ngươi gây dựng đã hóa thành tro bụi...",
+    "flora_p10_8": "[Một mầm non duy nhất hé nở nơi đầu lưỡi kiếm.]\n\n...ta vẫn sẽ đang sinh trưởng.",
+    "flora_p10_9": "Ta là Vạn Vật Tái Sinh.",
+    "flora_p10_10": "Sự sống không kết thúc.",
+    "flora_p10_11": "Nó chỉ lấy lại những gì vốn dĩ luôn thuộc về nó.",
+    "hellfire_unlock_1": "Không khí bỏng rát vì sức nóng ngạt thở khi những vết nứt hắc diện thạch xé toạc.",
+    "hellfire_unlock_2": "Mười nghìn linh hồn đã cháy rụi trong lò tàn sát của ngươi. Con quỷ bên trong đòi được giải phóng.",
+    "hellfire_unlock_3": "Một tia lửa... thế là đủ để đốt cháy cả thế giới.",
+    "hellfire_unlock_4": "Hãy giải phóng ta! Hãy nuôi ta! Để chẳng còn lại gì ngoài tro tàn!",
+    "hellfire_p10_1": "[Ngọn lửa biến mất hoàn toàn. Màn hình tối đen như mực.]\n\n...",
+    "hellfire_p10_2": "[Một đường kẻ đỏ duy nhất hiện ra giữa màn hình, chẻ đôi bóng tối.]\n\nNgươi tưởng đây là ngọn lửa ngươi có thể dập tắt sao?",
+    "hellfire_p10_3": "[Đường kẻ đỏ xé toạc thành một đại dương lửa đen và đỏ thẫm.]\n\nLỬA KHÔNG THƯƠNG LƯỢNG.",
+    "hellfire_p10_4": "[Thanh kiếm hiện ra trở lại—bao quanh bởi những chiếc sừng hắc diện thạch lởm chởm và ngọn lửa đen cuộn xoáy.]\n\nNó không dừng lại.\nNó không thương xót.",
+    "hellfire_p10_5": "[Mặt đất quanh thanh kiếm tan chảy tức thì thành dung nham sủi bọt.]\n\nNó chỉ nuốt chửng.",
+    "hellfire_p10_6": "[Lưỡi kiếm bùng nổ với âm thanh như một vụ phun trào núi lửa.]\n\nNgươi đã mang đến cho ta kẻ thù.\nNgươi đã mang đến cho ta linh hồn.\nNgươi đã cho ta mọi thứ ta cần để thiêu rụi chiếc lồng.",
+    "hellfire_p10_7": "[Những cột lửa đen phụt thẳng lên trời, nhuộm bầu trời thành đỏ sẫm.]\n\nGiờ thì...",
+    "hellfire_p10_8": "[Thanh kiếm cháy bằng ngọn lửa đen đến mức nuốt cả ánh sáng quanh nó.]\n\nKHÔNG CÒN GÌ CÓ THỂ NGĂN TA LẠI NỮA.",
+    "hellfire_p10_9": "[Những rung chấn dữ dội làm rung chuyển toàn màn hình. Ngọn lửa gầm lên với cường độ kinh hoàng.]\n\nCHÁY ĐI!",
+    "hellfire_p10_10": "Ta là Chúa Tể Hỏa Ngục.",
+    "hellfire_p10_11": "Và mọi thứ kết thúc trong tro tàn.",
+    "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
+    "btn_skip": "BỎ QUA [ESC]"
+  },
+  "toasts": {
+    "entered_combat_title": "Đã Vào Thảo Nguyên Rộng Lớn",
+    "entered_combat_desc": "Tấn công lính canh tại các bãi săn mồi!",
+    "weapon_locked_title": "VŨ KHÍ ĐANG KHÓA",
+    "weapon_locked_desc": "Cần 1,250 Mạng Tích Lũy để trang bị Overdrive!",
+    "weapon_locked_req_desc": "Cần {req} Mạng tích lũy để trang bị {name}!",
+    "weapon_aquatic_locked_desc": "Cần 2,500 Mạng Tích Lũy để trang bị Aquatic!",
+    "weapon_soil_locked_desc": "Cần 3,500 Mạng Tích Lũy để trang bị Soil!",
+    "weapon_metallic_locked_desc": "Cần 5,000 Mạng Tích Lũy để trang bị Metallic!",
+    "weapon_flora_locked_desc": "Cần 7,000 Mạng Tích Lũy để trang bị Flora!",
+    "weapon_hellfire_locked_desc": "Cần 10,000 Mạng Tích Lũy để trang bị Hellfire!",
+    "aquatic_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "aquatic_unlock_desc": "Aquatic — Thủy Triều Nhấn Chìm hiện đã sẵn sàng!",
+    "aquatic_p13_title": "THĂNG HOA CỰC HẠN",
+    "aquatic_p13_desc": "Giai đoạn 13: Omnitidal — Đã chạm tới cảnh giới đại dương nguyên thủy!",
+    "soil_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "soil_unlock_desc": "Soil — Pháo Đài Bất Diệt hiện đã sẵn sàng!",
+    "soil_p10_title": "PHÁO ĐÀI BẤT DIỆT",
+    "soil_p10_desc": "Giai đoạn 10: Soil — Hoàn tất biến đổi Pháo Đài Bất Diệt!",
+    "metallic_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "metallic_unlock_desc": "Metallic — Ý Chí Kim Thép hiện đã sẵn sàng!",
+    "metallic_p10_title": "THÉP VĨNH HẰNG",
+    "metallic_p10_desc": "Giai đoạn 10: Metallic — Hoàn tất tôi luyện Thép Vĩnh Hằng!",
+    "flora_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "flora_unlock_desc": "Flora — Vạn Vật Sinh Sôi hiện đã sẵn sàng!",
+    "flora_p10_title": "VẠN VẬT TÁI SINH",
+    "flora_p10_desc": "Giai đoạn 10: Flora — Sự tái sinh bất diệt bùng nở!",
+    "hellfire_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "hellfire_unlock_desc": "Hellfire — Chúa Tể Hỏa Ngục hiện đã sẵn sàng!",
+    "hellfire_p10_title": "CHÚA TỂ HỎA NGỤC",
+    "hellfire_p10_desc": "Giai đoạn 10: Hellfire — Hỏa ngục tuyệt diệt xuất thế!",
+    "overdrive_up_title": "OVERDRIVE LÊN GIAI ĐOẠN",
+    "overdrive_up_desc": "Đã đạt {name}",
+    "aquatic_up_title": "AQUATIC TIẾN HÓA",
+    "aquatic_up_desc": "Đã đạt {name}",
+    "soil_up_title": "SOIL TIẾN HÓA",
+    "soil_up_desc": "Đã đạt {name}",
+    "metallic_up_title": "METALLIC TÔI LUYỆN",
+    "metallic_up_desc": "Đã đạt {name}",
+    "flora_up_title": "FLORA LAN TỎA",
+    "flora_up_desc": "Đã đạt {name}",
+    "hellfire_up_title": "HELLFIRE BÙNG CHÁY",
+    "hellfire_up_desc": "Đã đạt {name}",
+    "devourer_up_title": "DEVOURER THỨC TỈNH",
+    "devourer_up_desc": "GIAI ĐOẠN: {name}",
+    "achievement_unlocked_title": "Mở Khóa Thành Tựu!",
+    "sword_equipped_title": "Đã Trang Bị {name}",
+    "sword_equipped_desc": "Sẵn sàng chiến đấu trên thảo nguyên.",
+    "sword_unequipped_title": "Đã Tháo Kiếm",
+    "sword_unequipped_desc": "Đã đặt lại lên bệ vũ khí.",
+    "save_reset_title": "Đã Đặt Lại Bản Lưu",
+    "save_reset_desc": "Toàn bộ tiến trình đã được đặt lại.",
+    "invalid_amount_title": "Số Lượng Không Hợp Lệ",
+    "invalid_amount_desc": "Tổng số mạng phải từ 0 trở lên.",
+    "invalid_input_title": "Nhập Liệu Không Hợp Lệ",
+    "invalid_input_desc": "Vui lòng nhập số chuỗi hạ gục.",
+    "invalid_streak_title": "Chuỗi Không Hợp Lệ",
+    "invalid_streak_desc": "Chuỗi hạ gục phải từ 0 trở lên.",
+    "dev_mode_title": "Chế Độ Nhà Phát Triển",
+    "dev_mode_desc": "Truy cập thành công. Bảng điều khiển debug đã sẵn sàng.",
+    "debug_kills_add_title": "Debug: Đã Thêm Mạng Tích Lũy",
+    "debug_kills_add_desc": "Đã thêm +{count} Mạng Tích Lũy (Tổng: {total})",
+    "debug_kills_set_title": "Debug: Đã Đặt Mạng Tích Lũy",
+    "debug_kills_set_desc": "Tổng mạng tích lũy đặt thành {count}",
+    "debug_streak_set_title": "Debug: Đã Đặt Chuỗi Hạ Gục",
+    "debug_streak_set_desc": "Chuỗi hạ gục hiện tại đặt thành {val}",
+    "debug_badge_title": "Debug: Đã Cấp Huy Hiệu",
+    "debug_badges_title": "Debug: Đã Cấp Nhiều Huy Hiệu",
+    "debug_badges_desc": "Đã cấp {count} huy hiệu. Toàn bộ thành tựu đã mở khóa.",
+    "debug_badges_all_unlocked": "Tất cả thành tựu đã được mở khóa từ trước."
+  },
+  "maps": {
+    "LOBBY": "Sảnh Thánh Địa",
+    "COMBAT": "Thảo Nguyên Rộng Lớn",
+    "portal_combat": "VÀO THẢO NGUYÊN",
+    "portal_lobby": "TRỞ VỀ SẢNH",
+    "pedestal_overdrive_locked": "OVERDRIVE (ĐANG KHÓA)",
+    "pedestal_overdrive_req": "[ CẦN 1,250 MẠNG TÍCH LŨY ]",
+    "pedestal_aquatic_locked": "AQUATIC (ĐANG KHÓA)",
+    "pedestal_aquatic_req": "[ CẦN 2,500 MẠNG TÍCH LŨY ]",
+    "pedestal_soil_locked": "SOIL (ĐANG KHÓA)",
+    "pedestal_soil_req": "[ CẦN 3,500 MẠNG TÍCH LŨY ]",
+    "pedestal_metallic_locked": "METALLIC (ĐANG KHÓA)",
+    "pedestal_metallic_req": "[ CẦN 5,000 MẠNG TÍCH LŨY ]",
+    "pedestal_flora_locked": "FLORA (ĐANG KHÓA)",
+    "pedestal_flora_req": "[ CẦN 7,000 MẠNG TÍCH LŨY ]",
+    "pedestal_hellfire_locked": "HELLFIRE (ĐANG KHÓA)",
+    "pedestal_hellfire_req": "[ CẦN 10,000 MẠNG TÍCH LŨY ]"
+  },
+  "map": {
+    "modal_tag": "ĐỊNH VỊ CHIẾN THUẬT",
+    "full_title": "🗺️ BẢN ĐỒ THẾ GIỚI",
+    "player_coords_label": "TỌA ĐỘ:",
+    "legend_player": "Người chơi",
+    "legend_zone": "Khu vực Quái",
+    "hint": "Kéo để di chuyển • Cuộn để phóng to • Rê chuột xem thông tin",
+    "btn_close": "Đóng [Esc / M]"
+  },
+  "zones": {
+    "zone_north": "BÃI SĂN MỒI PHÍA BẮC",
+    "zone_south": "BÃI SĂN MỒI PHÍA NAM",
+    "zone_fairy_north": "RỪNG TIÊN PHÍA BẮC",
+    "zone_fairy_south": "RỪNG TIÊN PHÍA NAM",
+    "zone_thug_camp": "TRẠI CÔN ĐỒ",
+    "zone_guard": "TIỀN ĐỒN THỦ VỆ",
+    "zone_swordman": "DOANH TRẠI KIẾM SĨ",
+    "zone_buff_man": "ĐẤU TRƯỜNG LỰC SĨ",
+    "zone_elf": "THÁNH ĐỊA TINH LINH",
+    "zone_ironborn": "TRẠI THIẾT CHIẾN",
+    "zone_bloodfang": "BÃI HUYẾT NHAM",
+    "zone_arcanist": "RỪNG HUYỀN THUẬT",
+    "zone_colossus": "CÁnh ĐỒNG PHÙ ĐIÊU",
+    "zone_starforged": "PHế TÍCH SAO RÈNH",
+    "zone_grizzlehorn": "MỎM ĐÁ SỪNG XÁM",
+    "zone_brambleback": "RỪNG GAI BỤI",
+    "zone_embermane": "SỐNG NÚI TÀN LỬA",
+    "zone_duskhorn": "VÙNG HOANG HOÀNG HÔN",
+    "zone_mirewalker": "ĐẦM LẦY SÂU THẲM",
+    "zone_thunderhoof": "THẢO NGUYÊN SẤM SÉT",
+    "zone_gloomscale": "HỐ VẢY HẮC ÁM",
+    "zone_wildtusk": "TRẢNG NANH HOANG",
+    "zone_moonmane": "CAO NGUYÊN NGUYỆT BỜM",
+    "zone_crimsonhide": "VÙNG ĐẤT XÍCH BÌ",
+    "unit_active_format": "{unit} đang hoạt động: {count}/{max}",
+    "unit_sentry": "Lính canh [100 Máu • 1 Chuỗi]",
+    "unit_fairy": "Tiên [250 Máu • 2 Chuỗi]",
+    "unit_thug": "Côn đồ [750 Máu • 5 Chuỗi]",
+    "unit_guard": "Thủ vệ [2,000 Máu • 10 Chuỗi]",
+    "unit_swordman": "Kiếm sĩ [4,500 Máu • 20 Chuỗi]",
+    "unit_buff_man": "Lực sĩ [10,000 Máu • 50 Chuỗi]",
+    "unit_elf": "Tinh linh [15,275 Máu • 100 Chuỗi]",
+    "unit_ironborn": "Thiết Chiến [28,000 Máu • 150 Chuỗi]",
+    "unit_bloodfang": "Huyết Nham [45,000 Máu • 200 Chuỗi]",
+    "unit_arcanist": "Pháp Sư [72,000 Máu • 300 Chuỗi]",
+    "unit_colossus": "Phù Điêu [110,000 Máu • 450 Chuỗi]",
+    "unit_starforged": "Sao Rènh [190,000 Máu • 650 Chuỗi]",
+    "unit_grizzlehorn": "Sừng Xám [300,000 Máu • 850 Chuỗi]",
+    "unit_brambleback": "Gai Bụi [475,000 Máu • 1,200 Chuỗi]",
+    "unit_embermane": "Tàn Lửa [750,000 Máu • 1,750 Chuỗi]",
+    "unit_duskhorn": "Hoàng Hôn [1,150,000 Máu • 2,500 Chuỗi]",
+    "unit_mirewalker": "Đầm Lầy [1,800,000 Máu • 3,600 Chuỗi]",
+    "unit_thunderhoof": "Sấm Sét [2,800,000 Máu • 5,000 Chuỗi]",
+    "unit_gloomscale": "Vảy Hắc Ám [4,300,000 Máu • 7,000 Chuỗi]",
+    "unit_wildtusk": "Nanh Hoang [6,700,000 Máu • 10,000 Chuỗi]",
+    "unit_moonmane": "Bờm Nguyệt Quang [10,500,000 Máu • 14,500 Chuỗi]",
+    "unit_crimsonhide": "Xích Bì [17,000,000 Máu • 21,000 Chuỗi]"
+  },
+  "npcs": {
+    "normal": {
+      "name": "Lính Gác Thường",
+      "desc": "Lính canh cơ bản canh giữ các bãi săn mồi ban đầu."
+    },
+    "fairy": {
+      "name": "Tiên Rừng",
+      "desc": "Sinh linh có cánh nhanh nhẹn, bay lượn lẩn tránh đòn đánh."
+    },
+    "thug": {
+      "name": "Côn Đồ",
+      "desc": "Kẻ cướp hung hãn tuần tra với vũ khí cận chiến thô sơ."
+    },
+    "guard": {
+      "name": "Vệ Binh",
+      "desc": "Chiến binh hoàng gia trang bị giáp trụ bảo vệ tiền đồn."
+    },
+    "swordman": {
+      "name": "Kiếm Sĩ",
+      "desc": "Bậc thầy kiếm thuật với những đường kiếm dứt khoát và chuẩn xác."
+    },
+    "buff_man": {
+      "name": "Lực Sĩ",
+      "desc": "Kẻ khổng lồ cơ bắp sở hữu những đòn giáng uy lực kinh hoàng."
+    },
+    "elf": {
+      "name": "Tinh Linh",
+      "desc": "Cung thủ thần rừng nhanh nhẹn sử dụng cung tên ma thuật."
+    },
+    "ironborn": {
+      "name": "Thiết Tộc",
+      "desc": "Sinh vật tôi luyện dưới lòng đất với lớp giáp sắt kiên cố."
+    },
+    "bloodfang": {
+      "name": "Huyết Nham",
+      "desc": "Thú săn mồi khát máu hình sói hung tợn và tàn bạo."
+    },
+    "arcanist": {
+      "name": "Bí Thuật Sư",
+      "desc": "Pháp sư bí thuật điều khiển nguồn năng lượng ma thuật hỗn mang."
+    },
+    "colossus": {
+      "name": "Khổng Lồ Cổ Đại",
+      "desc": "Cự nhân đá nguyên thủy khổng lồ từ thời hồng hoang."
+    },
+    "starforged": {
+      "name": "Tinh Thần Binh",
+      "desc": "Cỗ máy chiến tranh vũ trụ tôi luyện từ mảnh vỡ sao băng."
+    },
+    "grizzlehorn": {
+      "name": "Sừng Xám",
+      "desc": "Quái thú bọc giáp đồng với cặp sừng cong đồ sộ."
+    },
+    "brambleback": {
+      "name": "Gai Rừng",
+      "desc": "Quái vật bụi gai bao phủ gai nhọn tẩm độc tố sắc bén."
+    },
+    "embermane": {
+      "name": "Bờm Lửa",
+      "desc": "Mãnh thú họ mèo bốc cháy dữ dội tỏa nhiệt lượng nham thạch."
+    },
+    "duskhorn": {
+      "name": "Sừng Hoàng Hôn",
+      "desc": "Linh thú bóng đêm sở hữu cặp sừng hắc diện thạch huyền bí."
+    },
+    "mirewalker": {
+      "name": "Hành Giả Đầm Lầy",
+      "desc": "Cự thú đầm lầy độc hại bao quanh bởi các bào tử phát sáng."
+    },
+    "thunderhoof": {
+      "name": "Móng Lôi Đình",
+      "desc": "Thần thú sấm sét phóng ra những tia điện hủy diệt."
+    },
+    "gloomscale": {
+      "name": "Vảy U Ám",
+      "desc": "Giao long vực thẳm bọc lớp vảy rồng bóng tối đa tầng."
+    },
+    "wildtusk": {
+      "name": "Nanh Dã Thú",
+      "desc": "Dã trư tiền sử hung bạo sở hữu cặp ngà sắc bén chết chóc."
+    },
+    "moonmane": {
+      "name": "Bờm Nguyệt Quang",
+      "desc": "Thần thú ánh trăng tỏa hào quang nguyệt hoa thuần khiết."
+    },
+    "crimsonhide": {
+      "name": "Xích Bì",
+      "desc": "Bá chủ tận thế bọc giáp tinh thể huyết long hủy diệt."
+    }
+  },
+  "swords": {
+    "devourer": {
+      "name": "Devourer",
+      "tag": "VŨ KHÍ ĐẦU TIÊN",
+      "description": "Một lưỡi kiếm săn mồi vô độ nuốt chửng linh hồn kẻ thù để cường hóa người sử dụng, tiến hóa qua 17 giai đoạn lên tới 75,000 chuỗi hạ gục."
+    },
+    "overdrive": {
+      "name": "Overdrive",
+      "tag": "VŨ KHÍ TỐC ĐỘ",
+      "description": "Lưỡi kiếm tốc độ siêu vận tốc với dao động cộng hưởng sắc trắng và đỏ thẫm xen kẽ. Tiến hóa qua 7 giai đoạn từ kiếm liễu sắc nhọn thành katana thần tốc tối thượng, đạt tốc độ di chuyển 300."
+    },
+    "aquatic": {
+      "name": "Aquatic",
+      "tag": "THỦY TRIỀU TIẾN HÓA",
+      "description": "Thanh kiếm nước khởi đầu từ giọt nước vô hại, dần chuyển hóa thành đại hồng thủy diệt thế qua 13 giai đoạn với kỹ năng Tsunami cuồng nộ."
+    },
+    "soil": {
+      "name": "Soil",
+      "tag": "PHÁO ĐÀI ĐỊA LINH",
+      "description": "Thanh kiếm phòng thủ tập trung vào Máu, dần tiến hóa từ một lưỡi đất thô sơ thành một pháo đài thổ nhưỡng bất diệt qua 10 giai đoạn. Sở hữu kỹ năng tạo khiên Fortitude [Z]."
+    },
+    "metallic": {
+      "name": "Metallic",
+      "tag": "Ý CHÍ KIM THÉP",
+      "description": "Sinh ra từ kim loại thô và dần được tôi luyện thành một tạo tác không thể uốn cong hay phá vỡ. Sở hữu tư thế phòng ngự Iron Will [Z]."
+    },
+    "flora": {
+      "name": "Flora",
+      "tag": "VẠN VẬT SINH SÔI",
+      "description": "Thanh kiếm sống lớn mạnh qua từng trận chiến, dần trở thành hiện thân của sự phát triển tự nhiên không thể ngăn cản. Sở hữu kỹ năng Worldroot [Z]."
+    },
+    "hellfire": {
+      "name": "Hellfire",
+      "tag": "CHÚA TỂ HỎA NGỤC",
+      "description": "Vũ khí địa ngục nuôi dưỡng bởi sự hủy diệt và ngày càng trở nên khó kìm hãm. Sở hữu kỹ năng hủy diệt Cataclysm [Z]."
+    }
+  },
+  "phases": {
+    "devourer": {
+      "1": {
+        "name": "Giai đoạn 1: Đói Khát",
+        "shortName": "Đói Khát",
+        "effects": "Lưỡi thép xương thô sơ. Cơ bản 5 Sát thương và 100 Máu. Nuốt chửng linh hồn khi hạ gục kẻ địch để tăng tiến trong giai đoạn hiện tại."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Bữa Tiệc",
+        "shortName": "Bữa Tiệc",
+        "effects": "Lưỡi kiếm no nê. Cơ bản 18 Sát thương và 180 Máu. Chém xuyên da thịt kẻ địch với cơn cuồng nộ đói khát."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Kẻ Nuốt Chửng",
+        "shortName": "Kẻ Nuốt Chửng",
+        "effects": "Thực thể săn mồi thức tỉnh. Cơ bản 32 Sát thương và 280 Máu. Hút cạn sinh lực kẻ thù bằng dao động vực thẳm."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Tham Thực",
+        "shortName": "Tham Thực",
+        "effects": "Cơn cuồng nuốt chửng tham tàn. Cơ bản 55 Sát thương và 450 Máu. Rực cháy với cơn đói thiêu đốt mọi vật."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Hàm Răng Tối Thượng",
+        "shortName": "Hàm Răng Tối Thượng",
+        "effects": "Thống trị đỉnh cao săn mồi. Cơ bản 95 Sát thương và 750 Máu với nhát chém quét rộng 180° uy lực."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Kẻ Ăn Thế Giới",
+        "shortName": "Kẻ Ăn Thế Giới",
+        "effects": "Thảm họa nuốt chửng cõi trần. Cơ bản 160 Sát thương và 1,200 Máu. Tiêu hóa vạn vật trên vòng quét cực đại."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Tai Ương Vũ Trụ",
+        "shortName": "Tai Ương Vũ Trụ",
+        "effects": "Linh hồn thiên hà bị nuốt trọn. Cơ bản 260 Sát thương và 1,800 Máu. Vệt chém xé toạc các vết nứt vũ trụ."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Kỳ Dị Hư Không",
+        "shortName": "Kỳ Dị Hư Không",
+        "effects": "Chân trời sự kiện đói khát không đáy. Cơ bản 400 Sát thương và 2,600 Máu với lực kéo hư không nghiền nát."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Vỏ Rỗng Đói Khát",
+        "shortName": "Vỏ Rỗng Đói Khát",
+        "effects": "Xác khô đói lả kiệt quệ. Giác quan mờ nhạt xuống cơ bản 40 Sát thương, 58 Máu và 17 Tốc độ. Cần chính xác +250 mạng để thức tỉnh."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Cự Thú Thăng Hoa",
+        "shortName": "Cự Thú Thăng Hoa",
+        "effects": "Sự hồi sinh chấn động cõi giới! Cơ bản 650 Sát thương và 4,000 Máu. Mở khóa tia năng lượng Gluttony [Z]."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Kẻ Nuốt Chửng Vũ Trụ",
+        "shortName": "Kẻ Nuốt Chửng Vũ Trụ",
+        "effects": "Kẻ nuốt chửng vũ trụ thức giấc. Cơ bản 1,000 Sát thương, 6,000 Máu và 126 Tốc độ cùng các nhát chém thái dương rực sáng."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Chúa Tể Vực Thẳm",
+        "shortName": "Chúa Tể Vực Thẳm",
+        "effects": "Bá chủ của vực sâu thăm thẳm. Song kiếm hai lưỡi khổng lồ gây cơ bản 1,550 Sát thương tàn phá và 9,000 Máu."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Lõi Kỳ Dị",
+        "shortName": "Lõi Kỳ Dị",
+        "effects": "Chân trời hấp dẫn cực hạn. Lõi lỗ đen quay quanh gây cơ bản 2,300 Sát thương hư không và 13,500 Máu trên cung chém rộng."
+      },
+      "14": {
+        "name": "Giai đoạn 14: Nhật Thực Kinh Dị",
+        "shortName": "Nhật Thực Kinh Dị",
+        "effects": "Lưỡi hái nhật thực hai sừng cổ xưa. Thiêu rụi đội hình địch với cơ bản 3,400 Sát thương hỏa ngục và 19,000 Máu."
+      },
+      "15": {
+        "name": "Giai đoạn 15: Hư Vô Vũ Trụ",
+        "shortName": "Hư Vô Vũ Trụ",
+        "effects": "Lưỡi kiếm chòm sao tinh vân siêu phàm. Cơ bản 4,800 Sát thương và 25,000 Máu đập vỡ cấu trúc không gian."
+      },
+      "16": {
+        "name": "Giai đoạn 16: Tro Tàn Ngủ Yên",
+        "shortName": "Tro Tàn Ngủ Yên",
+        "effects": "Giấc ngủ vùi quá độ trước khi thăng hoa tối thượng. Giác quan lắng xuống cơ bản 138 Sát thương và 345 Máu. Cần chính xác +1,000 mạng để chạm đỉnh cao."
+      },
+      "17": {
+        "name": "Giai đoạn 17: Kẻ Nuốt Chửng Vạn Vật",
+        "shortName": "Kẻ Nuốt Chửng Vạn Vật",
+        "effects": "BIẾN ĐỔI TỐI HẬU. Đỉnh cao tuyệt đối của vạn vật. Cơ bản 6,500 Sát thương, 30,000 Máu, hào quang thần thánh và vĩnh viễn nhận huy hiệu All Devourer. Mở khóa Engulf [X]."
+      }
+    },
+    "overdrive": {
+      "1": {
+        "name": "Giai đoạn 1: Thủy Ngân",
+        "shortName": "Thủy Ngân",
+        "effects": "Kiếm liễu trắng thanh mảnh với điểm xuyết đỏ thẫm. Cơ bản 8 Sát thương, 120 Máu và 50 Tốc độ.",
+        "notification": "Mũi kim cựa mình với tiềm năng động năng."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Đâm Xuyên Tốc Độ",
+        "shortName": "Đâm Xuyên Tốc Độ",
+        "effects": "Kiếm liễu vận tốc đỏ thẫm cường hóa cùng gia tốc chớp nhoáng. Cơ bản 24 Sát thương, 260 Máu và 80 Tốc độ.",
+        "notification": "Cảm nhận gia tốc bắt đầu bùng nổ."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Xuyên Phá Âm Thanh",
+        "shortName": "Xuyên Phá Âm Thanh",
+        "effects": "Kiếm liễu siêu thanh tinh xảo rít qua bức tường âm thanh. Cơ bản 65 Sát thương, 550 Máu và 115 Tốc độ.",
+        "notification": "Nhanh hơn mắt thường có thể theo dõi."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Lưỡi Tachyon",
+        "shortName": "Lưỡi Tachyon",
+        "effects": "Lưỡi kiếm tốc độ tachyon bóp méo nhận thức. Cơ bản 180 Sát thương, 1,400 Máu và 155 Tốc độ.",
+        "notification": "Thế giới xung quanh bắt đầu chậm lại."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Katana Chớp Nhoáng",
+        "shortName": "Katana Chớp Nhoáng",
+        "effects": "Hóa hình Katana! Vòng chém như những tia sét trắng rực lửa. Cơ bản 650 Sát thương, 4,500 Máu và 200 Tốc độ.",
+        "notification": "Lưỡi thép lóe sáng tựa sấm sét đỏ thẫm."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Lưỡi Thần Tốc",
+        "shortName": "Lưỡi Thần Tốc",
+        "effects": "Katana thượng cấp phá vỡ mọi giới hạn âm thanh. Cơ bản 2,100 Sát thương, 12,000 Máu và 250 Tốc độ.",
+        "notification": "Hiện thực rạn nứt dưới làn sóng xung kích."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Thần Tốc Tối Thượng",
+        "shortName": "Thần Tốc Tối Thượng",
+        "effects": "BIẾN ĐỔI OVERDRIVE TỐI HẬU. Katana thần tốc uy nghi thần thánh. Cơ bản 5,500 Sát thương, 25,500 Máu và 300 Tốc độ.",
+        "notification": "Bạn đã hóa thân thành tốc độ vượt trên cả thần linh."
+      }
+    },
+    "aquatic": {
+      "1": {
+        "name": "Giai đoạn 1: Giọt Nước",
+        "shortName": "Giọt Nước",
+        "effects": "Một giọt nước run rẩy đọng trên lưỡi kiếm. Cơ bản 15 Sát thương và 150 Máu.",
+        "notification": "Một giọt nước duy nhất đọng lại trên lưỡi kiếm."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Gợn Sóng",
+        "shortName": "Gợn Sóng",
+        "effects": "Nước bắt đầu luân chuyển với động lượng. Tạo ra các gợn sóng hình tròn khi đánh trúng.",
+        "notification": "Dòng nước bắt đầu chuyển động."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Dòng Suối",
+        "shortName": "Dòng Suối",
+        "effects": "Một dòng suối mềm mại chảy quanh lưỡi kiếm. Để lại vệt nước ngắn khi vung chém.",
+        "notification": "Gợn sóng hóa thành dòng suối."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Dòng Chảy",
+        "shortName": "Dòng Chảy",
+        "effects": "Hải lưu tăng tốc với lưỡi kiếm lam ngọc và lõi trắng. Nước xoáy cuộn đầy uy lực.",
+        "notification": "Dòng suối đã tìm thấy hải lưu của chính mình."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Sóng Ngầm",
+        "shortName": "Sóng Ngầm",
+        "effects": "Vòng xoáy nước liên tục cuộn trào dưới chân người chơi. Cơ bản 300 Sát thương và 3,500 Máu.",
+        "notification": "Dưới mặt nước... có thứ gì đó đang lôi kéo."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Xoáy Nước",
+        "shortName": "Xoáy Nước",
+        "effects": "Song hoàn nước xoay tròn cùng lốc xoáy nuốt chửng vật chất. Cơ bản 550 Sát thương và 6,000 Máu.",
+        "notification": "Dòng chảy bắt đầu xoắn ốc dữ dội."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Vực Sâu",
+        "shortName": "Vực Sâu",
+        "effects": "Áp suất vực sâu thẳm. Để lại vệt nước khi di chuyển và hào quang nước tối nghiền nát. Cơ bản 900 Sát thương và 9,000 Máu.",
+        "notification": "Bạn đã chạm tới vùng nước sâu thẳm."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Hạn Hán",
+        "shortName": "Hạn Hán",
+        "effects": "SỰ SỤP ĐỔ NĂNG LƯỢNG. Giác quan mờ nhạt xuống 30 Sát thương và 300 Máu. Giọt nước bốc hơi. Cần +750 mạng để thức tỉnh.",
+        "notification": "Đại dương chìm vào thinh lặng."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Lũ Lụt",
+        "shortName": "Lũ Lụt",
+        "effects": "BÙNG NỔ DỮ DỘI! Cơ bản 2,000 Sát thương và 15,000 Máu. Mở khóa kỹ năng đặc trưng: TSUNAMI [Z] (Sát thương gấp 4 lần = 8,000).",
+        "notification": "Sự thinh lặng tan vỡ. ĐẠI HỒNG THỦY ĐÃ BẮT ĐẦU."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Gió Mùa",
+        "shortName": "Gió Mùa",
+        "effects": "Tạo bão cuồng nộ. Mưa rơi xối xả từ bầu trời. Cơ bản 4,000 Sát thương, 25,000 Máu. Tsunami gây 16,000 Sát thương.",
+        "notification": "Một ngọn sóng hóa thành cơn bão. GIÓ MÙA TRỖI DẬY."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Đại Tai Họa",
+        "shortName": "Đại Tai Họa",
+        "effects": "Biển cả vượt khỏi ranh giới. Rung màn hình khi tấn công. Cơ bản 7,000 Sát thương, 38,000 Máu. Tsunami gây 28,000 Sát thương.",
+        "notification": "Biển cả đã thoát khỏi bờ cõi. ĐẠI ĐỊA CHẤN."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Thủy Quái",
+        "shortName": "Thủy Quái",
+        "effects": "Ảo ảnh thủy quái Leviathan cổ đại hiện hình phía sau chủ nhân. Cơ bản 11,500 Sát thương, 50,000 Máu. Tsunami gây 46,000 Sát thương.",
+        "notification": "Có thứ gì đó dưới đáy đại dương đang thức giấc. LEVIATHAN TRỖI DẬY."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Thủy Triều Vô Tận",
+        "shortName": "Thủy Triều Vô Tận",
+        "effects": "BIẾN ĐỔI TỐI HẬU: THIÊN TAI DI ĐỘNG. Cơ bản 18,000 Sát thương, 62,000 Máu. Tsunami gây 72,000 Sát thương hủy diệt.",
+        "notification": "Không còn đại dương nào để chinh phục. Bởi vì bạn đã hóa thân thành chính nó. OMNITIDAL."
+      }
+    },
+    "soil": {
+      "1": {
+        "name": "Giai đoạn 1: Lưỡi Đất",
+        "shortName": "Lưỡi Đất",
+        "effects": "Lưỡi đất nén từ bùn đất ẩm thô sơ. Cơ bản 3 Sát thương, 250 Máu và 10 Tốc độ.",
+        "notification": "Ngươi đang cầm ta, yếu ớt và dễ vỡ vụn. Nhưng sâu bên trong... là một hạt mầm."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Đất Nén",
+        "shortName": "Đất Nén",
+        "effects": "Thổ nhưỡng nén chặt bện chặt rễ cây. Cơ bản 15 Sát thương, 800 Máu và 15 Tốc độ.",
+        "notification": "Rễ cây siết chặt lại. Ta sẽ không để bất cứ thứ gì chạm được vào ngươi."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Mảnh Sét",
+        "shortName": "Mảnh Sét",
+        "effects": "Lưỡi đất nung khô cứng cáp với gờ đất sét. Cơ bản 50 Sát thương, 2,200 Máu và 21 Tốc độ.",
+        "notification": "Sức nóng tôi luyện chúng ta thành một khối vững chắc. Ngươi an toàn sau lưng ta."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Lưỡi Đất Mùn",
+        "shortName": "Lưỡi Đất Mùn",
+        "effects": "Đất cổ đại kết tinh mạch khoáng sản sống. Cơ bản 150 Sát thương, 5,500 Máu và 28 Tốc độ. Mở khóa khiên hộ thân Fortitude [Z].",
+        "notification": "Uống trọn sinh khí từ lòng đất! Giữ vững trận địa — ta chính là tấm khiên của ngươi!"
+      },
+      "5": {
+        "name": "Giai đoạn 5: Tim Đá",
+        "shortName": "Tim Đá",
+        "effects": "Lưỡi đất hóa đá nặng trĩu hòa quyện mạch đá hoa cương. Cơ bản 400 Sát thương, 13,000 Máu và 36 Tốc độ.",
+        "notification": "Cứ để chúng đánh tới. Mỗi đòn giáng chỉ càng làm đất nén chặt hơn."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Pháo Đài Đất",
+        "shortName": "Pháo Đài Đất",
+        "effects": "Bức tường địa tầng rung chuyển nhịp đập địa chấn. Cơ bản 950 Sát thương, 28,000 Máu và 47 Tốc độ.",
+        "notification": "Một pháo đài không thể xây xong trong một ngày. Chúng ta chính là nền móng."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Phá Nham Đao",
+        "shortName": "Phá Nham Đao",
+        "effects": "Lưỡi đá nền bất hoại bao bọc cổ ngữ hộ vệ. Cơ bản 2,100 Sát thương, 58,000 Máu và 60 Tốc độ.",
+        "notification": "Đá nền không bao giờ vỡ vụn. Chúng ta cũng vậy."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Ý Chí Núi Non",
+        "shortName": "Ý Chí Núi Non",
+        "effects": "Pháo đài thổ nhưỡng sừng sững cùng các phiến đá hộ thân quay quanh. Cơ bản 4,200 Sát thương, 115,000 Máu và 76 Tốc độ.",
+        "notification": "Không gì lay chuyển được ngọn núi. Giữ vững, kho báu của ta."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Vỏ Rỗng Rã",
+        "shortName": "Vỏ Rỗng Rã",
+        "effects": "SỰ SỤP ĐỔ CÓ CHỦ ĐÍCH. Lớp vỏ thổ nhưỡng nứt vỡ, giảm xuống cơ bản 135 Sát thương, 5,000 Máu và 96 Tốc độ. Trải qua 40,000 mạng để lộ chân tâm.",
+        "notification": "Khoan đã... lớp vỏ bên ngoài đang rơi rụng... hãy bám chắc, tin ta, ĐỪNG BUÔNG TAY—"
+      },
+      "10": {
+        "name": "Giai đoạn 10: Pháo Đài Thổ Nhưỡng Bất Diệt",
+        "shortName": "Pháo Đài Bất Diệt",
+        "effects": "BIẾN ĐỔI TỐI HẬU. Thành lũy đại lục bất khả xâm phạm. Cơ bản 8,500 Sát thương, 315,000 Máu và 120 Tốc độ. Vĩnh viễn nhận huy hiệu Pháo Đài Thổ Nhưỡng Bất Diệt.",
+        "notification": "HẠT MẦM ĐÃ NẢY CHỒI. TA CHÍNH LÀ PHÁO ĐÀI. KHÔNG GÌ CÒN CÓ THỂ LÀM HẠI KHO BÁU CỦA TA."
+      }
+    },
+    "metallic": {
+      "1": {
+        "name": "Giai đoạn 1: Phế Liệu",
+        "shortName": "Phế Liệu",
+        "effects": "Mảnh phế liệu kim loại thô sơ. Cơ bản 5 Sát thương và 180 Máu.",
+        "notification": "Ta từng bị vứt bỏ một lần. Giờ đây, ta mang một sứ mệnh khác."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Rèn Thành",
+        "shortName": "Rèn Thành",
+        "effects": "Kim loại đã đi qua ngọn lửa rèn dữ dội. Cơ bản 22 Sát thương và 650 Máu.",
+        "notification": "Sức nóng đã biến đổi ta. Ta sẽ không mãi yếu hèn."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Tôi Luyện",
+        "shortName": "Tôi Luyện",
+        "effects": "Được đập búa và tôi nước, thép kết tinh thành hình. Cơ bản 70 Sát thương và 1,800 Máu.",
+        "notification": "Mỗi đòn đánh đều để lại dấu vết. Mỗi vết hằn chỉ làm ta cứng cáp hơn."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Ràng Thép",
+        "shortName": "Ràng Thép",
+        "effects": "Phiến thép kiên cố. Mở khóa Ý Chí Thép [Z] (Giảm 40% sát thương nhận vào & phản kích mảnh thép trong 6s). Cơ bản 200 Sát thương và 4,800 Máu.",
+        "notification": "Ta đã học được cách nhẫn nại. Hãy đánh ta lần nữa đi."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Gia Cố",
+        "shortName": "Gia Cố",
+        "effects": "Nhiều tầng thép cán nhiều lớp gia cố sống kiếm. Cơ bản 480 Sát thương và 11,000 Máu.",
+        "notification": "Thêm một tầng thép. Bớt đi một điểm yếu. Ta đang trở nên mạnh mẽ hơn."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Cứng Cáp",
+        "shortName": "Cứng Cáp",
+        "effects": "Mật độ luyện kim vô song tôi luyện dưới áp suất nghiền nát. Cơ bản 1,000 Sát thương và 24,000 Máu.",
+        "notification": "Áp lực không làm ta sợ hãi. Áp lực tạo nên ta."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Bậc Thầy Lò Rèn",
+        "shortName": "Bậc Thầy Lò Rèn",
+        "effects": "Lưỡi kiếm chỉ huy ngọn lửa cổ xưa và đe rèn thần thánh. Cơ bản 2,100 Sát thương và 50,000 Máu.",
+        "notification": "Đất mẹ ban cho ta chất liệu. Lò rèn ban cho ta mục đích sống."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Pháo Đài Sắt",
+        "shortName": "Pháo Đài Sắt",
+        "effects": "Giáp thành lũy bao bọc người dùng trong lớp phòng ngự bất khả lay chuyển. Cơ bản 4,200 Sát thương và 110,000 Máu.",
+        "notification": "Ta không còn cần đến một chiếc khiên. Chính ta là khiên."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Bất Khuất",
+        "shortName": "Bất Khuất",
+        "effects": "Bất khả xâm phạm trước mọi ngoại lực toan tính bẻ cong hay phá vỡ. Cơ bản 7,500 Sát thương và 210,000 Máu.",
+        "notification": "Ngươi không thể bẻ cong ta. Ngươi không thể phá vỡ ta."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Thép Vĩnh Hằng",
+        "shortName": "Thép Vĩnh Hằng",
+        "effects": "BIẾN ĐỔI TỐI HẬU: THÉP VĨNH HẰNG. Thần kiếm cự thạch tinh luyện hoàn mỹ tuyệt đối. Cơ bản 11,500 Sát thương, 360,000 Máu và 125 Tốc độ.",
+        "notification": "Ta không uốn cong. Ta không gãy vỡ. Ta trường tồn."
+      }
+    },
+    "flora": {
+      "1": {
+        "name": "Giai đoạn 1: Mầm Non",
+        "shortName": "Mầm Non",
+        "effects": "Lưỡi mầm non mỏng manh nhưng dẻo dai tràn đầy sức sống. Cơ bản 4 Sát thương và 220 Máu.",
+        "notification": "Ta từng chỉ là một hạt mầm. Ngay cả hạt giống cũng biết cách sinh tồn."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Bén Rễ",
+        "shortName": "Bén Rễ",
+        "effects": "Các sợi rễ đâm sâu gắn kết lưỡi kiếm thẳng vào lòng đất. Cơ bản 18 Sát thương và 750 Máu.",
+        "notification": "Rễ của ta đang lan tỏa. Ta đang bắt đầu bén rễ."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Sinh Trưởng",
+        "shortName": "Sinh Trưởng",
+        "effects": "Những thân gỗ cường tráng quấn chặt lấy sống kiếm. Cơ bản 60 Sát thương và 2,100 Máu.",
+        "notification": "Mỗi trận chiến nuôi dưỡng ta. Mỗi thắng lợi khiến ta vươn cao."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Gai Góc",
+        "shortName": "Gai Góc",
+        "effects": "Gai nhọn sắc lẹm phủ dọc lưỡi chém. Mở khóa Thế Giới Căn [Z] (Trói chân kẻ địch và hồi 20% Máu tối đa). Cơ bản 180 Sát thương và 5,600 Máu.",
+        "notification": "Chỉ phát triển thôi là chưa đủ. Đến hoa cũng cần có gai nhọn."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Hoang Dại",
+        "shortName": "Hoang Dại",
+        "effects": "Thảm thực vật rừng rậm hoang dã bùng nổ sức sống nguyên thủy. Cơ bản 440 Sát thương và 13,000 Máu.",
+        "notification": "Ngươi gọi đây là um tùm ư? Ta chỉ mới bắt đầu thôi."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Cổ Thụ",
+        "shortName": "Cổ Thụ",
+        "effects": "Ký ức ngàn năm của đại thụ hóa thân kiếm thành thiết mộc bất hoại. Cơ bản 950 Sát thương và 28,000 Máu.",
+        "notification": "Ta đã sống sót qua vô vàn mùa luân chuyển. Ngươi không thể tồn tại lâu hơn ta đâu."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Phủ Kín",
+        "shortName": "Phủ Kín",
+        "effects": "Tán lá sinh mệnh tỏa rộng từ kiếm phủ kín mặt đất. Cơ bản 2,000 Sát thương và 60,000 Máu.",
+        "notification": "Mảnh đất dưới chân ngươi vốn thuộc về ta. Ngươi chỉ là chưa nhận ra mà thôi."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Khổng Lồ",
+        "shortName": "Khổng Lồ",
+        "effects": "Cự kiếm đại thụ khổng lồ, tỏa ra sinh khí hành tinh cổ đại. Cơ bản 4,000 Sát thương và 130,000 Máu.",
+        "notification": "Ta đã vượt xa hình hài của một thanh kiếm. Ta đang trở thành thứ vĩ đại hơn."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Thế Giới Căn",
+        "shortName": "Thế Giới Căn",
+        "effects": "Mạng lưới rễ cây của cả hành tinh đập rộn ràng qua lưỡi kiếm. Cơ bản 7,800 Sát thương và 240,000 Máu.",
+        "notification": "Rễ của ta đã vươn xa hơn tầm mắt ngươi thấy. Nơi nào có đất, nơi đó có ta."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Vạn Vật Tái Sinh",
+        "shortName": "Vạn Vật Tái Sinh",
+        "effects": "BIẾN ĐỔI TỐI HẬU: VẠN VẬT TÁI SINH. Hiện thân vĩ đại của tự nhiên không thể ngăn cản. Cơ bản 12,000 Sát thương, 400,000 Máu và 130 Tốc độ.",
+        "notification": "Chặt hạ ta đi. Ta sẽ lại đâm chồi."
+      }
+    },
+    "hellfire": {
+      "1": {
+        "name": "Giai đoạn 1: Tàn Lửa",
+        "shortName": "Tàn Lửa",
+        "effects": "Một tàn than hồng bám chặt trên thép hắc thạch. Cơ bản 7 Sát thương và 140 Máu.",
+        "notification": "Một tàn lửa nhỏ. Đó là tất cả những gì ta cần."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Ngọn Lửa",
+        "shortName": "Ngọn Lửa",
+        "effects": "Lửa địa ngục cháy rực bao bọc sống kiếm. Cơ bản 28 Sát thương và 500 Máu.",
+        "notification": "Giờ ta bùng cháy. Hãy cho ta thứ gì đó để thiêu rụi."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Rực Cháy",
+        "shortName": "Rực Cháy",
+        "effects": "Ngọn lửa cuồng bạo phóng ra sau mỗi nhát chém. Cơ bản 90 Sát thương và 1,500 Máu.",
+        "notification": "Mỗi mạng hạ gục tiếp thêm nhiên liệu cho ngọn lửa. Hãy tiếp tục đem chúng tới."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Hỏa Ngục",
+        "shortName": "Hỏa Ngục",
+        "effects": "Ngọn lửa địa ngục bùng phát mãnh liệt. Mở khóa Đại Họa Diệt Thế [Z] (Cột dung nham gây sát thương gấp 5 lần). Cơ bản 260 Sát thương và 4,200 Máu.",
+        "notification": "Ngươi khao khát sức mạnh? Vậy thì hãy đối mặt với lửa thiêng."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Sinh Từ Địa Ngục",
+        "shortName": "Sinh Từ Địa Ngục",
+        "effects": "Cổ ngữ núi lửa sâu thẳm bốc cháy dọc theo thân kiếm hắc diện thạch. Cơ bản 650 Sát thương và 10,000 Máu.",
+        "notification": "Ngọn lửa biết rõ danh tính của ta. Còn ngươi thì sao?"
+      },
+      "6": {
+        "name": "Giai đoạn 6: Dung Nham",
+        "shortName": "Dung Nham",
+        "effects": "Dung nham nóng chảy rỉ ra từ các khe nứt rực cháy trên kiếm. Cơ bản 1,400 Sát thương và 22,000 Máu.",
+        "notification": "Ngọn lửa của ta đã chạm tới lòng đất. Giờ ngay cả mặt đất cũng phải rực cháy."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Tàn Phá",
+        "shortName": "Tàn Phá",
+        "effects": "Xóa sổ thiêu rụi toàn diện mọi vật chất trước mặt kiếm chủ. Cơ bản 2,800 Sát thương và 48,000 Máu.",
+        "notification": "Ta không còn thiêu rụi những kẻ đứng trước mặt. Ta xóa sổ chúng."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Đại Họa Diệt Thế",
+        "shortName": "Đại Họa Diệt Thế",
+        "effects": "Bão lửa địa ngục vây quanh lưỡi kiếm; không nơi nào an toàn. Cơ bản 5,600 Sát thương và 100,000 Máu.",
+        "notification": "Hãy nhìn quanh đi. Không còn nơi nào để chạy trốn nữa đâu."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Khải Huyền",
+        "shortName": "Khải Huyền",
+        "effects": "Lưỡi kiếm gầm vang sức nóng thiêu đốt của vũ trụ tàn lụi. Cơ bản 10,500 Sát thương và 190,000 Máu.",
+        "notification": "Ngươi có nghe thấy không? Đó là âm thanh của vạn vật đang cháy rụi."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Hellfire",
+        "shortName": "Chúa Tể Hỏa Ngục",
+        "effects": "BIẾN ĐỔI TỐI HẬU: CHÚA TỂ HỎA NGỤC. Hỏa ngục diệt thế không thể kìm hãm. Cơ bản 16,800 Sát thương, 320,000 Máu và 145 Tốc độ.",
+        "notification": "Chạy đi."
+      }
+    }
+  },
+  "bloodmoon": {
+    "title": "TRĂNG MÁU",
+    "subtitle": "Vầng trăng đỏ thẫm mọc lên — bóng tối bao phủ cả thảo nguyên!"
+  }
+}

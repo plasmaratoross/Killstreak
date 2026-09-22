@@ -1,0 +1,54 @@
+/* ============================================================
+   RESPONSIVE PRESENTATION
+   ============================================================
+
+   The scene is a fixed 1000x650 design. Every element inside #game-container is
+   positioned in px against that box — the HUD, the overlays, the minimap, the
+   screens. Reflowing those children for a narrow window would mean rewriting all
+   of them, so the whole box is scaled as one unit instead.
+
+   Only the RENDERED result is scaled. #game-canvas keeps its 1000x650 backing
+   store, because player position, camera, collision distances and the minimap
+   projection are all expressed against a 1000x650 world.
+
+   The factor itself is computed in src/core/GameLoop.js (resizeCanvasToFit) and
+   published as --game-scale, so nothing here needs to know the window size.
+   ============================================================ */
+
+:root {
+  --game-scale: 1;
+}
+
+/* Mobile browsers report 100vh as including chrome that is not on screen yet,
+   which makes the layout taller than the visible area. dvh is the visible
+   height. The 100vh line above it is the fallback for browsers without dvh. */
+body {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* translate() first so the 1000x650 box is centred on the viewport, then scale()
+   about the element's own centre. Order matters: it keeps the visual centre
+   pinned to the viewport centre even when the UNSCALED 1000px box is wider than
+   the window, which is the case this exists for.
+
+   position: absolute (not static) is what makes that centring exact — an
+   overflowing flex item can be shifted by the browser to keep its start edge
+   reachable, which would push the scaled scene off-centre. It also stays a
+   containing block for the absolutely positioned overlays inside, exactly as the
+   `position: relative` in style.css did. */
+#game-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(var(--game-scale));
+}
+
+/* Below the native width the scene is scaled down, so the desktop shadow and
+   corner radius — sized for a full-screen box — read as oversized. */
+@media (max-width: 999px) {
+  #game-container {
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+}

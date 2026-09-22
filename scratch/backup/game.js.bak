@@ -1,0 +1,4205 @@
+/**
+ * Game Core Controller
+ * Manages world areas (Lobby, Grassland Combat Map), 2 NPC Zones (max 7 each, 5s respawn), and Devourer phases.
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  const Config = window.Killstreak.Config;
+  const Storage = window.Killstreak.Storage;
+  const { Camera, Player, NPC, Tree, Rock, SwordStand, Portal, Particle, FloatingText, TsunamiWave } = window.Killstreak.Entities;
+
+  class Game {
+    constructor(canvas, callbacks = {}) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext("2d");
+      this.callbacks = callbacks;
+
+      this.viewport = Config.GAME_CONFIG.viewport;
+      this.camera = new Camera(this.viewport.width, this.viewport.height);
+
+      this.saveData = Storage.load();
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      if (I18n && this.saveData && this.saveData.settings && this.saveData.settings.language) {
+        I18n.init(this.saveData.settings.language);
+      }
+
+      this.state = "MENU";
+      this.currentArea = "LOBBY";
+      this.isGameOver = false;
+      this.killstreak = 0;
+      this.isDebugModeActive = false;
+      window.Killstreak.game = this;
+      window.Killstreak.GameInstance = this;
+
+      this.player = new Player(Config.MAPS.LOBBY.spawn.x, Config.MAPS.LOBBY.spawn.y);
+      this.player.game = this;
+      this.player.swordId = this.saveData.equippedSword || "devourer";
+      this.player.swordName = this.player.swordId === "aquatic" ? "Aquatic" : (this.player.swordId === "overdrive" ? "Overdrive" : "Devourer");
+      this.player.isSwordEquipped = typeof this.saveData.isSwordEquipped === "boolean" ? this.saveData.isSwordEquipped : true;
+      this.swordStands = (Config.MAPS.LOBBY.swordStands || [Config.MAPS.LOBBY.swordStand]).map(cfg => new SwordStand(cfg));
+      this.swordStand = this.swordStands[0];
+      this.lobbyPortal = new Portal(Config.MAPS.LOBBY.portalToCombat);
+      this.combatPortal = new Portal(Config.MAPS.COMBAT.portalToLobby);
+
+      this.npcs = [];
+      this.respawnQueue = []; // Holds { zoneIndex, timer: 5.0 }
+      this.trees = [];
+      this.rocks = [];
+      this.particles = [];
+      this.floatingTexts = [];
+      this.activePrompt = null;
+
+      // Devourer Skills (Gluttony & Engulf)
+      this.gluttonyCooldown = 0;
+      this.engulfCooldown = 0;
+      this.isEngulfActive = false;
+      this.engulfTimer = 0;
+      this.engulfTickTimer = 0;
+      this.activeBeam = null;
+      this.statsSaveTimer = 0;
+
+      // Aquatic Skill (Tsunami)
+      this.tsunamiCooldown = 0;
+      this.activeTsunamis = [];
+
+      // Soil Skill (Fortitude)
+      this.fortitudeCooldown = 0;
+
+      // Metallic Skill (Iron Will)
+      this.ironWillCooldown = 0;
+
+      // Flora Skill (Worldroot)
+      this.worldrootCooldown = 0;
+      this.activeWorldroots = [];
+
+      // Hellfire Skill (Cataclysm)
+      this.cataclysmCooldown = 0;
+      this.activeCataclysms = [];
+      this.isPaused = false;
+
+      // Bloodmoon Event State
+      this.bloodmoon = {
+        isActive: false,
+        activeTimer: 0,          // Counts up while active (max 15*60 = 900s)
+        checkTimer: 0,           // Counts up between checks (max 60s)
+        bannerPhase: "hidden",   // "hidden" | "entering" | "visible" | "exiting"
+        bannerTimer: 0,          // Controls how long each banner phase lasts
+        npcStatsApplied: false,  // Whether the +25% buff is currently applied
+      };
+
+      this.input = {
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+        screenMouseX: this.viewport.width / 2,
+        screenMouseY: this.viewport.height / 2,
+        isMouseDown: false
+      };
+
+      // Cutscene & Dialogue System
+      this.isCutsceneActive = false;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "devourer_p17";
+      this.cutsceneDialogue = this.getCutsceneDialogue();
+
+      this.player.swordId = this.saveData.equippedSword || "devourer";
+      this.player.swordName = this.player.swordId === "soil" ? "Soil" : (this.player.swordId === "aquatic" ? "Aquatic" : (this.player.swordId === "overdrive" ? "Overdrive" : "Devourer"));
+      this.player.isSwordEquipped = typeof this.saveData.isSwordEquipped === "boolean" ? this.saveData.isSwordEquipped : true;
+      this.syncSwordPhase(true);
+      this.checkFirstSessionAchievement();
+      this.setupArea("LOBBY");
+      this.isInitialized = true;
+
+      if (window.Killstreak && window.Killstreak.MapSystem) {
+        window.Killstreak.MapSystem.init(this);
+      }
+    }
+
+    getCutsceneDialogue() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      if (!I18n) {
+        return [
+          {
+            speaker: "DEVOURER — TRANSCENDENCE",
+            text: "The endless hunger ceases its trembling. All that lived and breathed in this realm... has been consumed."
+          },
+          {
+            speaker: "DEVOURER — TRANSCENDENCE",
+            text: "Seventy-five thousand souls surrendered their essence to forge this final vessel."
+          },
+          {
+            speaker: "DEVOURER — TRANSCENDENCE",
+            text: "The blade transcends mortal flesh, bone, and steel. Reality itself bends to your divine command."
+          },
+          {
+            speaker: "THE ALL DEVOURER",
+            text: "BEHOLD — THE APEX OF CONSUMPTION IS ATTAINED. I AM THE ALL DEVOURER."
+          }
+        ];
+      }
+      return [
+        {
+          speaker: I18n.t("cutscene.speaker_transcendence"),
+          text: I18n.t("cutscene.dialogue_1")
+        },
+        {
+          speaker: I18n.t("cutscene.speaker_transcendence"),
+          text: I18n.t("cutscene.dialogue_2")
+        },
+        {
+          speaker: I18n.t("cutscene.speaker_transcendence"),
+          text: I18n.t("cutscene.dialogue_3")
+        },
+        {
+          speaker: I18n.t("cutscene.speaker_all_devourer"),
+          text: I18n.t("cutscene.dialogue_4")
+        }
+      ];
+    }
+
+    setupArea(areaId) {
+      this.currentArea = areaId;
+      const mapConfig = Config.MAPS[areaId];
+
+      this.trees = [];
+      this.rocks = [];
+      this.npcs = [];
+      this.respawnQueue = [];
+      this.particles = [];
+      this.floatingTexts = [];
+
+      // Grassland environmental props
+      if (mapConfig.trees) {
+        mapConfig.trees.forEach(t => this.trees.push(new Tree(t.x, t.y, t.radius)));
+      }
+      if (mapConfig.rocks) {
+        mapConfig.rocks.forEach(r => this.rocks.push(new Rock(r.x, r.y, r.radius)));
+      }
+
+      this.player.x = mapConfig.spawn.x;
+      this.player.y = mapConfig.spawn.y;
+      this.player.hp = this.player.maxHp;
+
+      this.camera.follow(this.player.x, this.player.y, mapConfig.width, mapConfig.height, 1);
+
+      if (areaId === "COMBAT") {
+        this.populateGrasslandZones();
+      }
+
+      if (this.callbacks.onAreaChange) {
+        this.callbacks.onAreaChange(areaId, mapConfig.name);
+      }
+    }
+
+    startInLobby() {
+      this.state = "LOBBY";
+      this.setupArea("LOBBY");
+    }
+
+    enterCombatZone() {
+      this.state = "COMBAT";
+      this.setupArea("COMBAT");
+
+      if (this.callbacks.onToast) {
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const title = I18n ? I18n.t("toasts.entered_combat_title") : "Entered Open Grassland";
+        const desc = I18n ? I18n.t("toasts.entered_combat_desc") : "Strike stationary sentries in the feeding grounds!";
+        this.callbacks.onToast(title, desc, "⚔️");
+      }
+    }
+
+    setPaused(isPaused) {
+      this.isPaused = Boolean(isPaused);
+    }
+
+    returnToLobby() {
+      this.isGameOver = false;
+      this.state = "LOBBY";
+      this.killstreak = 0;
+      this.syncSwordPhase(true);
+      if (this.player && this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
+        this.player.applyKillstreakScaling(0);
+      }
+      this.setupArea("LOBBY");
+      if (this.callbacks.onKill) {
+        this.callbacks.onKill(0, this.saveData.highestKillstreak, this.saveData.kills, this.saveData.totalKills);
+      }
+      if (this.callbacks.onPhaseChange) {
+        this.callbacks.onPhaseChange(this.player.phase);
+      }
+    }
+
+    /**
+     * Populate the 4 designated NPC zones with structured formations
+     * 2 Normal Sentry zones (max 7 each, 14 total) + 2 Fairy groves (max 7 each, 14 total)
+     */
+    populateGrasslandZones() {
+      this.npcs = [];
+      this.respawnQueue = [];
+      const zones = Config.MAPS.COMBAT.npcZones;
+
+      zones.forEach((zone) => {
+        for (let slot = 0; slot < zone.maxNpcs; slot++) {
+          this.spawnNpcInSlot(zone.index, slot, zone.npcType);
+        }
+      });
+    }
+
+    /**
+     * Spawn an individual NPC inside a structured formation slot (7-slot or 5-slot)
+     * @param {number} zoneIndex 0 to 5
+     * @param {number} slotIndex
+     * @param {string} type
+     */
+    spawnNpcInSlot(zoneIndex, slotIndex, type = "normal") {
+      const zone = Config.MAPS.COMBAT.npcZones[zoneIndex];
+      if (!zone) return;
+
+      let offsets = Config.NPC_FORMATION_10_SLOTS;
+      if (zone.npcType === "buff_man") {
+        offsets = Config.NPC_FORMATION_10_BUFF_SLOTS || Config.NPC_FORMATION_7_BUFF_SLOTS;
+      } else if (zone.maxNpcs === 10) {
+        offsets = Config.NPC_FORMATION_10_SLOTS;
+      } else if (zone.maxNpcs === 9) {
+        offsets = Config.NPC_FORMATION_9_SLOTS;
+      } else if (zone.maxNpcs === 8) {
+        offsets = Config.NPC_FORMATION_8_SLOTS;
+      } else if (zone.maxNpcs === 7) {
+        offsets = Config.NPC_FORMATION_7_SLOTS;
+      } else if (zone.maxNpcs === 6) {
+        offsets = Config.NPC_FORMATION_6_SLOTS;
+      } else if (zone.maxNpcs === 5) {
+        offsets = Config.NPC_FORMATION_5_SLOTS;
+      }
+
+      const offset = (offsets && offsets[slotIndex]) || {
+        x: ((slotIndex % 4) - 1.5) * 55,
+        y: (Math.floor(slotIndex / 4) - 1) * 55
+      };
+      const centerX = zone.x + zone.width / 2;
+      const centerY = zone.y + zone.height / 2;
+      const x = centerX + offset.x;
+      const y = centerY + offset.y;
+
+      const npc = new NPC(x, y, zoneIndex, type, slotIndex);
+      npc.game = this;
+      this.npcs.push(npc);
+    }
+
+    equipSword(swordId) {
+      if (swordId === "overdrive") {
+        if ((this.saveData.totalKills || 0) < 1250) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_locked_desc") : "Requires 1,250 Total Kills to equip Overdrive!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
+      } else if (swordId === "aquatic") {
+        if ((this.saveData.totalKills || 0) < 2500) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_aquatic_locked_desc", { defaultValue: "Requires 2,500 Total Kills to equip Aquatic!" }) : "Requires 2,500 Total Kills to equip Aquatic!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
+      } else if (swordId === "soil") {
+        if ((this.saveData.totalKills || 0) < 3500) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_soil_locked_desc", { defaultValue: "Requires 3,500 Total Kills to equip Soil!" }) : "Requires 3,500 Total Kills to equip Soil!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
+      } else if (swordId === "metallic") {
+        if ((this.saveData.totalKills || 0) < 5000) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_metallic_locked_desc", { defaultValue: "Requires 5,000 Total Kills to equip Metallic!" }) : "Requires 5,000 Total Kills to equip Metallic!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
+      } else if (swordId === "flora") {
+        if ((this.saveData.totalKills || 0) < 7000) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_flora_locked_desc", { defaultValue: "Requires 7,000 Total Kills to equip Flora!" }) : "Requires 7,000 Total Kills to equip Flora!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
+      } else if (swordId === "hellfire") {
+        if ((this.saveData.totalKills || 0) < 10000) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_hellfire_locked_desc", { defaultValue: "Requires 10,000 Total Kills to equip Hellfire!" }) : "Requires 10,000 Total Kills to equip Hellfire!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
+      }
+
+      const isSwitchingSword = this.player.swordId !== swordId;
+      if (isSwitchingSword) {
+        this.killstreak = 0;
+      }
+
+      this.player.swordId = swordId;
+      this.player.swordName = swordId === "hellfire" ? "Hellfire" : (swordId === "flora" ? "Flora" : (swordId === "metallic" ? "Metallic" : (swordId === "soil" ? "Soil" : (swordId === "aquatic" ? "Aquatic" : (swordId === "overdrive" ? "Overdrive" : "Devourer")))));
+      this.player.isSwordEquipped = true;
+      this.saveData.equippedSword = swordId;
+      this.saveData.isSwordEquipped = true;
+
+      // Devourer skills disabled when not using Devourer
+      if (swordId !== "devourer") {
+        this.isEngulfActive = false;
+        this.player.isEngulfActive = false;
+        this.activeBeam = null;
+        this.gluttonyCooldown = 0;
+        this.engulfCooldown = 0;
+      }
+
+      // Aquatic skills disabled when not using Aquatic
+      if (swordId !== "aquatic") {
+        this.tsunamiCooldown = 0;
+        this.activeTsunamis = [];
+      }
+
+      // Soil skills disabled when not using Soil
+      if (swordId !== "soil") {
+        this.fortitudeCooldown = 0;
+        this.player.shield = 0;
+        this.player.shieldDuration = 0;
+      }
+
+      // Metallic skills disabled when not using Metallic
+      if (swordId !== "metallic") {
+        this.ironWillCooldown = 0;
+        this.player.ironWillActive = false;
+        this.player.ironWillTimer = 0;
+      }
+
+      // Flora skills disabled when not using Flora
+      if (swordId !== "flora") {
+        this.worldrootCooldown = 0;
+        this.player.worldrootHealTimer = 0;
+        this.activeWorldroots = [];
+      }
+
+      // Hellfire skills disabled when not using Hellfire
+      if (swordId !== "hellfire") {
+        this.cataclysmCooldown = 0;
+        this.activeCataclysms = [];
+      }
+
+      this.syncSwordPhase(true);
+      if (this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
+        this.player.applyKillstreakScaling(this.killstreak);
+      }
+
+      if (isSwitchingSword && this.callbacks.onKill) {
+        this.callbacks.onKill(this.killstreak, this.saveData.highestKillstreak, this.saveData.kills, this.saveData.totalKills);
+      }
+
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      if (this.callbacks.onPhaseChange) {
+        this.callbacks.onPhaseChange(this.player.phase);
+      }
+
+      // First time equipping Aquatic -> Play unlock cutscene
+      if (swordId === "aquatic" && !this.saveData.aquaticUnlockCutsceneSeen) {
+        this.startAquaticUnlockCutscene();
+      }
+
+      // First time equipping Soil -> Play unlock cutscene
+      if (swordId === "soil" && !this.saveData.soilUnlockCutsceneSeen) {
+        this.startSoilUnlockCutscene();
+      }
+
+      // First time equipping Metallic -> Play unlock cutscene
+      if (swordId === "metallic" && !this.saveData.metallicUnlockCutsceneSeen) {
+        this.startMetallicUnlockCutscene();
+      }
+
+      // First time equipping Flora -> Play unlock cutscene
+      if (swordId === "flora" && !this.saveData.floraUnlockCutsceneSeen) {
+        this.startFloraUnlockCutscene();
+      }
+
+      // First time equipping Hellfire -> Play unlock cutscene
+      if (swordId === "hellfire" && !this.saveData.hellfireUnlockCutsceneSeen) {
+        this.startHellfireUnlockCutscene();
+      }
+
+      return true;
+    }
+
+    toggleSwordEquip(targetSwordId = null) {
+      if (targetSwordId && targetSwordId !== this.player.swordId) {
+        return this.equipSword(targetSwordId);
+      }
+
+      this.player.isSwordEquipped = !this.player.isSwordEquipped;
+      this.saveData.isSwordEquipped = this.player.isSwordEquipped;
+      if (!this.player.isSwordEquipped) {
+        this.isEngulfActive = false;
+        this.player.isEngulfActive = false;
+        this.activeBeam = null;
+        this.activeTsunamis = [];
+        this.player.shield = 0;
+        this.player.shieldDuration = 0;
+        this.player.ironWillActive = false;
+        this.player.ironWillTimer = 0;
+        this.player.worldrootHealTimer = 0;
+        this.activeWorldroots = [];
+        this.activeCataclysms = [];
+      }
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      if (this.callbacks.onPhaseChange) {
+        this.callbacks.onPhaseChange(this.player.phase);
+      }
+      return this.player.isSwordEquipped;
+    }
+
+    syncSwordPhase(forceReset = false) {
+      const isOverdrive = this.player.swordId === "overdrive";
+      const isAquatic = this.player.swordId === "aquatic";
+      const isSoil = this.player.swordId === "soil";
+      const isMetallic = this.player.swordId === "metallic";
+      const isFlora = this.player.swordId === "flora";
+      const isHellfire = this.player.swordId === "hellfire";
+      const phases = isHellfire
+        ? Config.HELLFIRE_PHASES
+        : (isFlora
+          ? Config.FLORA_PHASES
+          : (isMetallic
+            ? Config.METALLIC_PHASES
+            : (isSoil
+              ? Config.SOIL_PHASES
+              : (isAquatic
+                ? Config.AQUATIC_PHASES
+                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))));
+      let matchedPhase = phases[0];
+
+      for (let i = phases.length - 1; i >= 0; i--) {
+        if (this.killstreak >= phases[i].killsRequired) {
+          matchedPhase = phases[i];
+          break;
+        }
+      }
+
+      const previousPhase = this.player.phase;
+      const isPhaseUp = Boolean(previousPhase && matchedPhase.phase > previousPhase.phase);
+      const prevSwordId = (previousPhase && typeof previousPhase.cssClass === "string")
+        ? (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer"))))))
+        : null;
+      const isDifferentSword = Boolean(previousPhase && prevSwordId !== this.player.swordId);
+      const phaseChanged = Boolean(previousPhase && (matchedPhase.phase !== previousPhase.phase || isDifferentSword));
+
+      if (phaseChanged || forceReset) {
+        this.player.setPhase(matchedPhase, isPhaseUp);
+      }
+
+      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire) {
+        this.gluttonyCooldown = 0;
+        this.engulfCooldown = 0;
+        this.isEngulfActive = false;
+        this.player.isEngulfActive = false;
+        this.activeBeam = null;
+      }
+
+      if (isPhaseUp) {
+        this.player.hp = this.player.maxHp; // Completely healed when phasing up!
+        this.onSwordPhaseUp(matchedPhase);
+      }
+
+      if (isHellfire) {
+        this.saveData.hellfirePhase = matchedPhase.phase;
+      } else if (isFlora) {
+        this.saveData.floraPhase = matchedPhase.phase;
+      } else if (isMetallic) {
+        this.saveData.metallicPhase = matchedPhase.phase;
+      } else if (isSoil) {
+        this.saveData.soilPhase = matchedPhase.phase;
+      } else if (isAquatic) {
+        this.saveData.aquaticPhase = matchedPhase.phase;
+      } else if (isOverdrive) {
+        this.saveData.overdrivePhase = matchedPhase.phase;
+      } else {
+        this.saveData.swordPhase = matchedPhase.phase;
+      }
+
+      if (this.isInitialized && this.callbacks.onPhaseChange && (phaseChanged || forceReset)) {
+        this.callbacks.onPhaseChange(matchedPhase);
+      }
+
+      return phaseChanged;
+    }
+
+    onSwordPhaseUp(phase) {
+      if (this.player.swordId === "soil") {
+        if (phase.phase === 10) {
+          this.unlockAchievement("soil_ascended");
+        }
+
+        if (phase.phase === 10 && !this.saveData.soilPhase10CutsceneSeen) {
+          this.startSoilPhase10Cutscene();
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 10 ? 20 : (phase.phase >= 7 ? 12 : 7), 0.35);
+        }
+
+        const pCount = phase.phase === 10 ? 75 : (phase.phase >= 7 ? 40 : 25);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          let pColor;
+          if (phase.phase === 9) {
+            pColor = i % 2 === 0 ? "#78716c" : "#57534e";
+          } else if (phase.phase === 10) {
+            pColor = i % 3 === 0 ? "#fef08a" : (i % 3 === 1 ? "#f59e0b" : "#78350f");
+          } else {
+            pColor = i % 2 === 0 ? (phase.color || "#b45309") : "#f59e0b";
+          }
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.5, 0.55)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("soil", phase.phase) : phase;
+        const phaseTitle = phase.phase === 9 ? "SOIL: COLLAPSE (WEAK PHASE!)" : `SOIL: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        const titleColor = phase.phase === 9 ? "#a8a29e" : (phase.color || "#d97706");
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, titleColor, 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.soil_up_title", { defaultValue: "EARTH FORTIFIED" }) : "EARTH FORTIFIED";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.soil_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "🛡️");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "aquatic") {
+        if (phase.phase === 13) {
+          this.unlockAchievement("aquatic_ascended");
+        }
+
+        if (phase.phase === 13 && !this.saveData.aquaticPhase13CutsceneSeen) {
+          this.startAquaticPhase13Cutscene();
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 13 ? 18 : (phase.phase >= 9 ? 12 : 7), 0.35);
+        }
+
+        const pCount = phase.phase === 13 ? 70 : (phase.phase >= 9 ? 40 : 25);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 100 + Math.random() * 220;
+          let pColor;
+          if (phase.phase === 8) {
+            pColor = i % 2 === 0 ? "#78716c" : "#a8a29e";
+          } else {
+            pColor = i % 2 === 0 ? (phase.color || "#06b6d4") : "#ffffff";
+          }
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.2, 0.5)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("aquatic", phase.phase) : phase;
+        const phaseTitle = phase.phase === 8 ? "AQUATIC: DROUGHT (POWER COLLAPSED!)" : `AQUATIC: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        const titleColor = phase.phase === 8 ? "#a8a29e" : (phase.color || "#06b6d4");
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, titleColor, 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.aquatic_up_title", { defaultValue: "AQUATIC DELUGE" }) : "AQUATIC DELUGE";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.aquatic_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "🌊");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "overdrive") {
+        if (phase.phase === 7) {
+          this.unlockAchievement("overdrive_ascended");
+        }
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 7 ? 16 : 8, 0.35);
+        }
+        const pCount = phase.phase === 7 ? 60 : 30;
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 240;
+          const pColor = i % 2 === 0 ? "#ffffff" : "#ef4444";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.2, 0.5)
+          );
+        }
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("overdrive", phase.phase) : phase;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, `OVERDRIVE: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`, "#ffffff", 16)
+        );
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.overdrive_up_title") : "OVERDRIVE PHASE UP";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.overdrive_up_desc", { name: pInfo.name }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "⚡");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "metallic") {
+        if (phase.phase === 10) {
+          this.unlockAchievement("metallic_ascended");
+        }
+
+        if (phase.phase === 10 && !this.saveData.metallicPhase10CutsceneSeen) {
+          this.startMetallicPhase10Cutscene();
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 10 ? 20 : (phase.phase >= 7 ? 12 : 7), 0.35);
+        }
+
+        const pCount = phase.phase === 10 ? 75 : (phase.phase >= 7 ? 40 : 25);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          let pColor = phase.phase === 10 ? (i % 3 === 0 ? "#ffffff" : (i % 3 === 1 ? "#cbd5e1" : "#475569")) : (i % 2 === 0 ? (phase.color || "#cbd5e1") : "#ffffff");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.5, 0.55)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("metallic", phase.phase) : phase;
+        const phaseTitle = `METALLIC: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#cbd5e1", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.metallic_up_title", { defaultValue: "STEEL REFORGED" }) : "STEEL REFORGED";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.metallic_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "⚙️");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "flora") {
+        if (phase.phase === 10) {
+          this.unlockAchievement("flora_ascended");
+        }
+
+        if (phase.phase === 10 && !this.saveData.floraPhase10CutsceneSeen) {
+          this.startFloraPhase10Cutscene();
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 10 ? 20 : (phase.phase >= 7 ? 12 : 7), 0.35);
+        }
+
+        const pCount = phase.phase === 10 ? 75 : (phase.phase >= 7 ? 40 : 25);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          let pColor = phase.phase === 10 ? (i % 3 === 0 ? "#4ade80" : (i % 3 === 1 ? "#22c55e" : "#14532d")) : (i % 2 === 0 ? (phase.color || "#22c55e") : "#86efac");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.5, 0.55)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("flora", phase.phase) : phase;
+        const phaseTitle = `FLORA: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#4ade80", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.flora_up_title", { defaultValue: "NATURE AWAKENED" }) : "NATURE AWAKENED";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.flora_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "🌿");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "hellfire") {
+        if (phase.phase === 10) {
+          this.unlockAchievement("hellfire_ascended");
+        }
+
+        if (phase.phase === 10 && !this.saveData.hellfirePhase10CutsceneSeen) {
+          this.startHellfirePhase10Cutscene();
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 10 ? 22 : (phase.phase >= 7 ? 14 : 8), 0.35);
+        }
+
+        const pCount = phase.phase === 10 ? 80 : (phase.phase >= 7 ? 45 : 30);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 100 + Math.random() * 220;
+          let pColor = phase.phase === 10 ? (i % 3 === 0 ? "#ef4444" : (i % 3 === 1 ? "#f97316" : "#fbbf24")) : (i % 2 === 0 ? (phase.color || "#dc2626") : "#f97316");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("hellfire", phase.phase) : phase;
+        const phaseTitle = `HELLFIRE: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#ef4444", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.hellfire_up_title", { defaultValue: "INFERNO IGNITED" }) : "INFERNO IGNITED";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.hellfire_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "🔥");
+        }
+        return;
+      }
+
+      if (phase.phase === 17 && !this.saveData.phase17CutsceneSeen) {
+        this.startPhase17Cutscene();
+        return;
+      }
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(phase.phase === 17 ? 16 : 10, 0.4);
+      }
+
+      const pCount = phase.phase === 17 ? 65 : 35;
+      for (let i = 0; i < pCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 100 + Math.random() * 220;
+        const pColor = (phase.phase === 17 && i % 2 === 0) ? "#facc15" : phase.color;
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      const pInfo = (I18n && phase) ? I18n.getPhaseInfo("devourer", phase.phase) : phase;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 32, `DEVOURER: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`, phase.color, 16)
+      );
+
+      if (this.callbacks.onToast) {
+        const title = I18n ? I18n.t("toasts.devourer_up_title") : "DEVOURER AWAKENED";
+        const desc = I18n ? I18n.t("toasts.devourer_up_desc", { name: (pInfo.shortName || phase.shortName).toUpperCase() }) : `PHASE: ${phase.shortName.toUpperCase()}`;
+        this.callbacks.onToast(title, desc, "👁️");
+      }
+    }
+
+    startAquaticUnlockCutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "aquatic_unlock";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_spring") : "PRIMORDIAL SPRING",
+          text: I18n ? I18n.t("cutscene.aquatic_unlock_1") : "In the beginning, there was only silence... and a single falling drop."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_spring") : "PRIMORDIAL SPRING",
+          text: I18n ? I18n.t("cutscene.aquatic_unlock_2") : "Two thousand five hundred souls have fallen. Their essence converges into an oceanic wellspring."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_aquatic_unlock") : "AQUATIC — THE DROWNING TIDE",
+          text: I18n ? I18n.t("cutscene.aquatic_unlock_3") : "The quiet ripples have begun to stir. Take the blade... and let the deluge commence."
+        }
+      ];
+
+      this.camera.shake(10, 0.5);
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startAquaticPhase13Cutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "aquatic_p13";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_aquatic_p13") : "AQUATIC — OMNITIDAL",
+          text: I18n ? I18n.t("cutscene.aquatic_p13_1") : "The continents submerge beneath a boundless, unforgiving abyss."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_aquatic_p13") : "AQUATIC — OMNITIDAL",
+          text: I18n ? I18n.t("cutscene.aquatic_p13_2") : "One hundred and forty-five thousand lives swept away into the infinite tide."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_ocean") : "THE PRIMORDIAL OCEAN",
+          text: I18n ? I18n.t("cutscene.aquatic_p13_3") : "Every drop of water in existence now answers to your pulse. Phase 13 — Omnitidal. The deluge is complete."
+        }
+      ];
+
+      this.camera.shake(16, 0.6);
+      this.unlockAchievement("aquatic_ascended");
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startSoilUnlockCutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "soil_unlock";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_core") : "EARTHEN CORE",
+          text: I18n ? I18n.t("cutscene.soil_unlock_1") : "Deep beneath the soil, ancient roots awaken."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_core") : "EARTHEN CORE",
+          text: I18n ? I18n.t("cutscene.soil_unlock_2") : "Three thousand five hundred battles have nourished the earth beneath your feet."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_unlock_3") : "I'm... just dirt. But I'll protect what I can."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_unlock_4") : "Take me. Together, we will make sure nothing ever reaches your treasure."
+        }
+      ];
+
+      this.camera.shake(10, 0.5);
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startSoilPhase10Cutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "soil_p10";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_1") : "[The screen briefly darkens.]\n\nYou thought I had fallen?"
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_2") : "[The broken blade sinks into the ground.]\n\nNo.\n\nI returned to where I began."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_3") : "[The ground begins trembling. Cracks spread outward from the sword.]\n\nEvery grain...\nEvery fragment...\nEvery piece of me that was broken..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_4") : "[The scattered dirt from previous phases begins floating toward the blade.]\n\n...was still mine."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_5") : "[Massive layers of earth rise from the ground and surround the sword.]\n\nI spent every battle learning how to endure.\nEvery defeat taught me how to rebuild."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_6") : "[The earth rapidly compresses, becoming incredibly dense and towering.]\n\nI am no longer loose dirt.\nI am no longer merely a blade."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_7") : "[The entire structure erupts into a colossal fortress-like sword.]\n\nI am the ground beneath your feet.\nThe wall between your treasure and everything that seeks to take it."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil") : "SOIL",
+          text: I18n ? I18n.t("cutscene.soil_p10_8") : "[The fortress settles into complete silence.]\n\nCome.\nBreak yourself against me."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_soil_p10") : "SOIL — PHASE 10: THE INDESTRUCTIBLE FORTRESS",
+          text: I18n ? I18n.t("cutscene.soil_p10_9") : "As long as I stand...\nYour treasure will never be taken."
+        }
+      ];
+
+      this.camera.shake(18, 0.7);
+      this.unlockAchievement("soil_ascended");
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startMetallicUnlockCutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "metallic_unlock";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_anvil") : "ANVIL OF WILL",
+          text: I18n ? I18n.t("cutscene.metallic_unlock_1") : "From raw iron and molten fire, an unyielding will takes shape."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_anvil") : "ANVIL OF WILL",
+          text: I18n ? I18n.t("cutscene.metallic_unlock_2") : "Five thousand foes have fallen before your resolve. The steel recognizes its master."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_unlock_3") : "I was discarded once. Now, I have another purpose."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_unlock_4") : "Hold me firm. We will bend neither to hardship nor death."
+        }
+      ];
+
+      this.camera.shake(10, 0.5);
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startMetallicPhase10Cutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "metallic_p10";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_1") : "[The sword ceases all vibration. The air around it feels unnaturally heavy.]\n\nThere is nothing left to temper."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_2") : "[The scratches on the blade begin to glow with cold white light.]\n\nEvery strike against me...\nEvery blow meant to shatter me..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_3") : "[The cracks and dents fill in, not by healing, but by folding into denser steel.]\n\n...was simply another hammer blow."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_4") : "[A ringing sound echoes—like an anvil struck in an empty cathedral.]\n\nI was scrap.\nI became a weapon."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_5") : "[The blade transforms into perfectly polished, dark silver steel. No reflections appear on its surface.]\n\nNow..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_6") : "[The white glow settles deep inside the core of the blade.]\n\nI am the standard against which all force is measured."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_7") : "[The sword emits a low, steady hum that does not fade.]\n\nBring your worst.\nBring everything."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic") : "METALLIC",
+          text: I18n ? I18n.t("cutscene.metallic_p10_8") : "[The screen flashes pure white for a fraction of a second.]\n\nI will not bend.\nI will not break."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic_p10") : "METALLIC — PHASE 10: ETERNAL STEEL",
+          text: I18n ? I18n.t("cutscene.metallic_p10_9") : "I am Eternal Steel."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_metallic_p10") : "METALLIC — PHASE 10: ETERNAL STEEL",
+          text: I18n ? I18n.t("cutscene.metallic_p10_10") : "And I will outlast all of you."
+        }
+      ];
+
+      this.camera.shake(18, 0.7);
+      this.unlockAchievement("metallic_ascended");
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startFloraUnlockCutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "flora_unlock";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_grove") : "ELDER GROVE",
+          text: I18n ? I18n.t("cutscene.flora_unlock_1") : "Leaves rustle as ancient roots stir beneath the emerald meadow."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_grove") : "ELDER GROVE",
+          text: I18n ? I18n.t("cutscene.flora_unlock_2") : "Seven thousand slaughters have fertilized the timeless grove. The forest awakens."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_unlock_3") : "A sprout in the storm... but patience outlives all tempests."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_unlock_4") : "Take root with me. Together, we shall endure longer than the mountains."
+        }
+      ];
+
+      this.camera.shake(10, 0.5);
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startFloraPhase10Cutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "flora_p10";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_1") : "[Roots slowly retreat into the soil. The world falls completely still.]\n\nYou fought so hard."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_2") : "[Green light pulses softly through the ground, spreading outward in all directions.]\n\nYou conquered empires.\nYou built monuments.\nYou swung your weapons with such fury."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_3") : "[Vines begin growing over everything—the arena, the weapons, the fallen.]\n\nAnd yet..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_4") : "[Flowers bloom in the cracks of broken armor.]\n\n...the grass always returns."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_5") : "[Massive ancient roots erupt from the earth, interlocking into an immense living sword.]\n\nI do not need to defeat you.\nI only need to exist."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_6") : "[Leaves drift down, glowing with calm, pale green light.]\n\nYour strength will fade.\nYour iron will rust.\nYour fires will die."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_7") : "[The living sword pulses with slow, heartbeat-like warmth.]\n\nAnd when everything you built has turned to dust..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora") : "FLORA",
+          text: I18n ? I18n.t("cutscene.flora_p10_8") : "[A single new sprout opens at the tip of the blade.]\n\n...I will still be growing."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora_p10") : "FLORA — PHASE 10: THE EVERGROWTH",
+          text: I18n ? I18n.t("cutscene.flora_p10_9") : "I am the Evergrowth."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora_p10") : "FLORA — PHASE 10: THE EVERGROWTH",
+          text: I18n ? I18n.t("cutscene.flora_p10_10") : "Life does not end."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_flora_p10") : "FLORA — PHASE 10: THE EVERGROWTH",
+          text: I18n ? I18n.t("cutscene.flora_p10_11") : "It only takes back what was always its own."
+        }
+      ];
+
+      this.camera.shake(18, 0.7);
+      this.unlockAchievement("flora_ascended");
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startHellfireUnlockCutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "hellfire_unlock";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_abyss") : "INFERNAL ABYSS",
+          text: I18n ? I18n.t("cutscene.hellfire_unlock_1") : "The air scorches with suffocating heat as obsidian fissures rip open."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_abyss") : "INFERNAL ABYSS",
+          text: I18n ? I18n.t("cutscene.hellfire_unlock_2") : "Ten thousand souls burned away in your crucible of slaughter. The demon within demands release."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_unlock_3") : "A spark... it is enough to ignite the world."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_unlock_4") : "Unleash me! Feed me! Let nothing remain but ash!"
+        }
+      ];
+
+      this.camera.shake(10, 0.5);
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startHellfirePhase10Cutscene() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "hellfire_p10";
+      this.cutsceneDialogue = [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_1") : "[The flames completely disappear. The screen goes pitch black.]\n\n..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_2") : "[A single red line appears down the center of the screen, splitting the darkness.]\n\nYou thought it was a fire you could put out?"
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_3") : "[The red line tears open into an ocean of black and crimson fire.]\n\nFIRE DOES NOT NEGOTIATE."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_4") : "[The sword reappears—surrounded by jagged obsidian horns and swirling black flame.]\n\nIt does not pause.\nIt does not show mercy."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_5") : "[The ground around the sword melts instantly into bubbling magma.]\n\nIt only consumes."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_6") : "[The blade erupts with a sound like a volcanic explosion.]\n\nYou brought me foes.\nYou brought me souls.\nYou gave me everything I needed to burn through the cage."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_7") : "[Pillars of black fire shoot skyward, turning the sky dark red.]\n\nNow..."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_8") : "[The sword burns with fire so dark it absorbs the light around it.]\n\nTHERE IS NOTHING LEFT TO HOLD ME BACK."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire") : "HELLFIRE",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_9") : "[Violent tremors shake the entire screen. The fire roars with terrifying intensity.]\n\nBURN!"
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire_p10") : "HELLFIRE — PHASE 10: THE INFERNAL",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_10") : "I am The Infernal."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_hellfire_p10") : "HELLFIRE — PHASE 10: THE INFERNAL",
+          text: I18n ? I18n.t("cutscene.hellfire_p10_11") : "And everything ends in ash."
+        }
+      ];
+
+      this.camera.shake(20, 0.8);
+      this.unlockAchievement("hellfire_ascended");
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    startPhase17Cutscene() {
+      this.isCutsceneActive = true;
+      this.cutsceneIndex = 0;
+      this.cutsceneTimer = 0;
+      this.cutsceneType = "devourer_p17";
+      this.cutsceneDialogue = this.getCutsceneDialogue();
+
+      // Immediately grant All Devourer badge
+      if (!this.saveData.achievements.includes("all_devourer")) {
+        this.saveData.achievements.push("all_devourer");
+        if (!this.saveData.badges.includes("all_devourer")) {
+          this.saveData.badges.push("all_devourer");
+        }
+        Storage.save(this.saveData);
+        if (this.callbacks.onBadgesUpdated) {
+          this.callbacks.onBadgesUpdated(this.saveData.badges);
+        }
+      }
+
+      this.camera.shake(12, 0.5);
+      if (this.callbacks.onCutsceneStart) {
+        this.callbacks.onCutsceneStart(this.cutsceneDialogue[0]);
+      }
+    }
+
+    advanceCutscene() {
+      if (!this.isCutsceneActive) return;
+      this.cutsceneIndex++;
+      if (this.cutsceneIndex >= this.cutsceneDialogue.length) {
+        this.finishCutscene();
+      } else {
+        this.camera.shake(6, 0.25);
+        const isAq = this.cutsceneType && this.cutsceneType.startsWith("aquatic");
+        const isSoil = this.cutsceneType && this.cutsceneType.startsWith("soil");
+        const isMet = this.cutsceneType && this.cutsceneType.startsWith("metallic");
+        const isFlora = this.cutsceneType && this.cutsceneType.startsWith("flora");
+        const isHell = this.cutsceneType && this.cutsceneType.startsWith("hellfire");
+        for (let i = 0; i < 20; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 70 + Math.random() * 120;
+          let pColor;
+          if (isHell) {
+            pColor = i % 2 === 0 ? "#ef4444" : "#fbbf24";
+          } else if (isFlora) {
+            pColor = i % 2 === 0 ? "#4ade80" : "#22c55e";
+          } else if (isMet) {
+            pColor = i % 2 === 0 ? "#ffffff" : "#cbd5e1";
+          } else if (isSoil) {
+            pColor = i % 3 === 0 ? "#fef08a" : (i % 3 === 1 ? "#f59e0b" : "#78350f");
+          } else if (isAq) {
+            pColor = i % 2 === 0 ? "#06b6d4" : "#ffffff";
+          } else {
+            pColor = "#facc15";
+          }
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4, 0.45)
+          );
+        }
+        if (this.callbacks.onCutsceneStep) {
+          this.callbacks.onCutsceneStep(this.cutsceneDialogue[this.cutsceneIndex]);
+        }
+      }
+    }
+
+    skipCutscene() {
+      if (this.isCutsceneActive) {
+        this.finishCutscene();
+      }
+    }
+
+    finishCutscene() {
+      this.isCutsceneActive = false;
+
+      if (this.cutsceneType === "aquatic_unlock") {
+        this.saveData.aquaticUnlockCutsceneSeen = true;
+        Storage.save(this.saveData);
+
+        this.camera.shake(14, 0.6);
+        for (let i = 0; i < 60; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          const color = i % 2 === 0 ? "#06b6d4" : "#38bdf8";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.aquatic_unlocked") : "AQUATIC UNLOCKED!", "#06b6d4", 20)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.aquatic_unlock_title") : "WEAPON UNLOCKED";
+          const tDesc = I18n ? I18n.t("toasts.aquatic_unlock_desc") : "Aquatic — The Drowning Tide is now available!";
+          this.callbacks.onToast(tTitle, tDesc, "🌊");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "aquatic_p13") {
+        this.saveData.aquaticPhase13CutsceneSeen = true;
+        this.unlockAchievement("aquatic_ascended");
+        Storage.save(this.saveData);
+
+        this.camera.shake(20, 1.0);
+        for (let i = 0; i < 90; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 280;
+          const color = i % 2 === 0 ? "#ffffff" : "#06b6d4";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.5, 0.8)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? (I18n.getLanguage() === "vi" ? "ĐẠI HỒNG THỦY OMNITIDAL!" : "OMNITIDAL APOCALYPSE!") : "OMNITIDAL APOCALYPSE!", "#ffffff", 22)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.aquatic_p13_title") : "MAXIMUM TRANSCENDENCE";
+          const tDesc = I18n ? I18n.t("toasts.aquatic_p13_desc") : "Phase 13: Omnitidal — Primordial ocean divinity reached!";
+          this.callbacks.onToast(tTitle, tDesc, "🌊");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "soil_unlock") {
+        this.saveData.soilUnlockCutsceneSeen = true;
+        Storage.save(this.saveData);
+
+        this.camera.shake(14, 0.6);
+        for (let i = 0; i < 60; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          const color = i % 2 === 0 ? "#f59e0b" : "#78350f";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.soil_unlocked") : "SOIL UNLOCKED!", "#f59e0b", 20)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.soil_unlock_title") : "WEAPON UNLOCKED";
+          const tDesc = I18n ? I18n.t("toasts.soil_unlock_desc") : "Soil — The Indestructible Fortress is now available!";
+          this.callbacks.onToast(tTitle, tDesc, "🛡️");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "soil_p10") {
+        this.saveData.soilPhase10CutsceneSeen = true;
+        this.unlockAchievement("soil_ascended");
+        Storage.save(this.saveData);
+
+        this.camera.shake(22, 1.1);
+        for (let i = 0; i < 90; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 280;
+          const color = i % 3 === 0 ? "#fef08a" : (i % 3 === 1 ? "#f59e0b" : "#78350f");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.5, 0.8)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.soil_p10") : "THE INDESTRUCTIBLE FORTRESS!", "#fef08a", 22)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.soil_p10_title") : "INDESTRUCTIBLE FORTRESS";
+          const tDesc = I18n ? I18n.t("toasts.soil_p10_desc") : "Phase 10: Soil — Indestructible Fortress transformation complete!";
+          this.callbacks.onToast(tTitle, tDesc, "🛡️");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "metallic_unlock") {
+        this.saveData.metallicUnlockCutsceneSeen = true;
+        Storage.save(this.saveData);
+
+        this.camera.shake(14, 0.6);
+        for (let i = 0; i < 60; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          const color = i % 2 === 0 ? "#cbd5e1" : "#ffffff";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.metallic_unlocked", { defaultValue: "METALLIC UNLOCKED!" }) : "METALLIC UNLOCKED!", "#cbd5e1", 20)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.metallic_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+          const tDesc = I18n ? I18n.t("toasts.metallic_unlock_desc", { defaultValue: "Metallic — The Forged Will is now available!" }) : "Metallic — The Forged Will is now available!";
+          this.callbacks.onToast(tTitle, tDesc, "⚙️");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "metallic_p10") {
+        this.saveData.metallicPhase10CutsceneSeen = true;
+        this.unlockAchievement("metallic_ascended");
+        Storage.save(this.saveData);
+
+        this.camera.shake(22, 1.1);
+        for (let i = 0; i < 90; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 280;
+          const color = i % 3 === 0 ? "#ffffff" : (i % 3 === 1 ? "#cbd5e1" : "#475569");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.5, 0.8)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.metallic_p10", { defaultValue: "ETERNAL STEEL ASCENDS!" }) : "ETERNAL STEEL ASCENDS!", "#ffffff", 22)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.metallic_p10_title", { defaultValue: "ETERNAL STEEL" }) : "ETERNAL STEEL";
+          const tDesc = I18n ? I18n.t("toasts.metallic_p10_desc", { defaultValue: "Phase 10: Metallic — Eternal Steel forged into perfection!" }) : "Phase 10: Metallic — Eternal Steel forged into perfection!";
+          this.callbacks.onToast(tTitle, tDesc, "⚙️");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "flora_unlock") {
+        this.saveData.floraUnlockCutsceneSeen = true;
+        Storage.save(this.saveData);
+
+        this.camera.shake(14, 0.6);
+        for (let i = 0; i < 60; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          const color = i % 2 === 0 ? "#4ade80" : "#22c55e";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.flora_unlocked", { defaultValue: "FLORA UNLOCKED!" }) : "FLORA UNLOCKED!", "#4ade80", 20)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.flora_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+          const tDesc = I18n ? I18n.t("toasts.flora_unlock_desc", { defaultValue: "Flora — The Evergrowth is now available!" }) : "Flora — The Evergrowth is now available!";
+          this.callbacks.onToast(tTitle, tDesc, "🌿");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "flora_p10") {
+        this.saveData.floraPhase10CutsceneSeen = true;
+        this.unlockAchievement("flora_ascended");
+        Storage.save(this.saveData);
+
+        this.camera.shake(22, 1.1);
+        for (let i = 0; i < 90; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 280;
+          const color = i % 3 === 0 ? "#4ade80" : (i % 3 === 1 ? "#86efac" : "#15803d");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.5, 0.8)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.flora_p10", { defaultValue: "THE EVERGROWTH ASCENDS!" }) : "THE EVERGROWTH ASCENDS!", "#4ade80", 22)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.flora_p10_title", { defaultValue: "THE EVERGROWTH" }) : "THE EVERGROWTH";
+          const tDesc = I18n ? I18n.t("toasts.flora_p10_desc", { defaultValue: "Phase 10: Flora — The Evergrowth blooms across eternity!" }) : "Phase 10: Flora — The Evergrowth blooms across eternity!";
+          this.callbacks.onToast(tTitle, tDesc, "🌿");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "hellfire_unlock") {
+        this.saveData.hellfireUnlockCutsceneSeen = true;
+        Storage.save(this.saveData);
+
+        this.camera.shake(14, 0.6);
+        for (let i = 0; i < 60; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 90 + Math.random() * 200;
+          const color = i % 2 === 0 ? "#ef4444" : "#fbbf24";
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.hellfire_unlocked", { defaultValue: "HELLFIRE UNLOCKED!" }) : "HELLFIRE UNLOCKED!", "#ef4444", 20)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.hellfire_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+          const tDesc = I18n ? I18n.t("toasts.hellfire_unlock_desc", { defaultValue: "Hellfire — The Infernal is now available!" }) : "Hellfire — The Infernal is now available!";
+          this.callbacks.onToast(tTitle, tDesc, "🔥");
+        }
+        return;
+      }
+
+      if (this.cutsceneType === "hellfire_p10") {
+        this.saveData.hellfirePhase10CutsceneSeen = true;
+        this.unlockAchievement("hellfire_ascended");
+        Storage.save(this.saveData);
+
+        this.camera.shake(24, 1.2);
+        for (let i = 0; i < 95; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 300;
+          const color = i % 3 === 0 ? "#ef4444" : (i % 3 === 1 ? "#f97316" : "#fbbf24");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.5, 0.8)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.hellfire_p10", { defaultValue: "THE INFERNAL CONSUMES ALL!" }) : "THE INFERNAL CONSUMES ALL!", "#ef4444", 22)
+        );
+
+        if (this.callbacks.onCutsceneEnd) {
+          this.callbacks.onCutsceneEnd();
+        }
+        if (this.callbacks.onToast) {
+          const tTitle = I18n ? I18n.t("toasts.hellfire_p10_title", { defaultValue: "THE INFERNAL" }) : "THE INFERNAL";
+          const tDesc = I18n ? I18n.t("toasts.hellfire_p10_desc", { defaultValue: "Phase 10: Hellfire — The Infernal consumes everything into ash!" }) : "Phase 10: Hellfire — The Infernal consumes everything into ash!";
+          this.callbacks.onToast(tTitle, tDesc, "🔥");
+        }
+        return;
+      }
+
+      this.saveData.phase17CutsceneSeen = true;
+
+      // Final confirmation of All Devourer badge
+      if (!this.saveData.achievements.includes("all_devourer")) {
+        this.saveData.achievements.push("all_devourer");
+        if (!this.saveData.badges.includes("all_devourer")) {
+          this.saveData.badges.push("all_devourer");
+        }
+      }
+      Storage.save(this.saveData);
+
+      // Apocalyptic Climax Explosion
+      this.camera.shake(18, 0.85);
+      for (let i = 0; i < 85; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 110 + Math.random() * 260;
+        const color = i % 2 === 0 ? "#facc15" : "#38bdf8";
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.5, 0.85)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 45, I18n ? I18n.t("floating.all_devourer") : "THE ALL DEVOURER ASCENDS!", "#facc15", 22)
+      );
+
+      if (this.callbacks.onCutsceneEnd) {
+        this.callbacks.onCutsceneEnd();
+      }
+      if (this.callbacks.onBadgesUpdated) {
+        this.callbacks.onBadgesUpdated(this.saveData.badges);
+      }
+      if (this.callbacks.onToast) {
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const achInfo = I18n ? I18n.getAchievementInfo("all_devourer") : { title: "All Devourer", description: "Marks completion of the final Devourer phase." };
+        const title = I18n ? I18n.t("toasts.achievement_unlocked_title") : "Achievement Unlocked!";
+        this.callbacks.onToast(title, `${achInfo.title}: ${achInfo.description}`, "👑");
+      }
+    }
+
+    checkFirstSessionAchievement() {
+      if (!this.saveData.achievements.includes("getting_started")) {
+        this.saveData.achievements.push("getting_started");
+        if (!this.saveData.badges.includes("getting_started")) {
+          this.saveData.badges.push("getting_started");
+        }
+        Storage.save(this.saveData);
+        if (this.callbacks.onBadgesUpdated) {
+          this.callbacks.onBadgesUpdated(this.saveData.badges);
+        }
+        if (this.callbacks.onToast) {
+          const I18n = window.Killstreak && window.Killstreak.I18n;
+          const achInfo = I18n ? I18n.getAchievementInfo("getting_started") : { title: "Getting Started", description: "Join and begin your journey with Devourer." };
+          const title = I18n ? I18n.t("toasts.achievement_unlocked_title") : "Achievement Unlocked!";
+          this.callbacks.onToast(title, `${achInfo.title}: ${achInfo.description}`, "⚔️");
+        }
+      }
+    }
+
+    unlockAchievement(achId) {
+      const ach = Config.ACHIEVEMENTS.find(a => (a.id === achId || a.badge === achId));
+      if (!ach) return false;
+      let newlyUnlocked = false;
+      if (!this.saveData.achievements.includes(ach.id)) {
+        this.saveData.achievements.push(ach.id);
+        newlyUnlocked = true;
+      }
+      if (!this.saveData.badges.includes(ach.badge)) {
+        this.saveData.badges.push(ach.badge);
+        newlyUnlocked = true;
+      }
+      if (newlyUnlocked) {
+        Storage.save(this.saveData);
+        if (this.callbacks.onBadgesUpdated) {
+          this.callbacks.onBadgesUpdated(this.saveData.badges);
+        }
+        if (this.callbacks.onToast) {
+          const I18n = window.Killstreak && window.Killstreak.I18n;
+          const achInfo = I18n ? I18n.getAchievementInfo(ach.id) : ach;
+          const title = I18n ? I18n.t("toasts.achievement_unlocked_title") : "Achievement Unlocked!";
+          this.callbacks.onToast(title, `${achInfo.title}: ${achInfo.description}`, ach.icon);
+        }
+      }
+      return true;
+    }
+
+    checkAchievements() {
+      const achievements = Config.ACHIEVEMENTS;
+      let newlyUnlocked = false;
+
+      achievements.forEach((ach) => {
+        let qualifies = false;
+        if (ach.id === "getting_started") {
+          qualifies = true;
+        } else if (ach.id === "all_devourer") {
+          qualifies = (this.player.swordId === "devourer" && this.player.phase && this.player.phase.phase === 17) ||
+                      (this.saveData.swordPhase === 17 || (this.saveData.devourerPhase && this.saveData.devourerPhase.phase === 17)) ||
+                      this.saveData.phase17CutsceneSeen ||
+                      (this.player.swordId === "devourer" && this.killstreak >= 75000);
+        } else if (ach.id === "overdrive_ascended") {
+          qualifies = (this.player.swordId === "overdrive" && this.player.phase && this.player.phase.phase === 7) ||
+                      (this.saveData.overdrivePhase === 7 || (this.saveData.overdrivePhase && this.saveData.overdrivePhase.phase === 7)) ||
+                      (this.player.swordId === "overdrive" && this.killstreak >= 25000);
+        } else if (ach.id === "aquatic_ascended") {
+          qualifies = (this.player.swordId === "aquatic" && this.player.phase && this.player.phase.phase === 13) ||
+                      (this.saveData.aquaticPhase === 13 || (this.saveData.aquaticPhase && this.saveData.aquaticPhase.phase === 13)) ||
+                      this.saveData.aquaticPhase13CutsceneSeen ||
+                      (this.player.swordId === "aquatic" && this.killstreak >= 145000);
+        } else if (ach.id === "soil_ascended") {
+          qualifies = (this.player.swordId === "soil" && this.player.phase && this.player.phase.phase === 10) ||
+                      (this.saveData.soilPhase === 10) ||
+                      this.saveData.soilPhase10CutsceneSeen ||
+                      (this.player.swordId === "soil" && this.killstreak >= 160000);
+        } else if (ach.id === "metallic_ascended") {
+          qualifies = (this.player.swordId === "metallic" && this.player.phase && this.player.phase.phase === 10) ||
+                      (this.saveData.metallicPhase === 10) ||
+                      this.saveData.metallicPhase10CutsceneSeen ||
+                      (this.player.swordId === "metallic" && this.killstreak >= 180000);
+        } else if (ach.id === "flora_ascended") {
+          qualifies = (this.player.swordId === "flora" && this.player.phase && this.player.phase.phase === 10) ||
+                      (this.saveData.floraPhase === 10) ||
+                      this.saveData.floraPhase10CutsceneSeen ||
+                      (this.player.swordId === "flora" && this.killstreak >= 200000);
+        } else if (ach.id === "hellfire_ascended") {
+          qualifies = (this.player.swordId === "hellfire" && this.player.phase && this.player.phase.phase === 10) ||
+                      (this.saveData.hellfirePhase === 10) ||
+                      this.saveData.hellfirePhase10CutsceneSeen ||
+                      (this.player.swordId === "hellfire" && this.killstreak >= 225000);
+        } else {
+          qualifies = ach.killsRequired === 0 ||
+            this.killstreak >= ach.killsRequired ||
+            this.saveData.highestKillstreak >= ach.killsRequired ||
+            this.saveData.kills >= ach.killsRequired ||
+            (typeof this.saveData.totalKills === "number" && this.saveData.totalKills >= ach.killsRequired);
+        }
+
+        if (qualifies && !this.saveData.achievements.includes(ach.id)) {
+          this.saveData.achievements.push(ach.id);
+          if (!this.saveData.badges.includes(ach.badge)) {
+            this.saveData.badges.push(ach.badge);
+          }
+          newlyUnlocked = true;
+
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const achInfo = I18n ? I18n.getAchievementInfo(ach.id) : ach;
+            const title = I18n ? I18n.t("toasts.achievement_unlocked_title") : "Achievement Unlocked!";
+            this.callbacks.onToast(title, `${achInfo.title}: ${achInfo.description}`, ach.icon);
+          }
+        }
+      });
+
+      if (newlyUnlocked) {
+        Storage.save(this.saveData);
+        if (this.callbacks.onBadgesUpdated) {
+          this.callbacks.onBadgesUpdated(this.saveData.badges);
+        }
+      }
+    }
+
+    getNearbySwordStand() {
+      if (!this.player) return null;
+      const stands = (this.swordStands || [this.swordStand]).filter(s => s.isPlayerNearby(this.player));
+      if (stands.length === 0) return null;
+      if (stands.length === 1) return stands[0];
+      // When multiple stands are within range, pick the one closest to the player
+      let closest = stands[0];
+      let minDist = Math.hypot(this.player.x - closest.x, this.player.y - closest.y);
+      for (let i = 1; i < stands.length; i++) {
+        const d = Math.hypot(this.player.x - stands[i].x, this.player.y - stands[i].y);
+        if (d < minDist) {
+          minDist = d;
+          closest = stands[i];
+        }
+      }
+      return closest;
+    }
+
+    handleInteraction() {
+      if (this.isCutsceneActive) return;
+      if (this.currentArea === "LOBBY") {
+        const nearbyStand = this.getNearbySwordStand();
+        if (nearbyStand) {
+          if (this.callbacks.onOpenSwordModal) {
+            this.callbacks.onOpenSwordModal(nearbyStand.swordId || "devourer");
+          }
+          return;
+        }
+        if (this.lobbyPortal.isPlayerNearby(this.player)) {
+          this.enterCombatZone();
+          return;
+        }
+      } else if (this.currentArea === "COMBAT") {
+        if (this.combatPortal.isPlayerNearby(this.player)) {
+          this.returnToLobby();
+          return;
+        }
+      }
+    }
+
+    handleAttackInput() {
+      if (this.isGameOver || this.isCutsceneActive) return;
+      this.player.attack();
+    }
+
+    activateGluttony() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "devourer" || this.player.phase.phase < 10) return false;
+      if (this.gluttonyCooldown > 0) return false;
+
+      this.gluttonyCooldown = 10.0;
+      const baseDmg = this.player.damage || this.player.phase.damage;
+      const phaseBonus = Math.max(0, this.player.phase.phase - 10) * 0.1;
+      const damage = Math.round(baseDmg * (1.5 + phaseBonus));
+
+      const beamLength = 420;
+      const beamHalfWidth = 24;
+      const angle = this.player.angle;
+      const x1 = this.player.x;
+      const y1 = this.player.y;
+      const x2 = x1 + Math.cos(angle) * beamLength;
+      const y2 = y1 + Math.sin(angle) * beamLength;
+
+      this.activeBeam = {
+        x1, y1, x2, y2,
+        timer: 0.32,
+        color: this.player.phase.color
+      };
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(8, 0.25);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 36, I18n ? I18n.t("floating.gluttony") : "GLUTTONY!", "#38bdf8", 18)
+      );
+
+      // Hit all NPCs in beam trajectory
+      for (let i = this.npcs.length - 1; i >= 0; i--) {
+        const npc = this.npcs[i];
+        const isHit = this.checkLineCircleCollision(x1, y1, x2, y2, npc.x, npc.y, npc.radius + beamHalfWidth);
+        if (isHit) {
+          this.player.timeSinceCombat = 0;
+          npc.takeDamage(damage, angle, 220);
+
+          if (this.saveData.settings.damageNumbers) {
+            this.floatingTexts.push(
+              new FloatingText(npc.x, npc.y - 14, `-${damage}`, "#38bdf8", 16)
+            );
+          }
+
+          for (let p = 0; p < 8; p++) {
+            const pAngle = angle + (Math.random() - 0.5) * 1.5;
+            const pSpeed = 80 + Math.random() * 120;
+            this.particles.push(
+              new Particle(npc.x, npc.y, Math.cos(pAngle) * pSpeed, Math.sin(pAngle) * pSpeed, "#38bdf8", 3.8, 0.4)
+            );
+          }
+
+          if (npc.hp <= 0) {
+            this.handleNpcDeath(npc);
+          }
+        }
+      }
+
+      return true;
+    }
+
+    activateEngulf() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "devourer" || this.player.phase.phase < 17) return false;
+      if (this.engulfCooldown > 0) return false;
+
+      this.engulfCooldown = 45.0;
+      this.isEngulfActive = true;
+      this.player.isEngulfActive = true;
+      this.engulfTimer = 3.0;
+      this.engulfTickTimer = 0;
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(14, 0.45);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 40, I18n ? I18n.t("floating.engulf") : "ENGULF!", "#facc15", 22)
+      );
+
+      for (let p = 0; p < 35; p++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 100 + Math.random() * 200;
+        const color = p % 2 === 0 ? "#facc15" : "#7c3aed";
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+        );
+      }
+
+      return true;
+    }
+
+    activateTsunami() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "aquatic" || this.player.phase.phase < 9) return false;
+      if (this.tsunamiCooldown > 0) return false;
+
+      this.tsunamiCooldown = 12.0;
+      const angle = this.player.angle;
+      const pNum = this.player.phase.phase;
+      const damage = Math.round(this.player.damage * 4);
+
+      const startDist = this.player.radius + 15;
+      const waveX = this.player.x + Math.cos(angle) * startDist;
+      const waveY = this.player.y + Math.sin(angle) * startDist;
+
+      this.activeTsunamis.push(new TsunamiWave(waveX, waveY, angle, damage, pNum));
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(pNum >= 12 ? 14 : 9, 0.3);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 36, I18n ? I18n.t("floating.tsunami") : "TSUNAMI!", "#06b6d4", 19)
+      );
+
+      for (let i = 0; i < 22; i++) {
+        const pAngle = angle + (Math.random() - 0.5) * 1.2;
+        const speed = 90 + Math.random() * 160;
+        const pColor = i % 2 === 0 ? "#06b6d4" : "#ffffff";
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(pAngle) * speed, Math.sin(pAngle) * speed, pColor, 3.8, 0.45)
+        );
+      }
+
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          phase: this.player.phase.phase
+        });
+      }
+      return true;
+    }
+
+    activateFortitude() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "soil" || this.player.phase.phase < 4) return false;
+      if (this.fortitudeCooldown > 0) return false;
+
+      this.fortitudeCooldown = 20.0;
+      const shieldAmount = Math.max(1, Math.round(this.player.hp * 0.15));
+      this.player.shield = shieldAmount;
+      this.player.maxShield = shieldAmount;
+      this.player.shieldDuration = 5.0;
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(7, 0.25);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 36, I18n ? I18n.t("floating.fortitude") : "FORTITUDE!", "#f59e0b", 19)
+      );
+
+      for (let i = 0; i < 24; i++) {
+        const pAngle = Math.random() * Math.PI * 2;
+        const speed = 70 + Math.random() * 150;
+        const pColor = i % 2 === 0 ? "#f59e0b" : "#78350f";
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(pAngle) * speed, Math.sin(pAngle) * speed, pColor, 4.0, 0.5)
+        );
+      }
+
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      return true;
+    }
+
+    activateIronWill() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "metallic" || this.player.phase.phase < 4) return false;
+      if (this.ironWillCooldown > 0) return false;
+
+      this.ironWillCooldown = 17.0;
+      this.player.ironWillActive = true;
+      this.player.ironWillTimer = 6.9;
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(8, 0.3);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 36, I18n ? I18n.t("floating.iron_will", { defaultValue: "IRON WILL!" }) : "IRON WILL!", "#f8fafc", 19)
+      );
+
+      for (let i = 0; i < 26; i++) {
+        const pAngle = Math.random() * Math.PI * 2;
+        const speed = 80 + Math.random() * 160;
+        const pColor = i % 2 === 0 ? "#ffffff" : "#cbd5e1";
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(pAngle) * speed, Math.sin(pAngle) * speed, pColor, 4.0, 0.5)
+        );
+      }
+
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: true,
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      return true;
+    }
+
+    activateWorldroot() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "flora" || this.player.phase.phase < 4) return false;
+      if (this.worldrootCooldown > 0) return false;
+
+      this.worldrootCooldown = 19.0;
+      const rootRadius = 250;
+
+      // Root all enemies within radius for 2.9s and deal 0.58x damage (15% enhanced)
+      const rootDamage = Math.max(1, Math.round(this.player.damage * 0.58));
+      for (let i = this.npcs.length - 1; i >= 0; i--) {
+        const npc = this.npcs[i];
+        if (npc.isDead || npc.hp <= 0) continue;
+        const d = Math.hypot(npc.x - this.player.x, npc.y - this.player.y);
+        if (d <= rootRadius) {
+          npc.rootTimer = 2.9;
+          npc.takeDamage(rootDamage, Math.atan2(npc.y - this.player.y, npc.x - this.player.x), 50);
+          if (this.saveData && this.saveData.settings && this.saveData.settings.damageNumbers) {
+            this.floatingTexts.push(
+              new FloatingText(npc.x, npc.y - 14, `-${rootDamage}`, "#22c55e", 17)
+            );
+          }
+          if (npc.hp <= 0 && !npc.isDead) {
+            this.handleNpcDeath(npc);
+          }
+        }
+      }
+
+      // Heal player 23% max HP over 4s (15% enhanced)
+      this.player.worldrootHealTimer = 4.0;
+      this.player.worldrootHealRate = (this.player.maxHp * 0.23) / 4.0;
+
+      this.activeWorldroots.push({
+        x: this.player.x,
+        y: this.player.y,
+        radius: rootRadius,
+        timer: 1.2,
+        maxTimer: 1.2
+      });
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(9, 0.35);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 36, I18n ? I18n.t("floating.worldroot", { defaultValue: "WORLDROOT!" }) : "WORLDROOT!", "#4ade80", 19)
+      );
+
+      for (let i = 0; i < 28; i++) {
+        const pAngle = Math.random() * Math.PI * 2;
+        const speed = 90 + Math.random() * 180;
+        const pColor = i % 2 === 0 ? "#4ade80" : "#15803d";
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(pAngle) * speed, Math.sin(pAngle) * speed, pColor, 4.2, 0.55)
+        );
+      }
+
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      return true;
+    }
+
+    activateCataclysm() {
+      if (this.state !== "COMBAT" || this.isGameOver || this.isCutsceneActive) return false;
+      if (!this.player || !this.player.isSwordEquipped || this.player.swordId !== "hellfire" || this.player.phase.phase < 4) return false;
+      if (this.cataclysmCooldown > 0) return false;
+
+      this.cataclysmCooldown = 15.3;
+      const blastRadius = 290;
+      const blastDamage = Math.round(this.player.damage * 5.75);
+
+      // Eruption AoE dealing 5.75x weapon damage (15% enhanced)
+      for (let i = this.npcs.length - 1; i >= 0; i--) {
+        const npc = this.npcs[i];
+        if (npc.isDead || npc.hp <= 0) continue;
+        const d = Math.hypot(npc.x - this.player.x, npc.y - this.player.y);
+        if (d <= blastRadius) {
+          const knockAngle = Math.atan2(npc.y - this.player.y, npc.x - this.player.x);
+          npc.takeDamage(blastDamage, knockAngle, 320);
+          if (this.saveData && this.saveData.settings && this.saveData.settings.damageNumbers) {
+            this.floatingTexts.push(
+              new FloatingText(npc.x, npc.y - 16, `-${blastDamage}`, "#ef4444", 19)
+            );
+          }
+          if (npc.hp <= 0 && !npc.isDead) {
+            this.handleNpcDeath(npc);
+          }
+        }
+      }
+
+      this.activeCataclysms.push({
+        x: this.player.x,
+        y: this.player.y,
+        radius: blastRadius,
+        timer: 0.8,
+        maxTimer: 0.8
+      });
+
+      if (this.saveData.settings.screenShake) {
+        this.camera.shake(16, 0.45);
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      this.floatingTexts.push(
+        new FloatingText(this.player.x, this.player.y - 36, I18n ? I18n.t("floating.cataclysm", { defaultValue: "CATACLYSM!" }) : "CATACLYSM!", "#ef4444", 21)
+      );
+
+      for (let i = 0; i < 35; i++) {
+        const pAngle = Math.random() * Math.PI * 2;
+        const speed = 120 + Math.random() * 240;
+        const pColor = i % 3 === 0 ? "#ef4444" : (i % 3 === 1 ? "#f97316" : "#fbbf24");
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(pAngle) * speed, Math.sin(pAngle) * speed, pColor, 5.0, 0.6)
+        );
+      }
+
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      return true;
+    }
+
+    drawGluttonyBeam(ctx) {
+      if (!this.activeBeam) return;
+      const b = this.activeBeam;
+      const progress = Math.max(0, b.timer / 0.32);
+      const alpha = Math.min(1, progress * 1.5);
+
+      ctx.save();
+      // Outer ethereal blast
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.4})`;
+      ctx.lineWidth = 50;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(b.x1, b.y1);
+      ctx.lineTo(b.x2, b.y2);
+      ctx.stroke();
+
+      // Main beam
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.85})`;
+      ctx.lineWidth = 32;
+      ctx.stroke();
+
+      // Secondary core
+      ctx.strokeStyle = `rgba(224, 242, 254, ${alpha * 0.95})`;
+      ctx.lineWidth = 18;
+      ctx.stroke();
+
+      // Inner brilliant white core
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      // Forward beam impact ring at tip
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
+      ctx.beginPath();
+      ctx.arc(b.x2, b.y2, 20 * progress, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    checkLineCircleCollision(x1, y1, x2, y2, cx, cy, r) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const lenSq = dx * dx + dy * dy;
+
+      if (lenSq === 0) return Math.hypot(cx - x1, cy - y1) <= r;
+
+      let t = ((cx - x1) * dx + (cy - y1) * dy) / lenSq;
+      t = Math.max(0, Math.min(1, t));
+
+      const nearestX = x1 + t * dx;
+      const nearestY = y1 + t * dy;
+      return Math.hypot(cx - nearestX, cy - nearestY) <= r;
+    }
+
+    update(dt) {
+      if (this.state === "MENU" || this.isGameOver || this.isPaused) return;
+
+      // Accumulate Active Playtime & Periodic Save
+      this.saveData.playTime = (this.saveData.playTime || 0) + dt;
+      this.statsSaveTimer = (this.statsSaveTimer || 0) + dt;
+      if (this.statsSaveTimer >= 5.0) {
+        this.statsSaveTimer = 0;
+        Storage.save(this.saveData);
+      }
+
+      // Update Skill Cooldowns
+      if (this.gluttonyCooldown > 0) {
+        this.gluttonyCooldown = Math.max(0, this.gluttonyCooldown - dt);
+      }
+      if (this.engulfCooldown > 0) {
+        this.engulfCooldown = Math.max(0, this.engulfCooldown - dt);
+      }
+      if (this.activeBeam) {
+        this.activeBeam.timer -= dt;
+        if (this.activeBeam.timer <= 0) {
+          this.activeBeam = null;
+        }
+      }
+
+      if (this.isCutsceneActive) {
+        this.cutsceneTimer += dt;
+        // Inward cosmic energy vortex towards player
+        if (Math.random() < 0.35) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 120 + Math.random() * 80;
+          const px = this.player.x + Math.cos(angle) * dist;
+          const py = this.player.y + Math.sin(angle) * dist;
+          const vx = -Math.cos(angle) * 140;
+          const vy = -Math.sin(angle) * 140;
+          this.particles.push(new Particle(px, py, vx, vy, "#facc15", 3.5, 0.6));
+        }
+
+        const activeMap = Config.MAPS[this.currentArea];
+        this.camera.follow(this.player.x, this.player.y, activeMap.width, activeMap.height, dt);
+
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          this.particles[i].update(dt);
+          if (this.particles[i].lifetime <= 0) {
+            this.particles.splice(i, 1);
+          }
+        }
+        for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+          this.floatingTexts[i].update(dt);
+          if (this.floatingTexts[i].lifetime <= 0) {
+            this.floatingTexts.splice(i, 1);
+          }
+        }
+        return;
+      }
+
+      const activeMap = Config.MAPS[this.currentArea];
+      const worldMouse = this.camera.screenToWorld(this.input.screenMouseX, this.input.screenMouseY);
+
+      this.player.update(dt, this.input, activeMap, worldMouse, this.currentArea === "COMBAT" ? this.npcs : []);
+      this.camera.follow(this.player.x, this.player.y, activeMap.width, activeMap.height, dt);
+
+      let prompt = null;
+
+      if (this.currentArea === "LOBBY") {
+        (this.swordStands || [this.swordStand]).forEach(s => s.update(dt));
+        this.lobbyPortal.update(dt);
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const nearbyStand = this.getNearbySwordStand();
+        if (nearbyStand) {
+          const sInfo = I18n ? I18n.getSwordInfo(nearbyStand.swordId) : null;
+          const sName = sInfo ? sInfo.name : (nearbyStand.swordId === "soil" ? "Soil" : (nearbyStand.swordId === "aquatic" ? "Aquatic" : (nearbyStand.swordId === "overdrive" ? "Overdrive" : "Devourer")));
+          prompt = I18n ? I18n.t("prompts.inspect", { sword: sName }) : `Inspect ${sName} [E]`;
+        } else if (this.lobbyPortal.isPlayerNearby(this.player)) {
+          prompt = I18n ? I18n.t("prompts.enter_grassland") : "Enter Grassland [E]";
+          if (Math.hypot(this.player.x - this.lobbyPortal.x, this.player.y - this.lobbyPortal.y) < 30) {
+            this.enterCombatZone();
+            return;
+          }
+        }
+      } else if (this.currentArea === "COMBAT") {
+        this.combatPortal.update(dt);
+
+        if (this.combatPortal.isPlayerNearby(this.player)) {
+          const I18n = window.Killstreak && window.Killstreak.I18n;
+          prompt = I18n ? I18n.t("prompts.return_to_lobby") : "Return to Lobby [E]";
+          if (Math.hypot(this.player.x - this.combatPortal.x, this.player.y - this.combatPortal.y) < 30) {
+            this.returnToLobby();
+            return;
+          }
+        }
+
+        // Engulf Active AoE Tick Processing
+        if (this.isEngulfActive) {
+          this.engulfTimer -= dt;
+          this.player.isEngulfActive = true;
+          this.engulfTickTimer += dt;
+          const tickInterval = 0.25;
+          if (this.engulfTickTimer >= tickInterval) {
+            this.engulfTickTimer -= tickInterval;
+            const tickDamage = Math.round((5 * (this.player.damage || this.player.phase.damage)) * tickInterval);
+            const engulfRadius = 240;
+
+            for (let i = this.npcs.length - 1; i >= 0; i--) {
+              const npc = this.npcs[i];
+              const dist = Math.hypot(npc.x - this.player.x, npc.y - this.player.y);
+              if (dist <= engulfRadius + npc.radius) {
+                const hitAngle = Math.atan2(npc.y - this.player.y, npc.x - this.player.x);
+                this.player.timeSinceCombat = 0;
+                npc.takeDamage(tickDamage, hitAngle, 50);
+
+                if (this.saveData.settings.damageNumbers) {
+                  this.floatingTexts.push(
+                    new FloatingText(npc.x, npc.y - 14, `-${tickDamage}`, "#facc15", 15)
+                  );
+                }
+
+                if (Math.random() < 0.45) {
+                  this.particles.push(
+                    new Particle(npc.x, npc.y, -Math.cos(hitAngle) * 70, -Math.sin(hitAngle) * 70, "#facc15", 3.2, 0.3)
+                  );
+                }
+
+                if (npc.hp <= 0) {
+                  this.handleNpcDeath(npc);
+                }
+              }
+            }
+
+            if (this.saveData.settings.screenShake) {
+              this.camera.shake(3, 0.1);
+            }
+          }
+
+          if (this.engulfTimer <= 0) {
+            this.isEngulfActive = false;
+            this.player.isEngulfActive = false;
+          }
+        } else {
+          this.player.isEngulfActive = false;
+        }
+
+        // Sword Combat Hit Detection (Multi-Layer Arc Sector & Swept Capsule Detection)
+        if (this.player.isAttacking && this.player.isSwordEquipped) {
+          const swordGeom = this.player.getSwordGeometry();
+          const bladeLength = this.player.phase.bladeLength || 40;
+          const bladeWidth = this.player.phase.bladeWidth || 10;
+          const arcAngle = this.player.phase.arcAngle || (Math.PI * 1.2);
+          const maxReach = this.player.radius + bladeLength + 10;
+
+          for (let i = this.npcs.length - 1; i >= 0; i--) {
+            const npc = this.npcs[i];
+            if (npc.isDead) continue;
+            if (npc.hp <= 0) {
+              this.handleNpcDeath(npc);
+              continue;
+            }
+            if (this.player.hitEnemiesThisSwing.has(npc)) continue;
+
+            const dx = npc.x - this.player.x;
+            const dy = npc.y - this.player.y;
+            const dist = Math.hypot(dx, dy);
+
+            let isHit = false;
+
+            // Layer 1: Line-circle check from player center to sword tip with blade width buffer
+            if (this.checkLineCircleCollision(
+              this.player.x,
+              this.player.y,
+              swordGeom.tipX,
+              swordGeom.tipY,
+              npc.x,
+              npc.y,
+              npc.radius + bladeWidth / 2 + 4
+            )) {
+              isHit = true;
+            }
+
+            // Layer 2: Point-blank contact hit (enemy touching or in immediate contact with player's front)
+            if (!isHit && dist <= this.player.radius + npc.radius + 16) {
+              const angleToNpc = Math.atan2(dy, dx);
+              const angleDiff = Math.atan2(Math.sin(angleToNpc - this.player.angle), Math.cos(angleToNpc - this.player.angle));
+              if (Math.abs(angleDiff) <= Math.PI * 0.55) {
+                isHit = true;
+              }
+            }
+
+            // Layer 3: Swept arc sector hit (prevents fast frame jumps skipping enemies in the swing cone)
+            if (!isHit && dist <= maxReach + npc.radius) {
+              const angleToNpc = Math.atan2(dy, dx);
+              const angleDiff = Math.atan2(Math.sin(angleToNpc - this.player.angle), Math.cos(angleToNpc - this.player.angle));
+              const angularSpan = Math.asin(Math.min(0.95, npc.radius / Math.max(1, dist)));
+              const halfArc = arcAngle / 2 + angularSpan + 0.12;
+
+              if (Math.abs(angleDiff) <= halfArc && this.player.attackProgress > 0.05) {
+                const currentOffset = (this.player.attackProgress - 0.5) * arcAngle;
+                const minSweptOffset = -arcAngle / 2 - angularSpan - 0.15;
+                const maxSweptOffset = currentOffset + angularSpan + 0.15;
+
+                if (angleDiff >= minSweptOffset && angleDiff <= maxSweptOffset) {
+                  isHit = true;
+                }
+              }
+            }
+
+            if (isHit) {
+              this.player.hitEnemiesThisSwing.add(npc);
+              this.player.timeSinceCombat = 0; // Player engaged in combat
+
+              const hitAngle = Math.atan2(npc.y - this.player.y, npc.x - this.player.x);
+              const damage = this.player.damage || this.player.phase.damage;
+              
+              // Only attacked NPC takes damage & activates!
+              npc.takeDamage(damage, hitAngle, 180);
+
+              if (this.saveData.settings.damageNumbers) {
+                this.floatingTexts.push(
+                  new FloatingText(npc.x, npc.y - 12, `-${damage}`, this.player.phase.color, 14)
+                );
+              }
+
+              if (this.saveData.settings.screenShake) {
+                this.camera.shake(3, 0.1);
+              }
+
+              for (let p = 0; p < 7; p++) {
+                const pAngle = hitAngle + (Math.random() - 0.5) * 1.2;
+                const pSpeed = 50 + Math.random() * 90;
+                this.particles.push(
+                  new Particle(npc.x, npc.y, Math.cos(pAngle) * pSpeed, Math.sin(pAngle) * pSpeed, this.player.phase.color, 3.5, 0.3)
+                );
+              }
+
+              if (npc.hp <= 0 && !npc.isDead) {
+                this.handleNpcDeath(npc);
+              }
+            }
+          }
+        }
+
+        // Reaper sweep: Ensure any NPC whose HP reached <= 0 is cleanly handled
+        for (let i = this.npcs.length - 1; i >= 0; i--) {
+          const npc = this.npcs[i];
+          if (!npc.isDead && npc.hp <= 0) {
+            this.handleNpcDeath(npc);
+          }
+        }
+
+        // Update NPCs
+        for (let i = this.npcs.length - 1; i >= 0; i--) {
+          this.npcs[i].update(dt, this.player, this.npcs, activeMap);
+        }
+
+        // Mutual physical collision separation & shoving (player can shove living NPCs)
+        const isPlayerWalking = Boolean(this.input.up || this.input.down || this.input.left || this.input.right);
+        for (let npc of this.npcs) {
+          if (npc.isDead || npc.hp <= 0) continue;
+          const pDist = Math.hypot(this.player.x - npc.x, this.player.y - npc.y);
+          const minSep = this.player.radius + npc.radius;
+          const attackReach = (npc.attackRange || (npc.radius + 14)) + this.player.radius;
+
+          // If hostile NPC is in contact reach during collision or shoving, deal damage!
+          if (npc.isHostile && pDist <= attackReach && npc.attackCooldown <= 0 && this.player.hp > 0) {
+            this.player.takeDamage(npc.damage, npc);
+            npc.attackCooldown = npc.attackRate;
+          }
+
+          if (pDist < minSep && pDist > 0.0001) {
+            const overlap = minSep - pDist;
+            const pAngle = Math.atan2(this.player.y - npc.y, this.player.x - npc.x);
+            const shoveRatio = typeof npc.getShoveRatio === "function" ? npc.getShoveRatio() : 0.70;
+
+            if (isPlayerWalking) {
+              this.player.x += Math.cos(pAngle) * (overlap * (1 - shoveRatio));
+              this.player.y += Math.sin(pAngle) * (overlap * (1 - shoveRatio));
+              npc.x -= Math.cos(pAngle) * (overlap * shoveRatio);
+              npc.y -= Math.sin(pAngle) * (overlap * shoveRatio);
+            } else {
+              this.player.x += Math.cos(pAngle) * (overlap * 0.4);
+              this.player.y += Math.sin(pAngle) * (overlap * 0.4);
+              npc.x -= Math.cos(pAngle) * (overlap * 0.6);
+              npc.y -= Math.sin(pAngle) * (overlap * 0.6);
+            }
+          }
+        }
+
+        // Check Player Death
+        if (this.player.hp <= 0) {
+          this.handlePlayerDeath();
+        }
+
+        // 6-Second Slot Respawn System per Zone
+        for (let i = this.respawnQueue.length - 1; i >= 0; i--) {
+          const item = this.respawnQueue[i];
+          item.timer -= dt;
+
+          if (item.timer <= 0) {
+            // Check if slot is occupied
+            const slotOccupied = this.npcs.some(n => n.zoneIndex === item.zoneIndex && n.slotIndex === item.slotIndex);
+            if (!slotOccupied) {
+              this.spawnNpcInSlot(item.zoneIndex, item.slotIndex, item.type);
+            }
+            this.respawnQueue.splice(i, 1);
+          }
+        }
+      }
+
+      if (prompt !== this.activePrompt) {
+        this.activePrompt = prompt;
+        if (this.callbacks.onPrompt) {
+          this.callbacks.onPrompt(Boolean(prompt), prompt);
+        }
+      }
+
+      // Update Tsunami Skill Cooldown & Projectiles
+      if (this.tsunamiCooldown > 0) {
+        this.tsunamiCooldown -= dt;
+      }
+      for (let i = this.activeTsunamis.length - 1; i >= 0; i--) {
+        const tsunami = this.activeTsunamis[i];
+        tsunami.update(dt, this);
+        if (tsunami.isDead) {
+          this.activeTsunamis.splice(i, 1);
+        }
+      }
+
+      // Update Fortitude Skill Cooldown
+      if (this.fortitudeCooldown > 0) {
+        this.fortitudeCooldown -= dt;
+      }
+
+      // Update Metallic Iron Will Skill Cooldown
+      if (this.ironWillCooldown > 0) {
+        this.ironWillCooldown -= dt;
+      }
+
+      // Update Flora Worldroot Skill Cooldown, Heal & Active Effects
+      if (this.worldrootCooldown > 0) {
+        this.worldrootCooldown -= dt;
+      }
+      if (this.player && this.player.worldrootHealTimer > 0) {
+        this.player.worldrootHealTimer -= dt;
+        const heal = (this.player.worldrootHealRate || 0) * dt;
+        this.player.hp = Math.min(this.player.maxHp, this.player.hp + heal);
+      }
+      for (let i = this.activeWorldroots.length - 1; i >= 0; i--) {
+        this.activeWorldroots[i].timer -= dt;
+        if (this.activeWorldroots[i].timer <= 0) {
+          this.activeWorldroots.splice(i, 1);
+        }
+      }
+
+      // Update Hellfire Cataclysm Skill Cooldown & Active Effects
+      if (this.cataclysmCooldown > 0) {
+        this.cataclysmCooldown -= dt;
+      }
+      for (let i = this.activeCataclysms.length - 1; i >= 0; i--) {
+        this.activeCataclysms[i].timer -= dt;
+        if (this.activeCataclysms[i].timer <= 0) {
+          this.activeCataclysms.splice(i, 1);
+        }
+      }
+
+      // Update Particles
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        this.particles[i].update(dt);
+        if (this.particles[i].lifetime <= 0) {
+          this.particles.splice(i, 1);
+        }
+      }
+
+      // Update Floating Texts
+      for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+        this.floatingTexts[i].update(dt);
+        if (this.floatingTexts[i].lifetime <= 0) {
+          this.floatingTexts.splice(i, 1);
+        }
+      }
+
+      // Notify HUD of Skill Cooldowns & Equipment
+      if (this.callbacks.onSkillsUpdate) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+
+      // Update Navigation & Minimap System
+      if (window.Killstreak && window.Killstreak.MapSystem) {
+        window.Killstreak.MapSystem.update(dt);
+      }
+
+      // Update Bloodmoon Event
+      this.updateBloodmoon(dt);
+    }
+
+    /**
+     * Bloodmoon Event System
+     * - 2% chance to trigger every 1 minute (only when not active)
+     * - Duration: 15 minutes (900 seconds)
+     * - Effects: +25% HP/Speed/Damage on all active NPCs, screen tint, map tint
+     * - Notification: banner appears at event start for ~5 seconds then hides
+     */
+    updateBloodmoon(dt) {
+      const bm = this.bloodmoon;
+      const isInCombat = this.currentArea === "COMBAT" && !this.isGameOver;
+
+      if (bm.isActive) {
+        // --- BLOODMOON IS ACTIVE ---
+        bm.activeTimer += dt;
+        const DURATION = (Config.GAME_CONFIG && Config.GAME_CONFIG.bloodmoon && Config.GAME_CONFIG.bloodmoon.duration) || 300; // 5 minutes in seconds
+
+        if (bm.activeTimer >= DURATION) {
+          // End Bloodmoon
+          this.endBloodmoon();
+          return;
+        }
+
+        // Apply NPC stat boosts if not yet applied (or if new NPCs spawned)
+        if (isInCombat) {
+          this.applyBloodmoonNpcBoosts();
+        }
+
+      } else {
+        // --- BLOODMOON NOT ACTIVE: Check every 60s (10% chance per 1 minute) ---
+        bm.checkTimer += dt;
+        const CHECK_INTERVAL = (Config.GAME_CONFIG && Config.GAME_CONFIG.bloodmoon && Config.GAME_CONFIG.bloodmoon.checkInterval) || 60; // 1 minute
+        const CHANCE = (Config.GAME_CONFIG && Config.GAME_CONFIG.bloodmoon && Config.GAME_CONFIG.bloodmoon.chance) || 0.10; // 10% chance
+
+        if (bm.checkTimer >= CHECK_INTERVAL) {
+          bm.checkTimer = 0;
+          const roll = Math.random();
+          if (roll < CHANCE) {
+            // 10% chance — trigger!
+            this.startBloodmoon();
+          }
+        }
+      }
+
+      // --- BANNER ANIMATION STATE MACHINE ---
+      const banner = document.getElementById("bloodmoon-banner");
+      if (!banner) return;
+
+      if (bm.bannerPhase === "entering") {
+        bm.bannerTimer -= dt;
+        if (bm.bannerTimer <= 0) {
+          // Transition to "visible" hold
+          bm.bannerPhase = "visible";
+          bm.bannerTimer = 4.0; // Hold for 4s
+          banner.classList.remove("bloodmoon-banner-entering");
+          banner.classList.add("bloodmoon-banner-visible");
+        }
+      } else if (bm.bannerPhase === "visible") {
+        bm.bannerTimer -= dt;
+        if (bm.bannerTimer <= 0) {
+          // Transition to exit animation
+          bm.bannerPhase = "exiting";
+          bm.bannerTimer = 0.5;
+          banner.classList.remove("bloodmoon-banner-visible");
+          banner.classList.add("bloodmoon-banner-exiting");
+        }
+      } else if (bm.bannerPhase === "exiting") {
+        bm.bannerTimer -= dt;
+        if (bm.bannerTimer <= 0) {
+          // Hide completely
+          bm.bannerPhase = "hidden";
+          banner.classList.add("hidden");
+          banner.classList.remove("bloodmoon-banner-exiting");
+        }
+      }
+    }
+
+    startBloodmoon() {
+      const bm = this.bloodmoon;
+      bm.isActive = true;
+      bm.activeTimer = 0;
+      bm.checkTimer = 0;
+      bm.npcStatsApplied = false;
+
+      // Immediately apply NPC boosts if in combat
+      if (this.currentArea === "COMBAT") {
+        this.applyBloodmoonNpcBoosts();
+      }
+
+      // Show screen tint
+      const tint = document.getElementById("bloodmoon-tint");
+      if (tint) tint.classList.remove("hidden");
+
+      // Show notification banner
+      this.showBloodmoonBanner();
+    }
+
+    endBloodmoon() {
+      const bm = this.bloodmoon;
+      bm.isActive = false;
+      bm.activeTimer = 0;
+      bm.checkTimer = 0; // Reset 1-min check after event ends
+      bm.bannerPhase = "hidden";
+
+      // Restore NPC stats
+      this.restoreBloodmoonNpcStats();
+
+      // Hide screen tint
+      const tint = document.getElementById("bloodmoon-tint");
+      if (tint) tint.classList.add("hidden");
+
+      // Hide banner immediately
+      const banner = document.getElementById("bloodmoon-banner");
+      if (banner) {
+        banner.classList.add("hidden");
+        banner.classList.remove("bloodmoon-banner-entering", "bloodmoon-banner-visible", "bloodmoon-banner-exiting");
+      }
+    }
+
+    summonEvent(name = "bloodmoon") {
+      if (name === "bloodmoon") {
+        if (this.bloodmoon.isActive) {
+          this.endBloodmoon();
+          return false;
+        } else {
+          this.startBloodmoon();
+          if (this.player) {
+            this.floatingTexts.push(
+              new FloatingText(this.player.x, this.player.y - 48, "BLOODMOON SUMMONED!", "#ef4444", 22)
+            );
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+
+    showBloodmoonBanner() {
+      const bm = this.bloodmoon;
+      const banner = document.getElementById("bloodmoon-banner");
+      if (!banner) return;
+
+      // Update banner text via I18n if available
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      const labelEl = document.getElementById("bloodmoon-label-text");
+      const subEl = document.getElementById("bloodmoon-sublabel-text");
+      if (I18n) {
+        if (labelEl) labelEl.textContent = I18n.t("bloodmoon.title") || "BLOODMOON";
+        if (subEl) subEl.textContent = I18n.t("bloodmoon.subtitle") || "The crimson moon rises — darkness descends upon the grassland!";
+      }
+
+      banner.classList.remove("hidden", "bloodmoon-banner-visible", "bloodmoon-banner-exiting");
+      banner.classList.add("bloodmoon-banner-entering");
+      bm.bannerPhase = "entering";
+      bm.bannerTimer = 0.55; // Duration of enter animation
+    }
+
+    applyBloodmoonNpcBoosts() {
+      for (const npc of this.npcs) {
+        if (npc.isDead) continue;
+        if (!npc._bloodmoonBoosted) {
+          // Store original base values before boosting
+          npc._baseMaxHp    = npc.configObj.maxHp    || npc.maxHp;
+          npc._baseDamage   = npc.configObj.damage    || npc.damage;
+          npc._baseSpeed    = npc.configObj.speed     || npc.speed;
+
+          const hpBoost  = npc._baseMaxHp  * 0.25;
+          const newMaxHp = npc._baseMaxHp  + hpBoost;
+
+          // Scale current HP proportionally
+          const hpRatio  = npc.maxHp > 0 ? (npc.hp / npc.maxHp) : 1;
+          npc.maxHp  = newMaxHp;
+          npc.hp     = Math.min(newMaxHp, newMaxHp * hpRatio);
+          npc.damage = (npc._baseDamage) * 1.25;
+          npc.speed  = (npc._baseSpeed)  * 1.25;
+          npc._bloodmoonBoosted = true;
+        }
+      }
+    }
+
+    restoreBloodmoonNpcStats() {
+      for (const npc of this.npcs) {
+        if (npc._bloodmoonBoosted) {
+          const hpRatio = npc.maxHp > 0 ? (npc.hp / npc.maxHp) : 1;
+          npc.maxHp  = npc._baseMaxHp;
+          npc.hp     = Math.min(npc._baseMaxHp, npc._baseMaxHp * hpRatio);
+          npc.damage = npc._baseDamage;
+          npc.speed  = npc._baseSpeed;
+          npc._bloodmoonBoosted = false;
+          delete npc._baseMaxHp;
+          delete npc._baseDamage;
+          delete npc._baseSpeed;
+        }
+      }
+    }
+
+    handleNpcDeath(npc) {
+      if (npc.isDead) return;
+      npc.isDead = true;
+
+      const idx = this.npcs.indexOf(npc);
+      if (idx !== -1) {
+        this.npcs.splice(idx, 1);
+      }
+
+      const zone = Config.MAPS.COMBAT.npcZones[npc.zoneIndex];
+      const respawnDelay = (zone && zone.respawnDelay) || Config.MAPS.COMBAT.respawnDelay || 6.0;
+
+      // Queue respawn back into its exact formation slot
+      this.respawnQueue.push({
+        zoneIndex: npc.zoneIndex,
+        slotIndex: npc.slotIndex,
+        type: npc.type,
+        timer: respawnDelay
+      });
+
+      let particleColor = "#ef4444";
+      let count = 16;
+      if (npc.type === "fairy") { particleColor = "#38bdf8"; count = 24; }
+      else if (npc.type === "guard") { particleColor = "#f8fafc"; count = 28; }
+      else if (npc.type === "thug") { particleColor = "#f59e0b"; count = 20; }
+      else if (npc.type === "swordman") { particleColor = "#3b82f6"; count = 28; }
+      else if (npc.type === "buff_man") { particleColor = "#d97706"; count = 35; }
+      else if (npc.type === "elf") { particleColor = "#10b981"; count = 32; }
+
+      for (let p = 0; p < count; p++) {
+        const pAngle = Math.random() * Math.PI * 2;
+        const pSpeed = 60 + Math.random() * 140;
+        this.particles.push(
+          new Particle(npc.x, npc.y, Math.cos(pAngle) * pSpeed, Math.sin(pAngle) * pSpeed, particleColor, 4.5, 0.5)
+        );
+      }
+
+      // Award Kills & Killstreak Separately
+      let killsAwarded = typeof npc.killsAwarded === "number" ? npc.killsAwarded : 1;
+      let streakAwarded = typeof npc.killstreakAwarded === "number" ? npc.killstreakAwarded : (npc.killsAwarded || 1);
+
+      // In Bloodmoon: NPCs yield 1.5x rounded up killstreak and +1 kill compared to normal
+      const isBloodmoonActive = Boolean(this.bloodmoon && this.bloodmoon.isActive);
+      if (isBloodmoonActive) {
+        streakAwarded = Math.ceil(streakAwarded * 1.5);
+        killsAwarded += 1;
+      }
+
+      this.saveData.totalKills = (this.saveData.totalKills || 0) + killsAwarded;
+      this.saveData.kills = this.saveData.totalKills;
+
+      // Process each awarded killstreak point individually to accurately transition phases and apply scaling
+      for (let k = 0; k < streakAwarded; k++) {
+        this.killstreak += 1;
+        const phaseChanged = this.syncSwordPhase();
+        if (!phaseChanged && this.player.isSwordEquipped) {
+          this.player.applyKillstreakScaling(this.killstreak);
+        }
+      }
+
+      if (npc.type !== "normal" || isBloodmoonActive) {
+        let ftColor = isBloodmoonActive ? "#ef4444" : "#38bdf8";
+        if (!isBloodmoonActive) {
+          if (npc.type === "guard") ftColor = "#f8fafc";
+          else if (npc.type === "thug") ftColor = "#f59e0b";
+          else if (npc.type === "swordman") ftColor = "#60a5fa";
+          else if (npc.type === "buff_man") ftColor = "#fbbf24";
+          else if (npc.type === "elf") ftColor = "#34d399";
+        }
+
+        const streakMsg = isBloodmoonActive ? `+${streakAwarded} BLOOD STREAK! (+${killsAwarded} KILLS)` : `+${streakAwarded} STREAK!`;
+        this.floatingTexts.push(
+          new FloatingText(npc.x, npc.y - 20, streakMsg, ftColor, 16)
+        );
+      }
+
+      if (this.killstreak > this.saveData.highestKillstreak) {
+        this.saveData.highestKillstreak = this.killstreak;
+      }
+
+      this.checkAchievements();
+      Storage.save(this.saveData);
+
+      if (this.callbacks.onKill) {
+        this.callbacks.onKill(this.killstreak, this.saveData.highestKillstreak, this.saveData.kills, this.saveData.totalKills);
+      }
+    }
+
+    setDebugMode(active) {
+      this.isDebugModeActive = Boolean(active);
+    }
+
+    addDebugTotalKills(amount) {
+      if (!this.isDebugModeActive) return false;
+      const parseFn = (window.Killstreak && window.Killstreak.parseNumberInput) || (Config && Config.parseNumberInput);
+      const count = Math.max(1, typeof amount === "number" ? amount : (parseFn ? parseFn(amount) : Number(amount) || 0));
+      if (count <= 0) return false;
+
+      this.saveData.totalKills = (this.saveData.totalKills || 0) + count;
+      this.saveData.kills = this.saveData.totalKills;
+
+      // Note: Modifies Total Kills only — does NOT modify current sword's killstreak or trigger phase progression
+      this.checkAchievements();
+      Storage.save(this.saveData);
+
+      if (this.callbacks.onKill) {
+        this.callbacks.onKill(this.killstreak, this.saveData.highestKillstreak, this.saveData.kills, this.saveData.totalKills);
+      }
+
+      if (this.callbacks.onToast) {
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const fmtFn = (window.Killstreak && window.Killstreak.formatNumber) || (Config && Config.formatNumber);
+        const fCount = fmtFn ? fmtFn(count).short : count.toLocaleString();
+        const fTotal = fmtFn ? fmtFn(this.saveData.totalKills || 0).short : (this.saveData.totalKills || 0).toLocaleString();
+        const title = I18n ? I18n.t("toasts.debug_kills_add_title") : "Debug: Total Kills Added";
+        const desc = I18n ? I18n.t("toasts.debug_kills_add_desc", { count: fCount, total: fTotal }) : `Added +${fCount} Total Kills (Total: ${fTotal})`;
+        this.callbacks.onToast(title, desc, "⚡");
+      }
+
+      return true;
+    }
+
+    setDebugTotalKills(amount) {
+      if (!this.isDebugModeActive) return false;
+      const parseFn = (window.Killstreak && window.Killstreak.parseNumberInput) || (Config && Config.parseNumberInput);
+      const count = Math.max(0, typeof amount === "number" ? amount : (parseFn ? parseFn(amount) : Number(amount) || 0));
+
+      this.saveData.totalKills = count;
+      this.saveData.kills = count;
+
+      this.checkAchievements();
+      Storage.save(this.saveData);
+
+      if (this.callbacks.onKill) {
+        this.callbacks.onKill(this.killstreak, this.saveData.highestKillstreak, this.saveData.kills, this.saveData.totalKills);
+      }
+
+      if (this.callbacks.onToast) {
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const fmtFn = (window.Killstreak && window.Killstreak.formatNumber) || (Config && Config.formatNumber);
+        const fCount = fmtFn ? fmtFn(count).short : count.toLocaleString();
+        const title = I18n ? I18n.t("toasts.debug_kills_set_title") : "Debug: Total Kills Set";
+        const desc = I18n ? I18n.t("toasts.debug_kills_set_desc", { count: fCount }) : `Total Kills set to ${fCount}`;
+        this.callbacks.onToast(title, desc, "⚡");
+      }
+
+      return true;
+    }
+
+    addDebugKills(amount) {
+      return this.addDebugTotalKills(amount);
+    }
+
+    setDebugKillstreak(amount) {
+      if (!this.isDebugModeActive) return false;
+      const parseFn = (window.Killstreak && window.Killstreak.parseNumberInput) || (Config && Config.parseNumberInput);
+      const val = Math.max(0, typeof amount === "number" ? amount : (parseFn ? parseFn(amount) : Number(amount) || 0));
+
+      this.killstreak = val;
+      if (this.killstreak > this.saveData.highestKillstreak) {
+        this.saveData.highestKillstreak = this.killstreak;
+      }
+
+      // Sync sword phase and recalculate scaling for new killstreak
+      this.syncSwordPhase(true);
+      if (this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
+        this.player.applyKillstreakScaling(this.killstreak);
+      }
+
+      this.checkAchievements();
+      Storage.save(this.saveData);
+
+      if (this.callbacks.onKill) {
+        this.callbacks.onKill(this.killstreak, this.saveData.highestKillstreak, this.saveData.kills, this.saveData.totalKills);
+      }
+
+      if (this.callbacks.onToast) {
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const fmtFn = (window.Killstreak && window.Killstreak.formatNumber) || (Config && Config.formatNumber);
+        const fVal = fmtFn ? fmtFn(val).short : val.toLocaleString();
+        const title = I18n ? I18n.t("toasts.debug_streak_set_title") : "Debug: Killstreak Set";
+        const desc = I18n ? I18n.t("toasts.debug_streak_set_desc", { val: fVal }) : `Current sword killstreak set to ${fVal}`;
+        this.callbacks.onToast(title, desc, "⚡");
+      }
+
+      return true;
+    }
+
+    grantDebugBadge(badgeId) {
+      if (!this.isDebugModeActive) return false;
+      const ach = Config.ACHIEVEMENTS.find(a => (a.id === badgeId || a.badge === badgeId));
+      if (!ach) return false;
+
+      let changed = false;
+      if (!this.saveData.achievements.includes(ach.id)) {
+        this.saveData.achievements.push(ach.id);
+        changed = true;
+      }
+      if (!this.saveData.badges.includes(ach.badge)) {
+        this.saveData.badges.push(ach.badge);
+        changed = true;
+      }
+
+      if (changed) {
+        Storage.save(this.saveData);
+        if (this.callbacks.onBadgesUpdated) {
+          this.callbacks.onBadgesUpdated(this.saveData.badges);
+        }
+        if (this.callbacks.onToast) {
+          const I18n = window.Killstreak && window.Killstreak.I18n;
+          const achInfo = I18n ? I18n.getAchievementInfo(ach.id) : ach;
+          const title = I18n ? I18n.t("toasts.debug_badge_title") : "Debug: Badge Granted";
+          this.callbacks.onToast(title, `${achInfo.title}: ${achInfo.description}`, ach.icon);
+        }
+      }
+      return true;
+    }
+
+    grantAllDebugBadges() {
+      if (!this.isDebugModeActive) return false;
+      let count = 0;
+      Config.ACHIEVEMENTS.forEach(ach => {
+        let changed = false;
+        if (!this.saveData.achievements.includes(ach.id)) {
+          this.saveData.achievements.push(ach.id);
+          changed = true;
+        }
+        if (!this.saveData.badges.includes(ach.badge)) {
+          this.saveData.badges.push(ach.badge);
+          changed = true;
+        }
+        if (changed) count++;
+      });
+
+      if (count > 0) {
+        Storage.save(this.saveData);
+        if (this.callbacks.onBadgesUpdated) {
+          this.callbacks.onBadgesUpdated(this.saveData.badges);
+        }
+        if (this.callbacks.onToast) {
+          const I18n = window.Killstreak && window.Killstreak.I18n;
+          const title = I18n ? I18n.t("toasts.debug_badges_title") : "Debug: Badges Granted";
+          const desc = I18n ? I18n.t("toasts.debug_badges_desc", { count }) : `Granted ${count} badge(s). All achievements unlocked.`;
+          this.callbacks.onToast(title, desc, "👑");
+        }
+      } else {
+        if (this.callbacks.onToast) {
+          const I18n = window.Killstreak && window.Killstreak.I18n;
+          const title = I18n ? I18n.t("toasts.debug_badge_title") : "Debug: Badges";
+          const desc = I18n ? I18n.t("toasts.debug_badges_all_unlocked") : "All achievements are already unlocked.";
+          this.callbacks.onToast(title, desc, "👑");
+        }
+      }
+      return true;
+    }
+
+    resetAllProgress() {
+      this.saveData = Storage.reset();
+      this.killstreak = 0;
+      this.isDebugModeActive = false;
+
+      // Reset all sword skills & active effects
+      this.gluttonyCooldown = 0;
+      this.engulfCooldown = 0;
+      this.isEngulfActive = false;
+      this.engulfTimer = 0;
+      this.engulfTickTimer = 0;
+      this.activeBeam = null;
+      this.tsunamiCooldown = 0;
+      this.activeTsunamis = [];
+      this.fortitudeCooldown = 0;
+      this.ironWillCooldown = 0;
+      this.worldrootCooldown = 0;
+      this.cataclysmCooldown = 0;
+      this.activeWorldroots = [];
+      this.activeCataclysms = [];
+      if (this.player) {
+        this.player.isEngulfActive = false;
+        this.player.swordId = "devourer";
+        this.player.swordName = "Devourer";
+        this.player.isSwordEquipped = true;
+        this.player.phaseKills = 0;
+        this.player.killstreak = 0;
+        this.player.shield = 0;
+        this.player.shieldDuration = 0;
+        this.player.ironWillActive = false;
+        this.player.ironWillTimer = 0;
+        this.player.worldrootHealTimer = 0;
+        this.player.vx = 0;
+        this.player.vy = 0;
+      }
+
+      this.syncSwordPhase(true);
+      if (this.player && typeof this.player.applyKillstreakScaling === "function") {
+        this.player.applyKillstreakScaling(0);
+      }
+      if (this.player) {
+        this.player.hp = this.player.maxHp;
+      }
+
+      this.isGameOver = false;
+      this.activePrompt = null;
+      this.respawnQueue = [];
+
+      if (this.callbacks.onKill) {
+        this.callbacks.onKill(0, 0, 0, 0);
+      }
+      if (this.callbacks.onPhaseChange && this.player) {
+        this.callbacks.onPhaseChange(this.player.phase);
+      }
+      if (this.callbacks.onSkillsUpdate && this.player) {
+        this.callbacks.onSkillsUpdate({
+          isSwordEquipped: this.player.isSwordEquipped,
+          swordId: this.player.swordId,
+          gluttonyCooldown: this.gluttonyCooldown,
+          engulfCooldown: this.engulfCooldown,
+          isEngulfActive: this.isEngulfActive,
+          tsunamiCooldown: this.tsunamiCooldown,
+          fortitudeCooldown: this.fortitudeCooldown,
+          shield: this.player.shield,
+          ironWillCooldown: this.ironWillCooldown,
+          ironWillActive: false,
+          worldrootCooldown: this.worldrootCooldown,
+          cataclysmCooldown: this.cataclysmCooldown,
+          phase: this.player.phase.phase
+        });
+      }
+      if (this.callbacks.onBadgesUpdated) {
+        this.callbacks.onBadgesUpdated([]);
+      }
+    }
+
+    handlePlayerDeath() {
+      this.isGameOver = true;
+      const finalStreak = this.killstreak;
+      const finalPhaseName = this.player.phase.name;
+
+      // Safely reset skills on death
+      this.gluttonyCooldown = 0;
+      this.engulfCooldown = 0;
+      this.isEngulfActive = false;
+      this.player.isEngulfActive = false;
+      this.engulfTimer = 0;
+      this.activeBeam = null;
+      this.tsunamiCooldown = 0;
+      this.activeTsunamis = [];
+      this.fortitudeCooldown = 0;
+      this.ironWillCooldown = 0;
+      this.worldrootCooldown = 0;
+      this.cataclysmCooldown = 0;
+      this.activeWorldroots = [];
+      this.activeCataclysms = [];
+      if (this.player) {
+        this.player.shield = 0;
+        this.player.shieldDuration = 0;
+        this.player.ironWillActive = false;
+        this.player.ironWillTimer = 0;
+        this.player.worldrootHealTimer = 0;
+      }
+
+      for (let p = 0; p < 30; p++) {
+        const pAngle = Math.random() * Math.PI * 2;
+        const pSpeed = 60 + Math.random() * 160;
+        this.particles.push(
+          new Particle(this.player.x, this.player.y, Math.cos(pAngle) * pSpeed, Math.sin(pAngle) * pSpeed, "#38bdf8", 5, 0.6)
+        );
+      }
+
+      this.killstreak = 0;
+      this.syncSwordPhase(true);
+      if (this.player && this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
+        this.player.applyKillstreakScaling(0);
+      }
+      Storage.save(this.saveData);
+
+      if (this.callbacks.onGameOver) {
+        this.callbacks.onGameOver(finalStreak, finalPhaseName, this.saveData.highestKillstreak);
+      }
+    }
+
+    respawnInCombat() {
+      this.isGameOver = false;
+      this.setupArea("COMBAT");
+      this.killstreak = 0;
+      this.syncSwordPhase(true);
+
+      if (this.callbacks.onRespawn) {
+        this.callbacks.onRespawn();
+      }
+    }
+
+    draw() {
+      this.render();
+    }
+
+    render() {
+      this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
+
+      if (this.state === "MENU") {
+        this.drawAmbientMenuBg();
+        return;
+      }
+
+      const activeMap = Config.MAPS[this.currentArea];
+      const cameraOffset = this.camera.getOffset();
+
+      this.ctx.save();
+      this.ctx.translate(-cameraOffset.x, -cameraOffset.y);
+
+      // 1. Draw Map Floor Terrain & Features
+      this.drawMapWorld(activeMap);
+
+      // 1b. Draw Lobby Floor Elements (Woven Rugs & Ambient Light Pools) BEFORE interactive zones
+      if (this.currentArea === "LOBBY") {
+        this.drawLobbyFloor(activeMap);
+      }
+
+      // 2. Draw Interactive Zones
+      if (this.currentArea === "LOBBY") {
+        const nearbyStand = this.getNearbySwordStand();
+        (this.swordStands || [this.swordStand]).forEach(stand => {
+          const sId = stand.swordId || "devourer";
+          const sDef = Config.SWORDS ? Config.SWORDS[sId] : null;
+          const isLocked = sDef ? (this.saveData.totalKills || 0) < sDef.unlockKills : false;
+          let standPhase = null;
+          if (this.player.swordId === sId && this.player.isSwordEquipped) {
+            standPhase = this.player.phase;
+          } else {
+            const pList = sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))));
+            const pNum = sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))));
+            standPhase = pList.find(p => p.phase === pNum) || pList[0];
+          }
+          stand.draw(this.ctx, standPhase, isLocked, false, Boolean(nearbyStand));
+        });
+
+        // If a stand is focused, draw its elevated illuminated badge on top of all pedestals
+        if (nearbyStand && typeof nearbyStand.drawBadge === "function") {
+          const sId = nearbyStand.swordId || "devourer";
+          const sDef = Config.SWORDS ? Config.SWORDS[sId] : null;
+          const isLocked = sDef ? (this.saveData.totalKills || 0) < sDef.unlockKills : false;
+          let standPhase = null;
+          if (this.player.swordId === sId && this.player.isSwordEquipped) {
+            standPhase = this.player.phase;
+          } else {
+            const pList = sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))));
+            const pNum = sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))));
+            standPhase = pList.find(p => p.phase === pNum) || pList[0];
+          }
+          nearbyStand.drawBadge(this.ctx, standPhase, isLocked);
+        }
+
+        this.lobbyPortal.draw(this.ctx);
+      } else if (this.currentArea === "COMBAT") {
+        this.combatPortal.draw(this.ctx);
+      }
+
+      // 3. Draw Village Ground Structures (Well, Barrels, Houses) or Lounge Furniture/Props
+      if (this.currentArea === "COMBAT") {
+        this.drawVillageStructures(activeMap);
+      } else if (this.currentArea === "LOBBY") {
+        this.drawLobbyFurnitureAndProps(activeMap);
+      }
+
+      // 4. Draw Rocks
+      for (let rock of this.rocks) {
+        rock.draw(this.ctx);
+      }
+
+      // 4. Draw NPCs
+      for (let npc of this.npcs) {
+        npc.draw(this.ctx);
+      }
+
+      // 5. Draw Player
+      if (!this.isGameOver) {
+        this.player.draw(this.ctx);
+      }
+
+      // Draw Gluttony Beam (if active)
+      if (this.activeBeam) {
+        this.drawGluttonyBeam(this.ctx);
+      }
+
+      // Draw Active Tsunamis (if any)
+      for (let tsunami of this.activeTsunamis) {
+        tsunami.draw(this.ctx);
+      }
+
+      // Draw Active Worldroots (if any)
+      for (let wr of this.activeWorldroots) {
+        const progress = wr.timer / wr.maxTimer;
+        this.ctx.save();
+        this.ctx.strokeStyle = `rgba(74, 222, 128, ${progress * 0.85})`;
+        this.ctx.lineWidth = 3;
+        this.ctx.beginPath();
+        this.ctx.arc(wr.x, wr.y, wr.radius * (1 - progress * 0.15), 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.fillStyle = `rgba(21, 128, 61, ${progress * 0.2})`;
+        this.ctx.fill();
+        this.ctx.restore();
+      }
+
+      // Draw Active Cataclysms (if any)
+      for (let c of this.activeCataclysms) {
+        const progress = c.timer / c.maxTimer;
+        this.ctx.save();
+        this.ctx.strokeStyle = `rgba(239, 68, 68, ${progress * 0.9})`;
+        this.ctx.lineWidth = 4;
+        this.ctx.beginPath();
+        this.ctx.arc(c.x, c.y, c.radius * (1 - progress * 0.12), 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.fillStyle = `rgba(220, 38, 38, ${progress * 0.25})`;
+        this.ctx.fill();
+        this.ctx.restore();
+      }
+
+      // 6. Draw Trees (after player/NPCs for subtle canopy layering)
+      for (let tree of this.trees) {
+        tree.draw(this.ctx);
+      }
+
+      // 7. Draw Particles
+      for (let particle of this.particles) {
+        particle.draw(this.ctx);
+      }
+
+      // 8. Draw Floating Texts
+      for (let ft of this.floatingTexts) {
+        ft.draw(this.ctx);
+      }
+
+      this.ctx.restore();
+    }
+
+    drawVillageStructures(map) {
+      if (!map) return;
+      const ctx = this.ctx;
+
+      // Draw Well
+      if (map.well) {
+        const w = map.well;
+        ctx.save();
+        // Drop shadow
+        ctx.beginPath();
+        ctx.arc(w.x + 3, w.y + 4, w.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+        ctx.fill();
+
+        // Stone Rim
+        ctx.beginPath();
+        ctx.arc(w.x, w.y, w.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#64748b";
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#334155";
+        ctx.stroke();
+
+        // Well Water Core
+        ctx.beginPath();
+        ctx.arc(w.x, w.y, w.radius * 0.65, 0, Math.PI * 2);
+        ctx.fillStyle = "#0c4a6e";
+        ctx.fill();
+
+        // Wooden Roof Beam
+        ctx.fillStyle = "#78350f";
+        ctx.fillRect(w.x - w.radius - 2, w.y - 4, (w.radius + 2) * 2, 8);
+        ctx.strokeStyle = "#451a03";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(w.x - w.radius - 2, w.y - 4, (w.radius + 2) * 2, 8);
+
+        // Well Label
+        ctx.font = "bold 9px -apple-system, BlinkMacSystemFont, sans-serif";
+        ctx.fillStyle = "rgba(203, 213, 225, 0.85)";
+        ctx.textAlign = "center";
+        ctx.fillText("VILLAGE WELL", w.x, w.y - w.radius - 6);
+        ctx.restore();
+      }
+
+      // Draw Barrels
+      if (map.barrels) {
+        for (let b of map.barrels) {
+          ctx.save();
+          // Shadow
+          ctx.beginPath();
+          ctx.arc(b.x + 2, b.y + 3, b.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+          ctx.fill();
+
+          // Barrel Body
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "#92400e";
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#451a03";
+          ctx.stroke();
+
+          // Iron Hoops
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.radius * 0.7, 0, Math.PI * 2);
+          ctx.strokeStyle = "#475569";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+
+      // Draw Houses
+      if (map.houses) {
+        for (let h of map.houses) {
+          ctx.save();
+          // House Shadow
+          ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+          ctx.fillRect(h.x + 8, h.y + 8, h.width, h.height);
+
+          // Walls
+          ctx.fillStyle = "#475569";
+          ctx.fillRect(h.x, h.y, h.width, h.height);
+          ctx.strokeStyle = "#1e293b";
+          ctx.lineWidth = 2.5;
+          ctx.strokeRect(h.x, h.y, h.width, h.height);
+
+          // Stone Corner Pillars
+          ctx.fillStyle = "#334155";
+          ctx.fillRect(h.x, h.y, 14, h.height);
+          ctx.fillRect(h.x + h.width - 14, h.y, 14, h.height);
+
+          // Doorway
+          const doorW = 24;
+          const doorH = 34;
+          const doorX = h.x + h.width / 2 - doorW / 2;
+          const doorY = h.y + h.height - doorH;
+          ctx.fillStyle = "#451a03";
+          ctx.fillRect(doorX, doorY, doorW, doorH);
+          ctx.strokeStyle = "#291e13";
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(doorX, doorY, doorW, doorH);
+
+          // Door Handle
+          ctx.fillStyle = "#fbbf24";
+          ctx.beginPath();
+          ctx.arc(doorX + doorW - 5, doorY + doorH / 2, 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Glowing Windows
+          const winY = h.y + 24;
+          const winSize = 18;
+          [h.x + 22, h.x + h.width - 22 - winSize].forEach(wx => {
+            ctx.fillStyle = "rgba(254, 240, 138, 0.85)";
+            ctx.shadowColor = "#fef08a";
+            ctx.shadowBlur = 8;
+            ctx.fillRect(wx, winY, winSize, winSize);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = "#451a03";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(wx, winY, winSize, winSize);
+            // Window Mullions
+            ctx.beginPath();
+            ctx.moveTo(wx + winSize / 2, winY);
+            ctx.lineTo(wx + winSize / 2, winY + winSize);
+            ctx.moveTo(wx, winY + winSize / 2);
+            ctx.lineTo(wx + winSize, winY + winSize / 2);
+            ctx.stroke();
+          });
+
+          // Pitched Roof
+          const roofOverhang = 8;
+          ctx.fillStyle = h.roofColor || "#92400e";
+          ctx.beginPath();
+          ctx.moveTo(h.x - roofOverhang, h.y);
+          ctx.lineTo(h.x + h.width / 2, h.y - 32);
+          ctx.lineTo(h.x + h.width + roofOverhang, h.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#451a03";
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Roof Ridge / Shingle Line
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(h.x - roofOverhang + 6, h.y - 6);
+          ctx.lineTo(h.x + h.width / 2, h.y - 26);
+          ctx.lineTo(h.x + h.width + roofOverhang - 6, h.y - 6);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+    }
+
+    drawMapWorld(map) {
+      if (this.currentArea === "COMBAT") {
+        // Lush Grassland Base Floor (darkened during Bloodmoon)
+        const bmActive = this.bloodmoon && this.bloodmoon.isActive;
+        this.ctx.fillStyle = bmActive ? "#120d0d" : "#1b381d";
+        this.ctx.fillRect(0, 0, map.width, map.height);
+
+        // Grassland Natural Grid (crimson-tinted during Bloodmoon)
+        const gridSize = 60;
+        this.ctx.save();
+        this.ctx.strokeStyle = bmActive ? "rgba(120, 20, 20, 0.35)" : "rgba(40, 80, 45, 0.35)";
+        this.ctx.lineWidth = 1;
+
+        for (let x = 0; x <= map.width; x += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, 0);
+          this.ctx.lineTo(x, map.height);
+          this.ctx.stroke();
+        }
+        for (let y = 0; y <= map.height; y += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, y);
+          this.ctx.lineTo(map.width, y);
+          this.ctx.stroke();
+        }
+
+        // Draw Village Pathways & Natural Clearings
+        this.ctx.fillStyle = "rgba(55, 38, 20, 0.38)";
+        this.ctx.beginPath();
+        this.ctx.ellipse(4550, 2480, 480, 360, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Trail leading from village to lake
+        this.ctx.beginPath();
+        this.ctx.moveTo(4520, 2200);
+        this.ctx.quadraticCurveTo(4600, 1800, 4700, 1650);
+        this.ctx.lineWidth = 32;
+        this.ctx.strokeStyle = "rgba(55, 38, 20, 0.32)";
+        this.ctx.stroke();
+
+        // Trail connecting from Combat Portal towards Zone 0 & 1
+        this.ctx.beginPath();
+        this.ctx.moveTo(120, 1980);
+        this.ctx.lineTo(850, 1980);
+        this.ctx.lineWidth = 24;
+        this.ctx.strokeStyle = "rgba(55, 38, 20, 0.28)";
+        this.ctx.stroke();
+
+        // Draw Scenic Lake
+        if (map.lake) {
+          const lk = map.lake;
+          const cx = lk.x + lk.width / 2;
+          const cy = lk.y + lk.height / 2;
+          const rx = lk.width / 2;
+          const ry = lk.height / 2;
+
+          // Sandy Shoreline Ring
+          this.ctx.fillStyle = "#5c4028";
+          this.ctx.beginPath();
+          this.ctx.ellipse(cx, cy, rx + 18, ry + 18, 0, 0, Math.PI * 2);
+          this.ctx.fill();
+
+          // Wet Sand Edge
+          this.ctx.fillStyle = "#3b291a";
+          this.ctx.beginPath();
+          this.ctx.ellipse(cx, cy, rx + 6, ry + 6, 0, 0, Math.PI * 2);
+          this.ctx.fill();
+
+          // Deep Water Basin (blood-red during Bloodmoon)
+          const waterGrad = this.ctx.createRadialGradient(cx, cy, 20, cx, cy, rx);
+          if (bmActive) {
+            waterGrad.addColorStop(0, "#7f1d1d");
+            waterGrad.addColorStop(0.7, "#991b1b");
+            waterGrad.addColorStop(1, "#450a0a");
+          } else {
+            waterGrad.addColorStop(0, "#0284c7");
+            waterGrad.addColorStop(0.7, "#0369a1");
+            waterGrad.addColorStop(1, "#075985");
+          }
+          this.ctx.fillStyle = waterGrad;
+          this.ctx.beginPath();
+          this.ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+          this.ctx.lineWidth = 3;
+          this.ctx.stroke();
+
+          // Gentle Water Ripples
+          const ripplePulse = (this.player.animTimer || 0) * 1.5;
+          this.ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+          this.ctx.lineWidth = 1.5;
+          for (let i = 0; i < 4; i++) {
+            const rippleR = ((ripplePulse * 25 + i * 55) % (rx * 0.75)) + 15;
+            this.ctx.beginPath();
+            this.ctx.ellipse(cx - 30 + i * 20, cy + (i % 2 === 0 ? -15 : 20), rippleR * 0.45, rippleR * 0.2, 0, 0, Math.PI * 2);
+            this.ctx.stroke();
+          }
+
+          // Lake Name Banner
+          this.ctx.font = "bold 14px -apple-system, BlinkMacSystemFont, sans-serif";
+          this.ctx.fillStyle = "rgba(56, 189, 248, 0.9)";
+          this.ctx.textAlign = "center";
+          this.ctx.fillText("TRANQUIL LAKE", cx, cy - 8);
+          this.ctx.font = "11px -apple-system, BlinkMacSystemFont, sans-serif";
+          this.ctx.fillStyle = "rgba(186, 230, 253, 0.7)";
+          this.ctx.fillText("Scenic Eastern Frontier", cx, cy + 12);
+        }
+
+        // Draw Hay Bales
+        if (map.hayBales) {
+          for (let hb of map.hayBales) {
+            this.ctx.save();
+            // Drop Shadow
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+            this.ctx.fillRect(hb.x + 3, hb.y + 3, hb.width, hb.height);
+
+            // Straw Bale Body
+            this.ctx.fillStyle = "#ca8a04";
+            this.ctx.fillRect(hb.x, hb.y, hb.width, hb.height);
+            this.ctx.strokeStyle = "#854d0e";
+            this.ctx.lineWidth = 1.5;
+            this.ctx.strokeRect(hb.x, hb.y, hb.width, hb.height);
+
+            // Twine Binding Cords
+            this.ctx.strokeStyle = "#713f12";
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(hb.x + hb.width * 0.33, hb.y);
+            this.ctx.lineTo(hb.x + hb.width * 0.33, hb.y + hb.height);
+            this.ctx.moveTo(hb.x + hb.width * 0.66, hb.y);
+            this.ctx.lineTo(hb.x + hb.width * 0.66, hb.y + hb.height);
+            this.ctx.stroke();
+
+            this.ctx.restore();
+          }
+        }
+
+        // Draw all NPC Zones
+        if (map.npcZones) {
+          map.npcZones.forEach((zone) => {
+            const isFairy = zone.npcType === "fairy";
+            const isGuard = zone.npcType === "guard";
+            const isThug = zone.npcType === "thug";
+            const isSwordman = zone.npcType === "swordman";
+            const isBuffMan = zone.npcType === "buff_man";
+            const isElf = zone.npcType === "elf";
+            const isIronborn = zone.npcType === "ironborn";
+            const isBloodfang = zone.npcType === "bloodfang";
+            const isArcanist = zone.npcType === "arcanist";
+            const isColossus = zone.npcType === "colossus";
+            const isStarforged = zone.npcType === "starforged";
+            const isGrizzlehorn = zone.npcType === "grizzlehorn";
+            const isBrambleback = zone.npcType === "brambleback";
+            const isEmbermane = zone.npcType === "embermane";
+            const isDuskhorn = zone.npcType === "duskhorn";
+            const isMirewalker = zone.npcType === "mirewalker";
+            const isThunderhoof = zone.npcType === "thunderhoof";
+            const isGloomscale = zone.npcType === "gloomscale";
+            const isWildtusk = zone.npcType === "wildtusk";
+            const isMoonmane = zone.npcType === "moonmane";
+            const isCrimsonhide = zone.npcType === "crimsonhide";
+
+            // Clearing Ground
+            if (isGuard) this.ctx.fillStyle = "rgba(40, 50, 65, 0.45)";
+            else if (isThug) this.ctx.fillStyle = "rgba(50, 35, 18, 0.45)";
+            else if (isFairy) this.ctx.fillStyle = "rgba(12, 34, 56, 0.45)";
+            else if (isSwordman) this.ctx.fillStyle = "rgba(30, 41, 70, 0.45)";
+            else if (isBuffMan) this.ctx.fillStyle = "rgba(60, 35, 10, 0.50)";
+            else if (isElf) this.ctx.fillStyle = "rgba(6, 44, 25, 0.45)";
+            else if (isIronborn) this.ctx.fillStyle = "rgba(40, 42, 45, 0.55)";
+            else if (isBloodfang) this.ctx.fillStyle = "rgba(60, 15, 15, 0.55)";
+            else if (isArcanist) this.ctx.fillStyle = "rgba(35, 10, 50, 0.55)";
+            else if (isColossus) this.ctx.fillStyle = "rgba(30, 30, 30, 0.60)";
+            else if (isStarforged) this.ctx.fillStyle = "rgba(55, 40, 5, 0.60)";
+            else if (isGrizzlehorn) this.ctx.fillStyle = "rgba(45, 30, 15, 0.55)";
+            else if (isBrambleback) this.ctx.fillStyle = "rgba(15, 45, 25, 0.55)";
+            else if (isEmbermane) this.ctx.fillStyle = "rgba(55, 20, 5, 0.55)";
+            else if (isDuskhorn) this.ctx.fillStyle = "rgba(30, 15, 55, 0.55)";
+            else if (isMirewalker) this.ctx.fillStyle = "rgba(10, 40, 40, 0.55)";
+            else if (isThunderhoof) this.ctx.fillStyle = "rgba(15, 25, 60, 0.55)";
+            else if (isGloomscale) this.ctx.fillStyle = "rgba(35, 10, 30, 0.60)";
+            else if (isWildtusk) this.ctx.fillStyle = "rgba(50, 30, 10, 0.55)";
+            else if (isMoonmane) this.ctx.fillStyle = "rgba(25, 30, 60, 0.55)";
+            else if (isCrimsonhide) this.ctx.fillStyle = "rgba(65, 8, 8, 0.65)";
+            else this.ctx.fillStyle = "rgba(35, 25, 18, 0.40)";
+
+            this.ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
+
+            this.ctx.strokeStyle = zone.accentColor || (isFairy ? "rgba(56, 189, 248, 0.55)" : "rgba(220, 38, 38, 0.45)");
+            this.ctx.lineWidth = 2.5;
+            this.ctx.setLineDash([8, 6]);
+            this.ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+            this.ctx.setLineDash([]);
+
+            // Zone Name Banner
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            this.ctx.font = "bold 11px -apple-system, BlinkMacSystemFont, sans-serif";
+            this.ctx.fillStyle = zone.tagColor || (isFairy ? "rgba(56, 189, 248, 0.95)" : "rgba(248, 113, 113, 0.85)");
+            this.ctx.textAlign = "center";
+            const zoneBanner = I18n ? I18n.getZoneLabel(zone.id) : zone.label;
+            this.ctx.fillText(zoneBanner, zone.x + zone.width / 2, zone.y + 20);
+
+            // NPC count tag
+            const activeInZone = this.npcs.filter(n => n.zoneIndex === zone.index).length;
+            let unitKey = "zones.unit_sentry";
+            if (isGuard) unitKey = "zones.unit_guard";
+            else if (isThug) unitKey = "zones.unit_thug";
+            else if (isFairy) unitKey = "zones.unit_fairy";
+            else if (isSwordman) unitKey = "zones.unit_swordman";
+            else if (isBuffMan) unitKey = "zones.unit_buff_man";
+            else if (isElf) unitKey = "zones.unit_elf";
+            else if (isIronborn) unitKey = "zones.unit_ironborn";
+            else if (isBloodfang) unitKey = "zones.unit_bloodfang";
+            else if (isArcanist) unitKey = "zones.unit_arcanist";
+            else if (isColossus) unitKey = "zones.unit_colossus";
+            else if (isStarforged) unitKey = "zones.unit_starforged";
+            else if (isGrizzlehorn) unitKey = "zones.unit_grizzlehorn";
+            else if (isBrambleback) unitKey = "zones.unit_brambleback";
+            else if (isEmbermane) unitKey = "zones.unit_embermane";
+            else if (isDuskhorn) unitKey = "zones.unit_duskhorn";
+            else if (isMirewalker) unitKey = "zones.unit_mirewalker";
+            else if (isThunderhoof) unitKey = "zones.unit_thunderhoof";
+            else if (isGloomscale) unitKey = "zones.unit_gloomscale";
+            else if (isWildtusk) unitKey = "zones.unit_wildtusk";
+            else if (isMoonmane) unitKey = "zones.unit_moonmane";
+            else if (isCrimsonhide) unitKey = "zones.unit_crimsonhide";
+
+            const unitLabel = I18n ? I18n.t(unitKey) : "Sentries [100 HP • 1 Streak]";
+            const countTag = I18n
+              ? I18n.t("zones.unit_active_format", { unit: unitLabel, count: activeInZone, max: zone.maxNpcs })
+              : `Active ${unitLabel}: ${activeInZone}/${zone.maxNpcs}`;
+
+            this.ctx.font = "bold 10px -apple-system, BlinkMacSystemFont, sans-serif";
+            this.ctx.fillStyle = zone.tagColor || "rgba(255, 255, 255, 0.6)";
+            this.ctx.fillText(countTag, zone.x + zone.width / 2, zone.y + 36);
+          });
+        }
+
+        // Outer Grassland Boundaries
+        this.ctx.strokeStyle = "#14532d";
+        this.ctx.lineWidth = 6;
+        this.ctx.strokeRect(3, 3, map.width - 6, map.height - 6);
+        this.ctx.restore();
+      } else {
+        // Warm Lounge Hardwood / Slate Tiles Floor
+        this.ctx.fillStyle = "#0c111c";
+        this.ctx.fillRect(0, 0, map.width, map.height);
+
+        // Elegant Lounge Parquet Grid
+        const gridSize = 40;
+        this.ctx.save();
+        this.ctx.strokeStyle = "rgba(148, 163, 184, 0.05)";
+        this.ctx.lineWidth = 1;
+
+        for (let x = 0; x <= map.width; x += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(x, 0);
+          this.ctx.lineTo(x, map.height);
+          this.ctx.stroke();
+        }
+        for (let y = 0; y <= map.height; y += gridSize) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, y);
+          this.ctx.lineTo(map.width, y);
+          this.ctx.stroke();
+        }
+
+        // Ambient Lounge Outer Wall / Border
+        this.ctx.strokeStyle = "rgba(56, 189, 248, 0.3)";
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeRect(2, 2, map.width - 4, map.height - 4);
+        this.ctx.restore();
+      }
+    }
+
+    drawSafeRoundRect(ctx, x, y, w, h, r = 0) {
+      if (typeof ctx.roundRect === "function") {
+        ctx.roundRect(x, y, w, h, r);
+      } else {
+        const radius = typeof r === "number" ? Math.min(r, w / 2, h / 2) : 0;
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+      }
+    }
+
+    drawLobbyFloor(map) {
+      if (!map) return;
+      const ctx = this.ctx;
+
+      // 1. Draw Woven Rugs
+      if (map.rugs) {
+        for (let rug of map.rugs) {
+          ctx.save();
+          // Shadow
+          ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+          ctx.beginPath();
+          this.drawSafeRoundRect(ctx, rug.x + 4, rug.y + 4, rug.width, rug.height, 12);
+          ctx.fill();
+
+          // Rug Body
+          ctx.fillStyle = rug.color || "#0f172a";
+          ctx.beginPath();
+          this.drawSafeRoundRect(ctx, rug.x, rug.y, rug.width, rug.height, 12);
+          ctx.fill();
+
+          // Rug Border Stitched Pattern
+          ctx.strokeStyle = rug.borderColor || "rgba(148, 163, 184, 0.3)";
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash([8, 6]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Inner Accent Line
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          this.drawSafeRoundRect(ctx, rug.x + 8, rug.y + 8, rug.width - 16, rug.height - 16, 8);
+          ctx.stroke();
+
+          // If gallery rug, render soft radiant floor halos under the 3 pedestals
+          if (rug.id === "gallery_rug" && map.swordStands) {
+            for (let stand of map.swordStands) {
+              const haloGrad = ctx.createRadialGradient(stand.x, stand.y, 4, stand.x, stand.y, 32);
+              const haloColor = stand.swordId === "soil"
+                ? "rgba(180, 83, 9, 0.25)"
+                : (stand.swordId === "aquatic"
+                  ? "rgba(6, 182, 212, 0.22)"
+                  : (stand.swordId === "overdrive" ? "rgba(239, 68, 68, 0.20)" : "rgba(56, 189, 248, 0.20)"));
+              haloGrad.addColorStop(0, haloColor);
+              haloGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+              ctx.fillStyle = haloGrad;
+              ctx.beginPath();
+              ctx.arc(stand.x, stand.y, 32, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          ctx.restore();
+        }
+      }
+
+      // 2. Draw Floor Lamps Light Pools
+      if (map.lamps) {
+        for (let lamp of map.lamps) {
+          ctx.save();
+          const glowGrad = ctx.createRadialGradient(lamp.x, lamp.y, 4, lamp.x, lamp.y, lamp.glowRadius || 110);
+          glowGrad.addColorStop(0, "rgba(254, 240, 138, 0.22)");
+          glowGrad.addColorStop(0.5, "rgba(253, 224, 71, 0.08)");
+          glowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = glowGrad;
+          ctx.beginPath();
+          ctx.arc(lamp.x, lamp.y, lamp.glowRadius || 110, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+    }
+
+    drawLobbyFurnitureAndProps(map) {
+      if (!map) return;
+      const ctx = this.ctx;
+
+      // 3. Draw Lounge Furniture (Sofas, Armchairs, Coffee Table, Credenzas)
+      if (map.furniture) {
+        for (let f of map.furniture) {
+          ctx.save();
+          // Drop Shadow
+          ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+          ctx.beginPath();
+          this.drawSafeRoundRect(ctx, f.x + 3, f.y + 4, f.width, f.height, 8);
+          ctx.fill();
+
+          if (f.type === "sofa_long") {
+            // Main Long Sofa Body
+            ctx.fillStyle = "#1e293b";
+            ctx.beginPath();
+            this.drawSafeRoundRect(ctx, f.x, f.y, f.width, f.height, 8);
+            ctx.fill();
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Backrest & Armrests
+            ctx.fillStyle = "#334155";
+            ctx.fillRect(f.x, f.y, f.width, 14);
+            ctx.fillRect(f.x, f.y, 14, f.height);
+            ctx.fillRect(f.x + f.width - 14, f.y, 14, f.height);
+
+            // Soft Seat Cushions
+            const cWidth = (f.width - 34) / 3;
+            for (let c = 0; c < 3; c++) {
+              const cx = f.x + 17 + c * cWidth;
+              ctx.fillStyle = "#253347";
+              ctx.fillRect(cx + 2, f.y + 16, cWidth - 4, f.height - 18);
+              ctx.strokeStyle = "#38485e";
+              ctx.lineWidth = 1;
+              ctx.strokeRect(cx + 2, f.y + 16, cWidth - 4, f.height - 18);
+            }
+
+          } else if (f.type === "chair") {
+            // Armchair Body
+            ctx.fillStyle = "#1e293b";
+            ctx.beginPath();
+            this.drawSafeRoundRect(ctx, f.x, f.y, f.width, f.height, 8);
+            ctx.fill();
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Outer Back/Sides
+            ctx.fillStyle = "#334155";
+            ctx.fillRect(f.x, f.y, f.width, 12);
+            ctx.fillRect(f.x, f.y + f.height - 12, f.width, 12);
+
+            // Center Cushion
+            ctx.fillStyle = "#253347";
+            ctx.beginPath();
+            this.drawSafeRoundRect(ctx, f.x + 8, f.y + 14, f.width - 16, f.height - 28, 4);
+            ctx.fill();
+            ctx.strokeStyle = "#38485e";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+          } else if (f.type === "table") {
+            // Coffee Table Dark Wood Base
+            ctx.fillStyle = "#1f1610";
+            ctx.beginPath();
+            this.drawSafeRoundRect(ctx, f.x, f.y, f.width, f.height, 6);
+            ctx.fill();
+            ctx.strokeStyle = "#451a03";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Glass/Tinted Inlay Top
+            ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
+            ctx.beginPath();
+            this.drawSafeRoundRect(ctx, f.x + 8, f.y + 7, f.width - 16, f.height - 14, 4);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+
+            // Tabletop Centerpiece (Books + Mini Succulent)
+            ctx.fillStyle = "#3b82f6";
+            ctx.fillRect(f.x + f.width / 2 - 28, f.y + f.height / 2 - 6, 18, 12);
+            ctx.fillStyle = "#ef4444";
+            ctx.fillRect(f.x + f.width / 2 - 26, f.y + f.height / 2 - 8, 14, 10);
+
+            // Mini Potted Plant on Table
+            ctx.fillStyle = "#92400e";
+            ctx.beginPath();
+            ctx.arc(f.x + f.width / 2 + 16, f.y + f.height / 2, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#10b981";
+            ctx.beginPath();
+            ctx.arc(f.x + f.width / 2 + 16, f.y + f.height / 2, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+
+          } else if (f.type === "credenza") {
+            // Archive Credenza / Shelving Unit
+            ctx.fillStyle = "#271d15";
+            ctx.beginPath();
+            this.drawSafeRoundRect(ctx, f.x, f.y, f.width, f.height, 4);
+            ctx.fill();
+            ctx.strokeStyle = "#451a03";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Shelves & Book Spines
+            const shelves = 4;
+            const sH = f.height / shelves;
+            for (let s = 1; s < shelves; s++) {
+              ctx.strokeStyle = "#451a03";
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(f.x + 2, f.y + s * sH);
+              ctx.lineTo(f.x + f.width - 2, f.y + s * sH);
+              ctx.stroke();
+
+              ctx.fillStyle = s % 2 === 0 ? "#0284c7" : "#d97706";
+              ctx.fillRect(f.x + 6, f.y + (s - 1) * sH + 6, f.width - 12, sH - 10);
+            }
+          }
+
+          ctx.restore();
+        }
+      }
+
+      // 4. Draw Floor Lamp Models
+      if (map.lamps) {
+        for (let lamp of map.lamps) {
+          ctx.save();
+          // Base
+          ctx.beginPath();
+          ctx.arc(lamp.x, lamp.y, lamp.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "#334155";
+          ctx.fill();
+          ctx.strokeStyle = "#64748b";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Core Bulb
+          ctx.beginPath();
+          ctx.arc(lamp.x, lamp.y, lamp.radius * 0.55, 0, Math.PI * 2);
+          ctx.fillStyle = "#fef08a";
+          ctx.shadowColor = "#fef08a";
+          ctx.shadowBlur = 10;
+          ctx.fill();
+
+          ctx.restore();
+        }
+      }
+
+      // 5. Draw Potted Plants
+      if (map.plants) {
+        for (let p of map.plants) {
+          ctx.save();
+          // Shadow
+          ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+          ctx.beginPath();
+          ctx.arc(p.x + 3, p.y + 4, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Ceramic Planter Rim
+          ctx.fillStyle = "#e2e8f0";
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius * 0.7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#94a3b8";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Soil
+          ctx.fillStyle = "#3f2212";
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius * 0.55, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Leaves
+          ctx.fillStyle = "#15803d";
+          for (let a = 0; a < 6; a++) {
+            const angle = (a * Math.PI / 3) + 0.2;
+            const lx = p.x + Math.cos(angle) * (p.radius * 0.75);
+            const ly = p.y + Math.sin(angle) * (p.radius * 0.75);
+            ctx.beginPath();
+            ctx.arc(lx, ly, p.radius * 0.42, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.fillStyle = "#22c55e";
+          for (let a = 0; a < 5; a++) {
+            const angle = (a * Math.PI * 2 / 5) - 0.1;
+            const lx = p.x + Math.cos(angle) * (p.radius * 0.45);
+            const ly = p.y + Math.sin(angle) * (p.radius * 0.45);
+            ctx.beginPath();
+            ctx.arc(lx, ly, p.radius * 0.32, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+      }
+
+      // 6. Draw Columns / Pillars
+      if (map.decorations) {
+        for (let col of map.decorations) {
+          if (col.type !== "pillar") continue;
+          ctx.save();
+          // Shadow
+          ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+          ctx.beginPath();
+          ctx.arc(col.x + 3, col.y + 4, col.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Base
+          ctx.fillStyle = "#334155";
+          ctx.beginPath();
+          ctx.arc(col.x, col.y, col.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#475569";
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Shaft
+          ctx.fillStyle = "#475569";
+          ctx.beginPath();
+          ctx.arc(col.x, col.y, col.radius * 0.65, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#64748b";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+    }
+
+    drawLobbyDecorations(map) {
+      this.drawLobbyFloor(map);
+      this.drawLobbyFurnitureAndProps(map);
+    }
+
+    drawAmbientMenuBg() {
+      this.ctx.save();
+      this.ctx.fillStyle = "#080c14";
+      this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
+      this.ctx.restore();
+    }
+  }
+
+  window.Killstreak.Game = Game;
+})(window);

@@ -1,0 +1,88 @@
+{
+  "out": "src/ui/modals.js",
+  "backup": "scratch/backup/main.js.modals.bak",
+  "fns": [
+    {
+      "name": "closeAllModals",
+      "params": [],
+      "lines": 17
+    },
+    {
+      "name": "openScreen",
+      "params": [
+        "game",
+        "screenName",
+        "origin = \"MENU\""
+      ],
+      "lines": 83
+    },
+    {
+      "name": "returnFromModal",
+      "params": [
+        "game"
+      ],
+      "lines": 7
+    },
+    {
+      "name": "promptReturnToLobby",
+      "params": [
+        "game"
+      ],
+      "lines": 12
+    }
+  ],
+  "callArgs": {
+    "openScreen": "game",
+    "returnFromModal": "game",
+    "updateSwordStandUI": "game"
+  },
+  "callbacks": {
+    "promptReturnToLobby": {
+      "args": "game"
+    },
+    "returnFromModal": {
+      "args": "game"
+    }
+  },
+  "neededRefs": [
+    "mainMenu",
+    "gameplayHud",
+    "swordModal",
+    "libraryModal",
+    "achievementsModal",
+    "settingsModal",
+    "mapModal",
+    "gameOverScreen",
+    "minimapWidget",
+    "menuLobbyBtn",
+    "hudLibraryBtn",
+    "hudLobbyBtn",
+    "badgesList",
+    "debugAuthContainer",
+    "debugPasswordInput",
+    "debugPasswordError",
+    "debugPanel",
+    "debugKillstreakHud",
+    "statsModal"
+  ],
+  "refsImport": "./domRefs.js",
+  "neededUtils": [],
+  "needsI18n": true,
+  "needsConfig": false,
+  "moduleState": [
+    "export let cogClickCount = 0;",
+    "let panelOrigin = \"MENU\";"
+  ],
+  "stateSetters": {
+    "cogClickCount": "setCogClickCount"
+  },
+  "excludeRefs": [],
+  "extraImports": [
+    "import { isDebugUnlocked } from './debugPanel.js';",
+    "import { renderBadges } from './badges.js';",
+    "import { renderLibrary } from './library.js';",
+    "import { updateSwordStandUI } from './swordStand.js';",
+    "import { updateHudCounters, updateHudPhaseTracking, updateStatsUI } from './hud.js';"
+  ],
+  "recordedAt": "2026-09-22T15:45:24.876Z"
+}

@@ -1,0 +1,30 @@
+{
+  "out": "src/core/InputManager.js",
+  "backup": "scratch/backup/main.js.InputManager.bak",
+  "fns": [
+    {
+      "name": "updateMouseCoordinates",
+      "params": [
+        "game",
+        "e"
+      ],
+      "lines": 5
+    }
+  ],
+  "callArgs": {},
+  "callbacks": {
+    "updateMouseCoordinates": {
+      "event": "e",
+      "args": "game"
+    }
+  },
+  "neededRefs": [
+    "canvas"
+  ],
+  "refsImport": "../ui/domRefs.js",
+  "neededUtils": [],
+  "needsI18n": false,
+  "needsConfig": false,
+  "moduleState": [],
+  "recordedAt": "2026-09-22T15:27:14.648Z"
+}

@@ -1,0 +1,27 @@
+{
+  "out": "src/ui/skillsPanel.js",
+  "backup": "scratch/backup/main.js.skillsPanel.bak",
+  "fns": [
+    {
+      "name": "updateSkillsUI",
+      "params": [
+        "game",
+        "skillsData"
+      ],
+      "lines": 215
+    }
+  ],
+  "callArgs": {
+    "updateSkillsUI": "game"
+  },
+  "neededRefs": [
+    "skillGluttonyBtn",
+    "skillGluttonyVal",
+    "skillEngulfBtn",
+    "skillEngulfVal"
+  ],
+  "neededUtils": [],
+  "needsI18n": true,
+  "needsConfig": false,
+  "recordedAt": "2026-09-22T15:22:47.398Z"
+}

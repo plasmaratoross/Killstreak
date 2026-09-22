@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Killstreak 2D — Devourer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Viewport Canvas (1000x650) -->
+    <canvas id="game-canvas" width="1000" height="650"></canvas>
+
+    <!-- 1. Main Menu Screen -->
+    <div id="main-menu" class="screen-overlay">
+      <div class="menu-box">
+        <div class="game-logo">
+          <h1 class="logo-title" data-i18n="menu.title">KILLSTREAK</h1>
+        </div>
+
+        <nav class="menu-nav">
+          <button id="menu-play-btn" class="menu-btn menu-btn-primary" data-i18n="menu.play">PLAY</button>
+          <button id="menu-library-btn" class="menu-btn" data-i18n="menu.library">LIBRARY</button>
+          <button id="menu-achievements-btn" class="menu-btn" data-i18n="menu.achievements">ACHIEVEMENTS</button>
+          <button id="menu-settings-btn" class="menu-btn" data-i18n="menu.settings">SETTINGS</button>
+          <button id="menu-lobby-btn" class="menu-btn btn-return-lobby hidden" data-i18n="menu.return_lobby">RETURN TO LOBBY</button>
+        </nav>
+
+        <div class="menu-footer">
+          <span data-i18n="menu.controls_footer">Move: WASD / Arrows • Aim: Mouse • Attack: Left Click / Space</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Minimalist Gameplay HUD -->
+    <div id="gameplay-hud" class="hud-overlay hidden">
+      <div class="hud-left">
+        <div class="hp-panel">
+          <div class="hp-meta">
+            <span class="hud-label" data-i18n="hud.hp">HP</span>
+            <span id="hud-hp-text">100 / 100</span>
+          </div>
+          <div class="hp-bar-outer">
+            <div id="hud-hp-bar" style="width: 100%;"></div>
+            <div id="hud-shield-bar" class="hud-shield-bar" style="width: 0%;"></div>
+          </div>
+          <div class="hud-stat-sub">
+            <span id="hud-dmg-val" class="hud-dmg-tag">⚔️ 5 DMG</span>
+            <span id="hud-scale-val" class="hud-scale-tag">Base: 5 DMG • 100 HP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-center">
+        <div class="hud-counters-group">
+          <div class="hud-streak-box">
+            <span class="hud-label" data-i18n="hud.killstreak">KILLSTREAK</span>
+            <span id="hud-killstreak-val" class="streak-val">0</span>
+          </div>
+          <div class="hud-kills-box">
+            <span class="hud-label" data-i18n="hud.kills">KILLS</span>
+            <span id="hud-kills-val" class="kills-val">0</span>
+          </div>
+        </div>
+        <div class="hud-sword-badge">
+          <span id="hud-sword-name" class="hud-sword-name">DEVOURER</span>
+          <div id="hud-phase-pill" class="phase-pill phase-1">
+            <span id="hud-phase-text">PHASE: HUNGER</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <div class="location-pill">
+          <span id="hud-area-label">AREA: LOBBY</span>
+        </div>
+        <button id="hud-stats-btn" class="hud-mini-btn" data-i18n="hud.stats_btn" data-i18n-title="hud.stats_btn_title" title="View Statistics">📊 STATS</button>
+        <button id="hud-library-btn" class="hud-mini-btn btn-highlight" data-i18n="hud.library_btn" data-i18n-title="hud.library_btn_title" title="Open Library">📖 LIBRARY</button>
+        <button id="hud-lobby-btn" class="hud-mini-btn btn-lobby hidden" data-i18n="hud.lobby_btn" data-i18n-title="hud.lobby_btn_title" title="Return to Sanctuary Lobby">🏠 LOBBY</button>
+        <button id="hud-menu-btn" class="hud-mini-btn" data-i18n="hud.menu_btn" data-i18n-title="hud.menu_btn_title" title="Pause / Menu">MENU [ESC]</button>
+      </div>
+
+      <!-- In-Game Debug Killstreak Widget (Only visible when Debug Mode is unlocked) -->
+      <div id="debug-killstreak-hud" class="debug-killstreak-hud hidden">
+        <span class="debug-killstreak-label" data-i18n="hud.debug_streak_label">Debug Killstreak:</span>
+        <input type="number" id="debug-hud-streak-input" class="debug-hud-streak-input" data-i18n-placeholder="hud.debug_streak_placeholder" placeholder="amount" min="0" max="100000" />
+        <button type="button" id="debug-hud-streak-apply" class="btn-debug-apply" data-i18n="hud.debug_apply_btn">APPLY</button>
+        <button type="button" id="debug-hud-event-btn" class="btn-debug-apply btn-debug-event" title="Summon Game Event (Bloodmoon)">🌑 SUMMON EVENT</button>
+      </div>
+
+      <!-- Skill Cooldown Bar -->
+      <div id="hud-skills-bar" class="hud-skills-bar">
+        <button id="skill-gluttony-btn" class="skill-btn skill-locked" data-i18n-title="skills.gluttony_title" title="Gluttony [Z] — Beam attack (Phase 10+)">
+          <div class="skill-btn-label" data-i18n="skills.gluttony_label">[ Z — GLUTTONY ]</div>
+          <div id="skill-gluttony-val" class="skill-btn-val">LOCKED</div>
+        </button>
+        <button id="skill-engulf-btn" class="skill-btn skill-locked" data-i18n-title="skills.engulf_title" title="Engulf [X] — Devourer AoE aura (Phase 17)">
+          <div class="skill-btn-label" data-i18n="skills.engulf_label">[ X — ENGULF ]</div>
+          <div id="skill-engulf-val" class="skill-btn-val">LOCKED</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2b. Compact Minimap Widget (Bottom-Right of Game Screen) -->
+    <div id="minimap-widget" class="minimap-widget hidden" title="Click to open Full Map [M]">
+      <div class="minimap-header">
+        <span id="minimap-title-text" class="minimap-title-text">OPEN GRASSLAND</span>
+        <span class="minimap-key-badge">[M]</span>
+      </div>
+      <div class="minimap-viewport-wrapper">
+        <canvas id="minimap-canvas" width="180" height="125"></canvas>
+        <div id="minimap-tooltip" class="map-tooltip hidden"></div>
+      </div>
+      <div class="minimap-footer">
+        <span id="minimap-coords-text" class="minimap-coords-text">X: 0 | Y: 0</span>
+      </div>
+    </div>
+
+    <!-- 3. Interaction Prompt Floating Box -->
+    <div id="interaction-prompt" class="interaction-prompt hidden">
+      <span class="prompt-key">[E]</span>
+      <span id="interaction-text" class="prompt-text">Inspect Devourer</span>
+    </div>
+
+    <!-- 4. Interactive Sword Stand Modal -->
+    <div id="sword-modal" class="modal-backdrop hidden">
+      <div class="modal-card sword-modal-card">
+        <div class="modal-header">
+          <div class="sword-title-group">
+            <span class="modal-tag" data-i18n="pedestal.tag">WEAPON PEDESTAL</span>
+            <h2 id="stand-sword-name">DEVOURER</h2>
+          </div>
+          <button id="close-sword-btn" class="modal-close">&times;</button>
+        </div>
+
+        <div class="stand-info-box">
+          <div class="stand-preview-icon" id="stand-sword-icon">👁️</div>
+          <div class="stand-details">
+            <div class="stand-stat-row">
+              <span class="stand-label" data-i18n="pedestal.weapon_label">Weapon:</span>
+              <span id="stand-weapon-title" class="stand-val">DEVOURER</span>
+            </div>
+            <div class="stand-stat-row">
+              <span class="stand-label" data-i18n="pedestal.current_phase_label">Current Phase:</span>
+              <span id="stand-sword-phase" class="stand-val">PHASE: HUNGER</span>
+            </div>
+            <div class="stand-stat-row">
+              <span class="stand-label" data-i18n="pedestal.base_stats_label">Base Stats:</span>
+              <span id="stand-sword-base" class="stand-val">5 DMG • 100 HP</span>
+            </div>
+            <div class="stand-stat-row">
+              <span class="stand-label" data-i18n="pedestal.scaling_label">Kill Scaling:</span>
+              <span id="stand-sword-scaling" class="stand-val">+0 Kills (+0%)</span>
+            </div>
+            <div class="stand-stat-row">
+              <span class="stand-label" data-i18n="pedestal.active_power_label">Active Power:</span>
+              <span id="stand-sword-damage" class="stand-val">5 DMG • 100 HP</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="stand-sword-lock-hint" class="stand-lock-hint hidden">
+          🔒 Requires 1,250 Lifetime Kills to Equip (Current: <span id="stand-current-kills">0</span>)
+        </div>
+
+        <div class="stand-actions">
+          <button id="stand-equip-btn" class="btn btn-equip" data-i18n="pedestal.btn_equip">EQUIP</button>
+          <button id="sword-stand-close-btn" class="btn btn-secondary" data-i18n="pedestal.btn_close">Close [Esc]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Library Modal (SWORDS & BADGES Sections) -->
+    <div id="library-modal" class="modal-backdrop hidden">
+      <div class="modal-card library-card">
+        <div class="modal-header">
+          <div class="sword-title-group">
+            <span class="modal-tag" data-i18n="library.tag">SANCTUARY ARCHIVE</span>
+            <h2 data-i18n="library.title">📖 LIBRARY</h2>
+          </div>
+          <button id="close-library-btn" class="modal-close">&times;</button>
+        </div>
+        <p class="modal-subtitle" data-i18n="library.subtitle">Official repository of known swords, transformation phases, and earned badges.</p>
+
+        <!-- Three Sections: SWORDS, BADGES, and BESTIARY -->
+        <div class="library-nav">
+          <button id="tab-swords-btn" class="tab-btn active" data-i18n="library.tab_swords">⚔️ SWORDS</button>
+          <button id="tab-badges-btn" class="tab-btn" data-i18n="library.tab_badges">🏆 BADGES</button>
+          <button id="tab-npcs-btn" class="tab-btn" data-i18n="library.tab_npcs">👾 BESTIARY</button>
+        </div>
+
+        <!-- Section 1: SWORDS -->
+        <div id="library-swords-section" class="library-section">
+          <!-- Sword Sub-Navigation -->
+          <div class="library-sword-subnav">
+            <button id="lib-tab-devourer" class="subtab-btn active">👁️ DEVOURER</button>
+            <button id="lib-tab-overdrive" class="subtab-btn">⚡ OVERDRIVE</button>
+            <button id="lib-tab-aquatic" class="subtab-btn">🌊 AQUATIC</button>
+            <button id="lib-tab-soil" class="subtab-btn">🛡️ SOIL</button>
+            <button id="lib-tab-metallic" class="subtab-btn">⚙️ METALLIC</button>
+            <button id="lib-tab-flora" class="subtab-btn">🌿 FLORA</button>
+            <button id="lib-tab-hellfire" class="subtab-btn">🔥 HELLFIRE</button>
+          </div>
+
+          <div class="library-sword-header" id="library-sword-header">
+            <span class="library-sword-tag" id="lib-sword-tag">FIRST WEAPON</span>
+            <h3 id="lib-sword-name">DEVOURER</h3>
+            <p id="lib-sword-desc">An insatiable predatory blade that consumes enemy essence to empower its wielder, progressing across 17 phases up to 75,000 killstreak.</p>
+          </div>
+          <div class="library-phases-list" id="library-phases-container">
+            <!-- Populated dynamically via config (Phases 1-17 or Overdrive 1-7) -->
+          </div>
+        </div>
+
+        <!-- Section 2: BADGES -->
+        <div id="library-badges-section" class="library-section hidden">
+          <div class="badges-grid" id="library-badges-container">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Section 3: BESTIARY (NPCS) -->
+        <div id="library-npcs-section" class="library-section hidden">
+          <div class="library-npcs-header">
+            <span class="library-npcs-count" id="lib-npcs-total-count" data-i18n="library.npc_count">22 KNOWN ENTITIES</span>
+            <span class="library-npcs-sort-hint" data-i18n="library.npc_sort_hint">Ordered from Weakest to Strongest</span>
+          </div>
+          <div class="library-npcs-list" id="library-npcs-container">
+            <!-- Populated dynamically via Data.NPCs -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="close-library-btn-bottom" class="btn btn-secondary" data-i18n="library.btn_close">Close [Esc]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Achievements Modal (Opened from Main Menu) -->
+    <div id="achievements-modal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 data-i18n="achievements.title">🏆 Achievements</h2>
+          <button id="close-achievements-btn" class="modal-close">&times;</button>
+        </div>
+        <p class="modal-subtitle" data-i18n="achievements.subtitle">Milestones and honors unlocked during your battles.</p>
+        <div id="badges-list" class="badges-grid"></div>
+        <div class="modal-footer">
+          <button id="close-achievements-btn-bottom" class="btn btn-secondary" data-i18n="achievements.btn_back">Back [Esc]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Settings Modal -->
+    <div id="settings-modal" class="modal-backdrop hidden">
+      <div class="modal-card settings-card">
+        <div class="modal-header">
+          <h2><span id="settings-cog-trigger" class="settings-cog-trigger">⚙️</span> <span data-i18n="settings.title">Game Settings</span></h2>
+          <button id="close-settings-btn" class="modal-close">&times;</button>
+        </div>
+        
+        <div class="settings-list">
+          <div class="setting-row">
+            <span data-i18n="settings.language">Language</span>
+            <div class="setting-lang-group">
+              <button type="button" id="lang-btn-en" class="btn-lang active">English</button>
+              <button type="button" id="lang-btn-vi" class="btn-lang">Vietnamese</button>
+            </div>
+          </div>
+          <label class="setting-row">
+            <span data-i18n="settings.shake">Screen Shake Effect</span>
+            <input type="checkbox" id="setting-shake" checked>
+          </label>
+          <label class="setting-row">
+            <span data-i18n="settings.damage_numbers">Floating Damage Numbers</span>
+            <input type="checkbox" id="setting-numbers" checked>
+          </label>
+          <label class="setting-row">
+            <span data-i18n="settings.damage_taken">Show Damage Taken</span>
+            <input type="checkbox" id="setting-damage-taken" checked>
+          </label>
+          <div class="setting-row-danger">
+            <div>
+              <strong data-i18n="settings.reset_title">Reset Progress</strong>
+              <p class="danger-hint" data-i18n="settings.reset_desc">Erases lifetime kills, highest streak, and badges.</p>
+            </div>
+            <button id="reset-save-btn" class="btn btn-danger" data-i18n="settings.reset_btn">Reset Save</button>
+          </div>
+        </div>
+
+        <!-- Hidden Debug Authentication Section -->
+        <div id="debug-auth-container" class="debug-auth-container hidden">
+          <div class="debug-auth-header">
+            <span class="debug-auth-icon">🔒</span>
+            <span class="debug-auth-title" data-i18n="debug.auth_title">Developer Authentication</span>
+          </div>
+          <p class="debug-auth-desc" data-i18n="debug.auth_desc">Enter authorization password to access developer controls.</p>
+          <div class="debug-input-row">
+            <input type="password" id="debug-password-input" class="debug-text-input" data-i18n-placeholder="debug.password_placeholder" placeholder="Password" autocomplete="off" />
+            <button type="button" id="debug-password-submit" class="btn btn-secondary debug-btn-unlock" data-i18n="debug.unlock_btn">Unlock</button>
+          </div>
+          <div id="debug-password-error" class="debug-error-msg hidden" data-i18n="debug.error_msg">Incorrect password. Access denied.</div>
+        </div>
+
+        <!-- Hidden Debug Mode Panel -->
+        <div id="debug-panel" class="debug-panel hidden">
+          <div class="debug-panel-header">
+            <div class="debug-title-group">
+              <span class="debug-dev-tag">DEV</span>
+              <span class="debug-title-text" data-i18n="debug.title">DEBUG MODE</span>
+              <span id="debug-status-pill" class="debug-status-pill off">[ OFF ]</span>
+            </div>
+            <label class="debug-switch" title="Toggle Debug Mode">
+              <input type="checkbox" id="debug-mode-toggle" />
+              <span class="debug-slider"></span>
+            </label>
+          </div>
+
+          <div id="debug-actions-area" class="debug-actions-area disabled">
+            <div class="debug-section">
+              <div class="debug-section-label" data-i18n="debug.set_add_kills">⚡ Set / Add Kills (Total Kills Only)</div>
+              <div class="debug-btn-grid">
+                <button type="button" class="btn btn-debug-quick" data-debug-kills="10">+10 Kills</button>
+                <button type="button" class="btn btn-debug-quick" data-debug-kills="100">+100 Kills</button>
+                <button type="button" class="btn btn-debug-quick" data-debug-kills="1000">+1,000 Kills</button>
+                <button type="button" class="btn btn-debug-quick" data-debug-kills="10000">+10,000 Kills</button>
+              </div>
+              <div class="debug-input-row">
+                <input type="number" id="debug-custom-kills-input" class="debug-text-input" data-i18n-placeholder="debug.custom_placeholder" placeholder="Custom amount" min="0" max="1000000" />
+                <button type="button" id="debug-add-custom-kills-btn" class="btn btn-secondary debug-btn-action" data-i18n="debug.add_kills_btn">Add Kills</button>
+                <button type="button" id="debug-set-custom-kills-btn" class="btn btn-secondary debug-btn-action" data-i18n="debug.set_total_btn">Set Total</button>
+              </div>
+            </div>
+
+            <div class="debug-section">
+              <div class="debug-section-label" data-i18n="debug.badge_actions">🏆 Badge Actions (Achievements)</div>
+              <div class="debug-btn-grid">
+                <button type="button" id="debug-grant-all-badges-btn" class="btn btn-debug-highlight" data-i18n="debug.grant_all_btn">Grant All Badges</button>
+              </div>
+              <div id="debug-individual-badges-list" class="debug-badges-container"></div>
+            </div>
+
+            <div class="debug-section">
+              <div class="debug-section-label">🌑 Game Events</div>
+              <div class="debug-btn-grid">
+                <button type="button" id="debug-summon-bloodmoon-btn" class="btn btn-debug-highlight">Summon Bloodmoon</button>
+                <button type="button" id="debug-end-bloodmoon-btn" class="btn btn-debug-quick">End Bloodmoon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="close-settings-btn-bottom" class="btn btn-secondary" data-i18n="settings.btn_back">Back [Esc]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="stats-modal" class="modal-backdrop hidden">
+      <div class="modal-card stats-card">
+        <div class="modal-header">
+          <h2 data-i18n="stats.title">📊 Game Statistics</h2>
+          <button id="close-stats-btn" class="modal-close">&times;</button>
+        </div>
+        <p class="modal-subtitle" data-i18n="stats.subtitle">Lifetime combat records and progression metrics.</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-card-label" data-i18n="stats.total_playtime">Total Playtime</span>
+            <span id="stat-total-playtime" class="stat-card-value">0m 0s</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-label" data-i18n="stats.total_kills">Total Kills</span>
+            <span id="stat-total-kills" class="stat-card-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-label" data-i18n="stats.highest_streak">Highest Killstreak</span>
+            <span id="stat-highest-streak" class="stat-card-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-label" data-i18n="stats.current_phase">Current Phase</span>
+            <span id="stat-current-phase" class="stat-card-value">Phase 1: Hunger</span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="close-stats-btn-bottom" class="btn btn-secondary" data-i18n="stats.btn_back">Back [Esc]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Game Over Screen -->
+    <div id="game-over-screen" class="overlay-screen hidden">
+      <div class="overlay-card">
+        <h1 class="death-title" data-i18n="game_over.title">YOU DIED</h1>
+        <p class="death-subtitle" data-i18n="game_over.subtitle">Your killstreak has ended in the grassland.</p>
+        
+        <div class="run-summary">
+          <div class="summary-item">
+            <span class="label" data-i18n="game_over.streak_reached">Streak Reached</span>
+            <span id="run-streak" class="val">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="label" data-i18n="game_over.weapon">Weapon</span>
+            <span id="run-weapon" class="val">DEVOURER</span>
+          </div>
+          <div class="summary-item">
+            <span class="label" data-i18n="game_over.phase_reached">Phase Reached</span>
+            <span id="run-phase" class="val">PHASE: HUNGER</span>
+          </div>
+          <div class="summary-item">
+            <span class="label" data-i18n="game_over.best_streak">Best Streak</span>
+            <span id="run-best-streak" class="val">0</span>
+          </div>
+        </div>
+
+        <div class="death-actions">
+          <button id="respawn-combat-btn" class="btn btn-primary" data-i18n="game_over.btn_fight_again">Fight Again [Space]</button>
+          <button id="return-lobby-btn" class="btn btn-secondary" data-i18n="game_over.btn_return_lobby">Return to Lobby</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Full Map Modal (Interactive Pan & Zoom) -->
+    <div id="map-modal" class="modal-backdrop hidden">
+      <div class="modal-card full-map-card">
+        <div class="modal-header">
+          <div class="full-map-header-left">
+            <span class="modal-tag" data-i18n="map.modal_tag">TACTICAL NAVIGATION</span>
+            <h2 id="full-map-heading" data-i18n="map.full_title">🗺️ WORLD MAP</h2>
+          </div>
+          <div class="full-map-player-pill">
+            <span class="full-map-player-label" data-i18n="map.player_coords_label">COORDINATES:</span>
+            <span id="full-map-coords-text" class="full-map-player-coords">X: 0 | Y: 0</span>
+          </div>
+          <div class="full-map-controls-group">
+            <button type="button" id="map-zoom-in-btn" class="map-btn-icon" title="Zoom In">+</button>
+            <button type="button" id="map-zoom-out-btn" class="map-btn-icon" title="Zoom Out">&minus;</button>
+            <button type="button" id="map-reset-btn" class="map-btn-icon" title="Reset View">⟲</button>
+            <button type="button" id="close-map-btn" class="modal-close">&times;</button>
+          </div>
+        </div>
+
+        <div class="full-map-viewport" id="full-map-viewport">
+          <canvas id="full-map-canvas" width="880" height="460"></canvas>
+          <div id="full-map-tooltip" class="map-tooltip hidden"></div>
+        </div>
+
+        <div class="modal-footer full-map-footer">
+          <div class="full-map-legend">
+            <span class="legend-item"><span class="legend-dot player-dot"></span> <span data-i18n="map.legend_player">Player</span></span>
+            <span class="legend-item"><span class="legend-dot zone-dot"></span> <span data-i18n="map.legend_zone">NPC Zones</span></span>
+            <span class="legend-hint" data-i18n="map.hint">Drag to pan • Scroll to zoom • Hover zone for info</span>
+          </div>
+          <button id="close-map-btn-bottom" class="btn btn-secondary" data-i18n="map.btn_close">Close [Esc / M]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. Phase 17 Transformation Cutscene Overlay -->
+    <div id="cutscene-overlay" class="cutscene-overlay hidden">
+      <div class="cutscene-bars cutscene-bar-top"></div>
+      <div class="cutscene-bars cutscene-bar-bottom"></div>
+      <div class="cutscene-dialogue-box">
+        <div class="cutscene-speaker-tag">
+          <span class="cutscene-icon">👑</span>
+          <span id="cutscene-speaker">DEVOURER — TRANSCENDENCE</span>
+        </div>
+        <p id="cutscene-text" class="cutscene-text"></p>
+        <div class="cutscene-footer">
+          <span class="cutscene-hint" data-i18n="cutscene.hint">[SPACE] or Click to Continue</span>
+          <button id="cutscene-skip-btn" class="cutscene-skip-btn" data-i18n="cutscene.btn_skip">SKIP [ESC]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. Toast Notifications -->
+    <div id="toast" class="toast hidden">
+      <div id="toast-icon" class="toast-icon">⚔️</div>
+      <div class="toast-content">
+        <div id="toast-title" class="toast-title">Achievement Unlocked!</div>
+        <div id="toast-desc" class="toast-desc">First Blood</div>
+      </div>
+    </div>
+
+    <!-- 11. Bloodmoon Screen Tint Overlay (Canvas-level, pointer-events: none) -->
+    <div id="bloodmoon-tint" class="bloodmoon-tint hidden"></div>
+
+    <!-- 12. Bloodmoon Event Notification Banner -->
+    <div id="bloodmoon-banner" class="bloodmoon-banner hidden" aria-live="assertive" aria-label="Bloodmoon Event Active">
+      <div class="bloodmoon-banner-inner">
+        <span class="bloodmoon-moon-icon">🌑</span>
+        <div class="bloodmoon-text-group">
+          <span class="bloodmoon-label" id="bloodmoon-label-text">BLOODMOON</span>
+          <span class="bloodmoon-sublabel" id="bloodmoon-sublabel-text">The crimson moon rises — darkness descends upon the grassland!</span>
+        </div>
+        <span class="bloodmoon-moon-icon">🌑</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vite ES Module Entry Point -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

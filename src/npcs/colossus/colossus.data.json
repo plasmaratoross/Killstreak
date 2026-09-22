@@ -1,0 +1,20 @@
+{
+  "id": "colossus",
+  "name": "Colossus",
+  "description": "Titanic stone-armored giant with earth-shaking blows and near-impenetrable bulk.",
+  "radius": 22,
+  "speed": 85,
+  "maxHp": 110000,
+  "damage": 8750,
+  "attackRate": 1.1,
+  "attackRange": 22,
+  "killsAwarded": 3,
+  "killstreakAwarded": 450,
+  "respawnDelay": 5,
+  "color": "#616a6b",
+  "glowColor": "rgba(97, 106, 107, 0.80)",
+  "massScale": 0.1,
+  "shoveRatio": 0.25,
+  "barWidth": 62,
+  "barColor": "#839192"
+}

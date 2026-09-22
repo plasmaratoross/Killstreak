@@ -1,0 +1,29 @@
+/**
+ * Duskhorn NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.duskhorn = {
+    id: "duskhorn",
+    name: "Duskhorn",
+    description: "Shadow-forged twilight stalker crowned with crystalline obsidian horns radiating eerie void resonance.",
+    radius: 23,
+    speed: 125,
+    maxHp: 1150000,
+    damage: 78000,
+    attackRate: 0.82,
+    attackRange: 23,
+    killsAwarded: 5,
+    killstreakAwarded: 2500,
+    respawnDelay: 5.5,
+    color: "#1e1b4b",
+    glowColor: "rgba(168, 85, 247, 0.90)",
+    massScale: 0.08,
+    shoveRatio: 0.22,
+    barWidth: 70,
+    barColor: "#a855f7"
+  };
+})(window);

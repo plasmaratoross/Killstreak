@@ -1,0 +1,23 @@
+{
+  "out": "src/ui/language.js",
+  "backup": "scratch/backup/main.js.language.bak",
+  "fns": [
+    {
+      "name": "updateLanguageUI",
+      "params": [
+        "lang"
+      ],
+      "lines": 9
+    }
+  ],
+  "callArgs": {},
+  "neededRefs": [
+    "langBtnEn",
+    "langBtnVi"
+  ],
+  "neededUtils": [],
+  "needsI18n": false,
+  "needsConfig": false,
+  "moduleState": [],
+  "recordedAt": "2026-09-22T15:26:15.585Z"
+}

@@ -1,0 +1,33 @@
+{
+  "out": "src/ui/badges.js",
+  "backup": "scratch/backup/main.js.badges.bak",
+  "fns": [
+    {
+      "name": "renderBadges",
+      "params": [
+        "unlockedBadges = []",
+        "targetElement = badgesList"
+      ],
+      "lines": 19
+    },
+    {
+      "name": "renderDebugBadges",
+      "params": [
+        "game"
+      ],
+      "lines": 31
+    }
+  ],
+  "callArgs": {
+    "renderDebugBadges": "game"
+  },
+  "neededRefs": [
+    "badgesList",
+    "debugIndividualBadgesList"
+  ],
+  "neededUtils": [],
+  "needsI18n": true,
+  "needsConfig": true,
+  "moduleState": [],
+  "recordedAt": "2026-09-22T15:25:56.941Z"
+}

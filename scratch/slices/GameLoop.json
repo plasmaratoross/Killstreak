@@ -1,0 +1,46 @@
+{
+  "out": "src/core/GameLoop.js",
+  "backup": "scratch/backup/main.js.GameLoop.bak",
+  "fns": [
+    {
+      "name": "loop",
+      "params": [
+        "game",
+        "currentTimestamp"
+      ],
+      "lines": 62
+    }
+  ],
+  "callArgs": {},
+  "callbacks": {
+    "loop": {
+      "event": "ts",
+      "args": "game"
+    }
+  },
+  "neededRefs": [
+    "hudHpText",
+    "hudHpBar",
+    "hudShieldBar",
+    "hudDmgVal",
+    "hudScaleVal"
+  ],
+  "refsImport": "../ui/domRefs.js",
+  "neededUtils": [
+    {
+      "file": "format",
+      "names": [
+        "formatNumber"
+      ]
+    }
+  ],
+  "needsI18n": true,
+  "needsConfig": false,
+  "moduleState": [
+    "let lastTimestamp = performance.now();"
+  ],
+  "stateSetters": {},
+  "excludeRefs": [],
+  "extraImports": [],
+  "recordedAt": "2026-09-22T15:50:43.734Z"
+}

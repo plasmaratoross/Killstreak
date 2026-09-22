@@ -1,0 +1,67 @@
+{
+  "out": "src/ui/library.js",
+  "backup": "scratch/backup/main.js.library.bak",
+  "fns": [
+    {
+      "name": "renderLibrary",
+      "params": [
+        "game"
+      ],
+      "lines": 25
+    },
+    {
+      "name": "renderLibraryNpcs",
+      "params": [],
+      "lines": 190
+    },
+    {
+      "name": "renderLibrarySwords",
+      "params": [
+        "game"
+      ],
+      "lines": 100
+    }
+  ],
+  "callArgs": {
+    "renderLibrary": "game",
+    "renderLibrarySwords": "game"
+  },
+  "callbacks": {},
+  "neededRefs": [
+    "libraryPhasesContainer",
+    "libraryBadgesContainer",
+    "libraryNpcsContainer",
+    "libNpcsTotalCount",
+    "libTabDevourer",
+    "libTabOverdrive",
+    "libTabAquatic",
+    "libTabSoil",
+    "libTabMetallic",
+    "libTabFlora",
+    "libTabHellfire",
+    "libSwordTag",
+    "libSwordName",
+    "libSwordDesc"
+  ],
+  "refsImport": "./domRefs.js",
+  "neededUtils": [
+    {
+      "file": "format",
+      "names": [
+        "formatNumber"
+      ]
+    }
+  ],
+  "needsI18n": true,
+  "needsConfig": true,
+  "moduleState": [
+    "let selectedLibrarySword = \"devourer\";"
+  ],
+  "stateSetters": {
+    "selectedLibrarySword": "setSelectedLibrarySword"
+  },
+  "excludeRefs": [
+    "canvas"
+  ],
+  "recordedAt": "2026-09-22T15:31:37.625Z"
+}

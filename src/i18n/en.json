@@ -1,0 +1,1059 @@
+{
+  "menu": {
+    "title": "KILLSTREAK",
+    "play": "PLAY",
+    "library": "LIBRARY",
+    "achievements": "ACHIEVEMENTS",
+    "settings": "SETTINGS",
+    "return_lobby": "RETURN TO LOBBY",
+    "controls_footer": "Move: WASD / Arrows • Aim: Mouse • Attack: Left Click / Space"
+  },
+  "hud": {
+    "hp": "HP",
+    "dmg_tag": "⚔️ {damage} DMG",
+    "no_sword": "🛡️ NO SWORD",
+    "scale_streak": "Base: {dmg} DMG • {hp} HP (+{streak} streak)",
+    "scale_base": "Base: {dmg} DMG • {hp} HP",
+    "unequipped": "Unequipped",
+    "killstreak": "KILLSTREAK",
+    "kills": "KILLS",
+    "phase_prefix": "PHASE: {name}",
+    "unequipped_caps": "UNEQUIPPED",
+    "no_sword_caps": "NO SWORD",
+    "area_prefix": "AREA: {name}",
+    "stats_btn": "📊 STATS",
+    "stats_btn_title": "View Statistics",
+    "library_btn": "📖 LIBRARY",
+    "library_btn_title": "Open Library",
+    "lobby_btn": "🏠 LOBBY",
+    "lobby_btn_title": "Return to Sanctuary Lobby",
+    "menu_btn": "MENU [ESC]",
+    "menu_btn_title": "Pause / Menu",
+    "debug_streak_label": "Debug Killstreak:",
+    "debug_streak_placeholder": "amount",
+    "debug_apply_btn": "APPLY"
+  },
+  "skills": {
+    "gluttony_label": "[ Z — GLUTTONY ]",
+    "gluttony_title": "Gluttony [Z] — Beam attack (Phase 10+)",
+    "engulf_label": "[ X — ENGULF ]",
+    "engulf_title": "Engulf [X] — Devourer AoE aura (Phase 17)",
+    "fortitude_label": "[ Z — FORTITUDE ]",
+    "fortitude_title": "Fortitude [Z] — Shield equal to 15% of current HP for 5s (Phase 4+, 20s CD)",
+    "tsunami_label": "[ Z — TSUNAMI ]",
+    "tsunami_title": "Tsunami [Z] — Sweeping wave dealing 4x sword damage (Phase 9+)",
+    "iron_will_label": "[ Z — IRON WILL ]",
+    "iron_will_title": "Iron Will [Z] — 46% DMG reduction for 6.9s & retaliatory shrapnel (Phase 4+, 17s CD)",
+    "worldroot_label": "[ Z — WORLDROOT ]",
+    "worldroot_title": "Worldroot [Z] — Entangle foes in briar thorns for 2.9s & heal 23% max HP over 4s (Phase 4+, 19s CD)",
+    "cataclysm_label": "[ Z — CATACLYSM ]",
+    "cataclysm_title": "Cataclysm [Z] — Slams blade releasing explosive magma eruptions dealing 5.75x DMG (Phase 4+, 15.3s CD)",
+    "locked_p4": "LOCKED (P4)",
+    "locked_p9": "LOCKED (P9)",
+    "locked_p10": "LOCKED (P10)",
+    "locked_p17": "LOCKED (P17)",
+    "locked": "LOCKED",
+    "active": "ACTIVE",
+    "ready": "READY"
+  },
+  "floating": {
+    "aquatic_unlocked": "AQUATIC UNLOCKED!",
+    "soil_unlocked": "SOIL UNLOCKED!",
+    "soil_p10": "THE INDESTRUCTIBLE FORTRESS!",
+    "metallic_unlocked": "METALLIC UNLOCKED!",
+    "metallic_p10": "ETERNAL STEEL!",
+    "flora_unlocked": "FLORA UNLOCKED!",
+    "flora_p10": "THE EVERGROWTH!",
+    "hellfire_unlocked": "HELLFIRE UNLOCKED!",
+    "hellfire_p10": "THE INFERNAL!",
+    "all_devourer": "THE ALL DEVOURER ASCENDS!",
+    "fortitude": "FORTITUDE!",
+    "tsunami": "TSUNAMI!",
+    "iron_will": "IRON WILL!",
+    "worldroot": "WORLDROOT!",
+    "cataclysm": "CATACLYSM!",
+    "gluttony": "GLUTTONY!",
+    "engulf": "ENGULF!"
+  },
+  "prompts": {
+    "inspect": "Inspect {sword} [E]",
+    "enter_grassland": "Enter Grassland [E]",
+    "return_to_lobby": "Return to Lobby [E]",
+    "confirm_return_lobby": "Return to Sanctuary Lobby? Current sword killstreak ({streak}) will reset to 0."
+  },
+  "pedestal": {
+    "tag": "WEAPON PEDESTAL",
+    "weapon_label": "Weapon:",
+    "current_phase_label": "Current Phase:",
+    "phase_desc": "PHASE {phase}: {name} ({kills} KILLSTREAK)",
+    "phase_pedestal": "PHASE {phase}: {name} (PEDESTAL)",
+    "phase_locked": "LOCKED ({kills} LIFETIME KILLS NEEDED)",
+    "base_stats_label": "Base Stats:",
+    "base_stats_val": "{damage} DMG • {hp} HP",
+    "scaling_label": "Kill Scaling:",
+    "scaling_val": "+{kills} Phase Kills{bonus}",
+    "scaling_pedestal": "+0 Phase Kills (Pedestal)",
+    "scaled_bonus": " (+{pct}% scaled)",
+    "active_power_label": "Active Power:",
+    "active_power_val": "{damage} DMG • {hp} HP • {speed} SPD • Reach: {reach}px",
+    "lock_hint": "🔒 Requires 1,250 Lifetime Kills to Equip (Current: {kills})",
+    "btn_equip": "EQUIP",
+    "btn_equipped": "EQUIPPED ✓",
+    "btn_switch": "SWITCH TO {name}",
+    "btn_locked": "LOCKED 🔒",
+    "btn_close": "Close [Esc]"
+  },
+  "library": {
+    "tag": "SANCTUARY ARCHIVE",
+    "title": "📖 LIBRARY",
+    "subtitle": "Official repository of known swords, transformation phases, and earned badges.",
+    "tab_swords": "⚔️ SWORDS",
+    "tab_badges": "🏆 BADGES",
+    "tab_npcs": "👾 BESTIARY",
+    "npc_count": "{count} KNOWN ENTITIES",
+    "npc_sort_hint": "Ordered from Weakest to Strongest",
+    "stat_hp": "HP",
+    "stat_damage": "DAMAGE",
+    "stat_attack_speed": "ATK RATE",
+    "stat_streak": "STREAK",
+    "stat_kills": "KILLS",
+    "stat_respawn": "RESPAWN",
+    "stat_location": "ZONE",
+    "tier_1": "TIER I • NOVICE",
+    "tier_2": "TIER II • ADEPT",
+    "tier_3": "TIER III • ELITE",
+    "tier_4": "TIER IV • DREAD",
+    "tier_5": "TIER V • APEX",
+    "final_badge": "👑 FINAL TRANSFORMATION",
+    "transitional_hurdle": "TRANSITIONAL HURDLE",
+    "deliberate_collapse": "DELIBERATE COLLAPSE",
+    "speed_unit": "SPD",
+    "req_streak": "Requirement: {kills} Killstreak",
+    "active_scaled": "Active Scaled: {damage} DMG • {hp} HP (+{kills} kills in active phase)",
+    "badge_unlocked": "UNLOCKED",
+    "badge_locked": "LOCKED",
+    "btn_close": "Close [Esc]"
+  },
+  "achievements": {
+    "title": "🏆 Achievements",
+    "subtitle": "Milestones and honors unlocked during your battles.",
+    "btn_back": "Back [Esc]",
+    "status_unlocked": "Unlocked",
+    "status_locked": "Locked",
+    "items": {
+      "getting_started": {
+        "title": "Getting Started",
+        "description": "Join and begin your journey with Devourer."
+      },
+      "all_devourer": {
+        "title": "All Devourer",
+        "description": "Marks completion of the final Devourer phase (75,000 killstreak)."
+      },
+      "overdrive_ascended": {
+        "title": "Overdrive Ascended",
+        "description": "Unlock when reaching the final phase of Overdrive (25,000 killstreak)."
+      },
+      "aquatic_ascended": {
+        "title": "Aquatic Ascended",
+        "description": "Unlock when reaching the final phase of Aquatic (145,000 killstreak)."
+      },
+      "soil_ascended": {
+        "title": "Indestructible Soil Fortress",
+        "description": "Unlock when reaching the final phase of Soil (160,000 killstreak)."
+      },
+      "metallic_ascended": {
+        "title": "Eternal Steel",
+        "description": "Unlock when reaching the final phase of Metallic (198,000 killstreak)."
+      },
+      "flora_ascended": {
+        "title": "The Evergrowth",
+        "description": "Unlock when reaching the final phase of Flora (230,000 killstreak)."
+      },
+      "hellfire_ascended": {
+        "title": "The Infernal",
+        "description": "Unlock when reaching the final phase of Hellfire (264,375 killstreak)."
+      }
+    }
+  },
+  "settings": {
+    "title": "Game Settings",
+    "language": "Language",
+    "lang_en": "English",
+    "lang_vi": "Vietnamese",
+    "shake": "Screen Shake Effect",
+    "damage_numbers": "Floating Damage Numbers",
+    "damage_taken": "Show Damage Taken",
+    "reset_title": "Reset Progress",
+    "reset_desc": "Erases lifetime kills, highest streak, and badges.",
+    "reset_btn": "Reset Save",
+    "reset_confirm": "Reset all lifetime kills, highest streak, and unlocked badges?",
+    "btn_back": "Back [Esc]"
+  },
+  "debug": {
+    "auth_title": "Developer Authentication",
+    "auth_desc": "Enter authorization password to access developer controls.",
+    "password_placeholder": "Password",
+    "unlock_btn": "Unlock",
+    "error_msg": "Incorrect password. Access denied.",
+    "title": "DEBUG MODE",
+    "status_on": "[ ON ]",
+    "status_off": "[ OFF ]",
+    "set_add_kills": "⚡ Set / Add Kills (Total Kills Only)",
+    "custom_placeholder": "Custom amount",
+    "add_kills_btn": "Add Kills",
+    "set_total_btn": "Set Total",
+    "badge_actions": "🏆 Badge Actions (Achievements)",
+    "grant_all_btn": "Grant All Badges",
+    "grant_btn": "Grant",
+    "granted_btn": "Granted",
+    "quick_add_kills": "+{n} Kills"
+  },
+  "stats": {
+    "title": "📊 Game Statistics",
+    "subtitle": "Lifetime combat records and progression metrics.",
+    "total_playtime": "Total Playtime",
+    "total_kills": "Total Kills",
+    "highest_streak": "Highest Killstreak",
+    "current_phase": "Current Phase",
+    "none_unequipped": "None (Unequipped)",
+    "btn_back": "Back [Esc]"
+  },
+  "game_over": {
+    "title": "YOU DIED",
+    "subtitle": "Your killstreak has ended in the grassland.",
+    "streak_reached": "Streak Reached",
+    "weapon": "Weapon",
+    "phase_reached": "Phase Reached",
+    "best_streak": "Best Streak",
+    "btn_fight_again": "Fight Again [Space]",
+    "btn_return_lobby": "Return to Lobby"
+  },
+  "cutscene": {
+    "speaker_transcendence": "DEVOURER — TRANSCENDENCE",
+    "speaker_all_devourer": "THE ALL DEVOURER",
+    "speaker_spring": "PRIMORDIAL SPRING",
+    "speaker_aquatic_unlock": "AQUATIC — THE DROWNING TIDE",
+    "speaker_aquatic_p13": "AQUATIC — OMNITIDAL",
+    "speaker_ocean": "THE PRIMORDIAL OCEAN",
+    "speaker_core": "EARTHEN CORE",
+    "speaker_soil": "SOIL",
+    "speaker_soil_p10": "SOIL — PHASE 10: THE INDESTRUCTIBLE FORTRESS",
+    "speaker_metallic": "METALLIC",
+    "speaker_metallic_p10": "METALLIC — PHASE 10: ETERNAL STEEL",
+    "speaker_flora": "FLORA",
+    "speaker_flora_p10": "FLORA — PHASE 10: THE EVERGROWTH",
+    "speaker_hellfire": "HELLFIRE",
+    "speaker_hellfire_p10": "HELLFIRE — PHASE 10: THE INFERNAL",
+    "speaker_grove": "ELDER GROVE",
+    "speaker_anvil": "ANVIL OF WILL",
+    "speaker_abyss": "INFERNAL ABYSS",
+    "dialogue_1": "The endless hunger ceases its trembling. All that lived and breathed in this realm... has been consumed.",
+    "dialogue_2": "Seventy-five thousand souls surrendered their essence to forge this final vessel.",
+    "dialogue_3": "The blade transcends mortal flesh, bone, and steel. Reality itself bends to your divine command.",
+    "dialogue_4": "BEHOLD — THE APEX OF CONSUMPTION IS ATTAINED. I AM THE ALL DEVOURER.",
+    "aquatic_unlock_1": "In the beginning, there was only silence... and a single falling drop.",
+    "aquatic_unlock_2": "Two thousand five hundred souls have fallen. Their essence converges into an oceanic wellspring.",
+    "aquatic_unlock_3": "The quiet ripples have begun to stir. Take the blade... and let the deluge commence.",
+    "aquatic_p13_1": "The continents submerge beneath a boundless, unforgiving abyss.",
+    "aquatic_p13_2": "One hundred and forty-five thousand lives swept away into the infinite tide.",
+    "aquatic_p13_3": "Every drop of water in existence now answers to your pulse. Phase 13 — Omnitidal. The deluge is complete.",
+    "soil_unlock_1": "Deep beneath the soil, ancient roots awaken.",
+    "soil_unlock_2": "Three thousand five hundred battles have nourished the earth beneath your feet.",
+    "soil_unlock_3": "I'm... just dirt. But I'll protect what I can.",
+    "soil_unlock_4": "Take me. Together, we will make sure nothing ever reaches your treasure.",
+    "soil_p10_1": "[The screen briefly darkens.]\n\nYou thought I had fallen?",
+    "soil_p10_2": "[The broken blade sinks into the ground.]\n\nNo.\n\nI returned to where I began.",
+    "soil_p10_3": "[The ground begins trembling. Cracks spread outward from the sword.]\n\nEvery grain...\nEvery fragment...\nEvery piece of me that was broken...",
+    "soil_p10_4": "[The scattered dirt from previous phases begins floating toward the blade.]\n\n...was still mine.",
+    "soil_p10_5": "[Massive layers of earth rise from the ground and surround the sword.]\n\nI spent every battle learning how to endure.\nEvery defeat taught me how to rebuild.",
+    "soil_p10_6": "[The earth rapidly compresses, becoming incredibly dense and towering.]\n\nI am no longer loose dirt.\nI am no longer merely a blade.",
+    "soil_p10_7": "[The entire structure erupts into a colossal fortress-like sword.]\n\nI am the ground beneath your feet.\nThe wall between your treasure and everything that seeks to take it.",
+    "soil_p10_8": "[The fortress settles into complete silence.]\n\nCome.\nBreak yourself against me.",
+    "soil_p10_9": "As long as I stand...\nYour treasure will never be taken.",
+    "metallic_unlock_1": "From raw iron and molten fire, an unyielding will takes shape.",
+    "metallic_unlock_2": "Five thousand foes have fallen before your resolve. The steel recognizes its master.",
+    "metallic_unlock_3": "I was discarded once. Now, I have another purpose.",
+    "metallic_unlock_4": "Hold me firm. We will bend neither to hardship nor death.",
+    "metallic_p10_1": "[The sword ceases all vibration. The air around it feels unnaturally heavy.]\n\nThere is nothing left to temper.",
+    "metallic_p10_2": "[The scratches on the blade begin to glow with cold white light.]\n\nEvery strike against me...\nEvery blow meant to shatter me...",
+    "metallic_p10_3": "[The cracks and dents fill in, not by healing, but by folding into denser steel.]\n\n...was simply another hammer blow.",
+    "metallic_p10_4": "[A ringing sound echoes—like an anvil struck in an empty cathedral.]\n\nI was scrap.\nI became a weapon.",
+    "metallic_p10_5": "[The blade transforms into perfectly polished, dark silver steel. No reflections appear on its surface.]\n\nNow...",
+    "metallic_p10_6": "[The white glow settles deep inside the core of the blade.]\n\nI am the standard against which all force is measured.",
+    "metallic_p10_7": "[The sword emits a low, steady hum that does not fade.]\n\nBring your worst.\nBring everything.",
+    "metallic_p10_8": "[The screen flashes pure white for a fraction of a second.]\n\nI will not bend.\nI will not break.",
+    "metallic_p10_9": "I am Eternal Steel.",
+    "metallic_p10_10": "And I will outlast all of you.",
+    "flora_unlock_1": "Leaves rustle as ancient roots stir beneath the emerald meadow.",
+    "flora_unlock_2": "Seven thousand slaughters have fertilized the timeless grove. The forest awakens.",
+    "flora_unlock_3": "A sprout in the storm... but patience outlives all tempests.",
+    "flora_unlock_4": "Take root with me. Together, we shall endure longer than the mountains.",
+    "flora_p10_1": "[Roots slowly retreat into the soil. The world falls completely still.]\n\nYou fought so hard.",
+    "flora_p10_2": "[Green light pulses softly through the ground, spreading outward in all directions.]\n\nYou conquered empires.\nYou built monuments.\nYou swung your weapons with such fury.",
+    "flora_p10_3": "[Vines begin growing over everything—the arena, the weapons, the fallen.]\n\nAnd yet...",
+    "flora_p10_4": "[Flowers bloom in the cracks of broken armor.]\n\n...the grass always returns.",
+    "flora_p10_5": "[Massive ancient roots erupt from the earth, interlocking into an immense living sword.]\n\nI do not need to defeat you.\nI only need to exist.",
+    "flora_p10_6": "[Leaves drift down, glowing with calm, pale green light.]\n\nYour strength will fade.\nYour iron will rust.\nYour fires will die.",
+    "flora_p10_7": "[The living sword pulses with slow, heartbeat-like warmth.]\n\nAnd when everything you built has turned to dust...",
+    "flora_p10_8": "[A single new sprout opens at the tip of the blade.]\n\n...I will still be growing.",
+    "flora_p10_9": "I am the Evergrowth.",
+    "flora_p10_10": "Life does not end.",
+    "flora_p10_11": "It only takes back what was always its own.",
+    "hellfire_unlock_1": "The air scorches with suffocating heat as obsidian fissures rip open.",
+    "hellfire_unlock_2": "Ten thousand souls burned away in your crucible of slaughter. The demon within demands release.",
+    "hellfire_unlock_3": "A spark... it is enough to ignite the world.",
+    "hellfire_unlock_4": "Unleash me! Feed me! Let nothing remain but ash!",
+    "hellfire_p10_1": "[The flames completely disappear. The screen goes pitch black.]\n\n...",
+    "hellfire_p10_2": "[A single red line appears down the center of the screen, splitting the darkness.]\n\nYou thought it was a fire you could put out?",
+    "hellfire_p10_3": "[The red line tears open into an ocean of black and crimson fire.]\n\nFIRE DOES NOT NEGOTIATE.",
+    "hellfire_p10_4": "[The sword reappears—surrounded by jagged obsidian horns and swirling black flame.]\n\nIt does not pause.\nIt does not show mercy.",
+    "hellfire_p10_5": "[The ground around the sword melts instantly into bubbling magma.]\n\nIt only consumes.",
+    "hellfire_p10_6": "[The blade erupts with a sound like a volcanic explosion.]\n\nYou brought me foes.\nYou brought me souls.\nYou gave me everything I needed to burn through the cage.",
+    "hellfire_p10_7": "[Pillars of black fire shoot skyward, turning the sky dark red.]\n\nNow...",
+    "hellfire_p10_8": "[The sword burns with fire so dark it absorbs the light around it.]\n\nTHERE IS NOTHING LEFT TO HOLD ME BACK.",
+    "hellfire_p10_9": "[Violent tremors shake the entire screen. The fire roars with terrifying intensity.]\n\nBURN!",
+    "hellfire_p10_10": "I am The Infernal.",
+    "hellfire_p10_11": "And everything ends in ash.",
+    "hint": "[SPACE] or Click to Continue",
+    "btn_skip": "SKIP [ESC]"
+  },
+  "toasts": {
+    "entered_combat_title": "Entered Open Grassland",
+    "entered_combat_desc": "Strike stationary sentries in the feeding grounds!",
+    "weapon_locked_title": "WEAPON LOCKED",
+    "weapon_locked_desc": "Requires 1,250 Total Kills to equip Overdrive!",
+    "weapon_locked_req_desc": "Requires {req} Total Kills to equip {name}!",
+    "weapon_aquatic_locked_desc": "Requires 2,500 Total Kills to equip Aquatic!",
+    "weapon_soil_locked_desc": "Requires 3,500 Total Kills to equip Soil!",
+    "weapon_metallic_locked_desc": "Requires 5,000 Total Kills to equip Metallic!",
+    "weapon_flora_locked_desc": "Requires 7,000 Total Kills to equip Flora!",
+    "weapon_hellfire_locked_desc": "Requires 10,000 Total Kills to equip Hellfire!",
+    "aquatic_unlock_title": "WEAPON UNLOCKED",
+    "aquatic_unlock_desc": "Aquatic — The Drowning Tide is now available!",
+    "aquatic_p13_title": "MAXIMUM TRANSCENDENCE",
+    "aquatic_p13_desc": "Phase 13: Omnitidal — Primordial ocean divinity reached!",
+    "soil_unlock_title": "WEAPON UNLOCKED",
+    "soil_unlock_desc": "Soil — The Indestructible Fortress is now available!",
+    "soil_p10_title": "INDESTRUCTIBLE FORTRESS",
+    "soil_p10_desc": "Phase 10: Soil — Indestructible Fortress transformation complete!",
+    "metallic_unlock_title": "WEAPON UNLOCKED",
+    "metallic_unlock_desc": "Metallic — The Forged Will is now available!",
+    "metallic_p10_title": "ETERNAL STEEL",
+    "metallic_p10_desc": "Phase 10: Metallic — Eternal Steel forged!",
+    "flora_unlock_title": "WEAPON UNLOCKED",
+    "flora_unlock_desc": "Flora — The Evergrowth is now available!",
+    "flora_p10_title": "THE EVERGROWTH",
+    "flora_p10_desc": "Phase 10: Flora — The Evergrowth blooms!",
+    "hellfire_unlock_title": "WEAPON UNLOCKED",
+    "hellfire_unlock_desc": "Hellfire — The Infernal is now available!",
+    "hellfire_p10_title": "THE INFERNAL",
+    "hellfire_p10_desc": "Phase 10: Hellfire — The Infernal unleashed!",
+    "overdrive_up_title": "OVERDRIVE PHASE UP",
+    "overdrive_up_desc": "Reached {name}",
+    "aquatic_up_title": "AQUATIC DELUGE",
+    "aquatic_up_desc": "Reached {name}",
+    "soil_up_title": "SOIL FORTITUDE",
+    "soil_up_desc": "Reached {name}",
+    "metallic_up_title": "STEEL TEMPERED",
+    "metallic_up_desc": "Reached {name}",
+    "flora_up_title": "EVERGROWTH SPREADS",
+    "flora_up_desc": "Reached {name}",
+    "hellfire_up_title": "INFERNAL BLAZE",
+    "hellfire_up_desc": "Reached {name}",
+    "devourer_up_title": "DEVOURER AWAKENED",
+    "devourer_up_desc": "PHASE: {name}",
+    "achievement_unlocked_title": "Achievement Unlocked!",
+    "sword_equipped_title": "{name} Equipped",
+    "sword_equipped_desc": "Ready to fight in the grassland.",
+    "sword_unequipped_title": "Sword Unequipped",
+    "sword_unequipped_desc": "Returned to weapon pedestal.",
+    "save_reset_title": "Save Reset",
+    "save_reset_desc": "All progress has been reset.",
+    "invalid_amount_title": "Invalid Amount",
+    "invalid_amount_desc": "Total kills must be 0 or positive.",
+    "invalid_input_title": "Invalid Input",
+    "invalid_input_desc": "Please enter a killstreak amount.",
+    "invalid_streak_title": "Invalid Killstreak",
+    "invalid_streak_desc": "Killstreak must be 0 or positive.",
+    "dev_mode_title": "Developer Mode",
+    "dev_mode_desc": "Access granted. Debug controls available.",
+    "debug_kills_add_title": "Debug: Total Kills Added",
+    "debug_kills_add_desc": "Added +{count} Total Kills (Total: {total})",
+    "debug_kills_set_title": "Debug: Total Kills Set",
+    "debug_kills_set_desc": "Total Kills set to {count}",
+    "debug_streak_set_title": "Debug: Killstreak Set",
+    "debug_streak_set_desc": "Current sword killstreak set to {val}",
+    "debug_badge_title": "Debug: Badge Granted",
+    "debug_badges_title": "Debug: Badges Granted",
+    "debug_badges_desc": "Granted {count} badge(s). All achievements unlocked.",
+    "debug_badges_all_unlocked": "All achievements are already unlocked."
+  },
+  "maps": {
+    "LOBBY": "Sanctuary Lobby",
+    "COMBAT": "Open Grassland",
+    "portal_combat": "ENTER GRASSLAND",
+    "portal_lobby": "RETURN TO LOBBY",
+    "pedestal_overdrive_locked": "OVERDRIVE (LOCKED)",
+    "pedestal_overdrive_req": "[ 1,250 TOTAL KILLS REQUIRED ]",
+    "pedestal_aquatic_locked": "AQUATIC (LOCKED)",
+    "pedestal_aquatic_req": "[ 2,500 TOTAL KILLS REQUIRED ]",
+    "pedestal_soil_locked": "SOIL (LOCKED)",
+    "pedestal_soil_req": "[ 3,500 TOTAL KILLS REQUIRED ]",
+    "pedestal_metallic_locked": "METALLIC (LOCKED)",
+    "pedestal_metallic_req": "[ 5,000 TOTAL KILLS REQUIRED ]",
+    "pedestal_flora_locked": "FLORA (LOCKED)",
+    "pedestal_flora_req": "[ 7,000 TOTAL KILLS REQUIRED ]",
+    "pedestal_hellfire_locked": "HELLFIRE (LOCKED)",
+    "pedestal_hellfire_req": "[ 10,000 TOTAL KILLS REQUIRED ]"
+  },
+  "map": {
+    "modal_tag": "TACTICAL NAVIGATION",
+    "full_title": "🗺️ WORLD MAP",
+    "player_coords_label": "COORDINATES:",
+    "legend_player": "Player",
+    "legend_zone": "NPC Zones",
+    "hint": "Drag to pan • Scroll to zoom • Hover zone for info",
+    "btn_close": "Close [Esc / M]"
+  },
+  "zones": {
+    "zone_north": "NORTH FEEDING GROUND",
+    "zone_south": "SOUTH FEEDING GROUND",
+    "zone_fairy_north": "NORTH FAIRY GROVE",
+    "zone_fairy_south": "SOUTH FAIRY GROVE",
+    "zone_thug_camp": "THUG CAMP",
+    "zone_guard": "GUARD OUTPOST",
+    "zone_swordman": "SWORDMAN BARRACKS",
+    "zone_buff_man": "BUFF MAN ARENA",
+    "zone_elf": "ELF SANCTUARY",
+    "zone_ironborn": "IRONBORN CAMP",
+    "zone_bloodfang": "BLOODFANG GROUNDS",
+    "zone_arcanist": "ARCANIST GROVE",
+    "zone_colossus": "COLOSSUS FIELD",
+    "zone_starforged": "STARFORGED RUINS",
+    "zone_grizzlehorn": "GRIZZLEHORN CRAGS",
+    "zone_brambleback": "BRAMBLEBACK THICKET",
+    "zone_embermane": "EMBERMANE RIDGE",
+    "zone_duskhorn": "DUSKHORN EXPANSE",
+    "zone_mirewalker": "MIREWALKER MARSH",
+    "zone_thunderhoof": "THUNDERHOOF STEPPES",
+    "zone_gloomscale": "GLOOMSCALE HOLLOW",
+    "zone_wildtusk": "WILDTUSK GLADE",
+    "zone_moonmane": "MOONMANE PLATEAU",
+    "zone_crimsonhide": "CRIMSONHIDE BADLANDS",
+    "unit_active_format": "Active {unit}: {count}/{max}",
+    "unit_sentry": "Sentries [100 HP • 1 Streak]",
+    "unit_fairy": "Fairies [250 HP • 2 Streak]",
+    "unit_thug": "Thugs [750 HP • 5 Streak]",
+    "unit_guard": "Guards [2,000 HP • 10 Streak]",
+    "unit_swordman": "Swordmen [4,500 HP • 20 Streak]",
+    "unit_buff_man": "Buff Men [10,000 HP • 50 Streak]",
+    "unit_elf": "Elves [15,275 HP • 100 Streak]",
+    "unit_ironborn": "Ironborn [28,000 HP • 150 Streak]",
+    "unit_bloodfang": "Bloodfangs [45,000 HP • 200 Streak]",
+    "unit_arcanist": "Arcanists [72,000 HP • 300 Streak]",
+    "unit_colossus": "Colossi [110,000 HP • 450 Streak]",
+    "unit_starforged": "Starforged [190,000 HP • 650 Streak]",
+    "unit_grizzlehorn": "Grizzlehorns [300,000 HP • 850 Streak]",
+    "unit_brambleback": "Bramblebacks [475,000 HP • 1,200 Streak]",
+    "unit_embermane": "Embermanes [750,000 HP • 1,750 Streak]",
+    "unit_duskhorn": "Duskhorns [1,150,000 HP • 2,500 Streak]",
+    "unit_mirewalker": "Mirewalkers [1,800,000 HP • 3,600 Streak]",
+    "unit_thunderhoof": "Thunderhoofs [2,800,000 HP • 5,000 Streak]",
+    "unit_gloomscale": "Gloomscales [4,300,000 HP • 7,000 Streak]",
+    "unit_wildtusk": "Wildtusks [6,700,000 HP • 10,000 Streak]",
+    "unit_moonmane": "Moonmanes [10,500,000 HP • 14,500 Streak]",
+    "unit_crimsonhide": "Crimsonhides [17,000,000 HP • 21,000 Streak]"
+  },
+  "npcs": {
+    "normal": {
+      "name": "Normal Sentry",
+      "desc": "Basic stationary sentry defending feeding grounds."
+    },
+    "fairy": {
+      "name": "Fairy",
+      "desc": "Small winged woodland sprite with evasive fluttering."
+    },
+    "thug": {
+      "name": "Thug",
+      "desc": "Aggressive bandit patrol wielding crude daggers."
+    },
+    "guard": {
+      "name": "Guard",
+      "desc": "Heavily armored royal sentry defending outer encampments."
+    },
+    "swordman": {
+      "name": "Swordman",
+      "desc": "Disciplined blademaster executing swift thrusts and parries."
+    },
+    "buff_man": {
+      "name": "Buff Man",
+      "desc": "Imposing brawny powerhouse capable of delivering staggering blows."
+    },
+    "elf": {
+      "name": "Elf",
+      "desc": "Agile woodland sniper wielding mystical bows."
+    },
+    "ironborn": {
+      "name": "Ironborn",
+      "desc": "Forged in subterranean depths, boasting reinforced metallic plating."
+    },
+    "bloodfang": {
+      "name": "Bloodfang",
+      "desc": "Fierce lupine predators driven by predatory bloodlust."
+    },
+    "arcanist": {
+      "name": "Arcanist",
+      "desc": "Mystic spellcaster channeling raw arcane volatility."
+    },
+    "colossus": {
+      "name": "Colossus",
+      "desc": "Ancient monolithic titan of primordial stone."
+    },
+    "starforged": {
+      "name": "Starforged",
+      "desc": "Cosmic construct forged from fallen astral debris."
+    },
+    "grizzlehorn": {
+      "name": "Grizzlehorn",
+      "desc": "Heavily plated beast with sweeping bronze armor horns."
+    },
+    "brambleback": {
+      "name": "Brambleback",
+      "desc": "Spiny briar beast bristling with toxic radial thorns."
+    },
+    "embermane": {
+      "name": "Embermane",
+      "desc": "Ferocious flaming feline entity radiating intense volcanic heat."
+    },
+    "duskhorn": {
+      "name": "Duskhorn",
+      "desc": "Twilight beast crowned with long crystalline obsidian horns."
+    },
+    "mirewalker": {
+      "name": "Mirewalker",
+      "desc": "Deep-marsh cyclopean wanderer enveloped in toxic spores."
+    },
+    "thunderhoof": {
+      "name": "Thunderhoof",
+      "desc": "Crackling storm-beast discharging lethal electric arcs."
+    },
+    "gloomscale": {
+      "name": "Gloomscale",
+      "desc": "Abyssal serpentine dragon cloaked in shadowy layered void scales."
+    },
+    "wildtusk": {
+      "name": "Wildtusk",
+      "desc": "Prehistoric dread-boar armed with razor-sharp war tusks."
+    },
+    "moonmane": {
+      "name": "Moonmane",
+      "desc": "Celestial astral guardian radiating pure celestial lunar luminescence."
+    },
+    "crimsonhide": {
+      "name": "Crimsonhide",
+      "desc": "Apocalyptic apex behemoth encased in blood-crystalline dragon carapace."
+    }
+  },
+  "swords": {
+    "devourer": {
+      "name": "Devourer",
+      "tag": "FIRST WEAPON",
+      "description": "An insatiable predatory blade that consumes enemy essence to empower its wielder, progressing across 17 phases up to 75,000 killstreak."
+    },
+    "overdrive": {
+      "name": "Overdrive",
+      "tag": "SPEED WEAPON",
+      "description": "A hyper-velocity speed blade with alternating white and crimson resonance. Progresses across 7 phases from a needle rapier into a divine godspeed katana, reaching 300 walk speed."
+    },
+    "aquatic": {
+      "name": "Aquatic",
+      "tag": "EVOLUTIONARY DELUGE",
+      "description": "A liquid evolutionary blade that ascends from a harmless droplet into a planetary cataclysm across 13 phases, featuring the signature Tsunami skill."
+    },
+    "soil": {
+      "name": "Soil",
+      "tag": "EARTHEN FORTRESS",
+      "description": "A defensive, HP-focused sword that gradually evolves from a crude dirt blade into an indestructible soil fortress across 10 phases. Features the Fortitude [Z] shield skill."
+    },
+    "metallic": {
+      "name": "Metallic",
+      "tag": "THE FORGED WILL",
+      "description": "Born from raw metal and gradually forged into something that cannot bend or break. Unlocks the Iron Will [Z] hardening stance."
+    },
+    "flora": {
+      "name": "Flora",
+      "tag": "THE EVERGROWTH",
+      "description": "A living sword that grows stronger through every battle, eventually becoming an embodiment of unstoppable natural growth. Features Worldroot [Z]."
+    },
+    "hellfire": {
+      "name": "Hellfire",
+      "tag": "THE INFERNAL",
+      "description": "An infernal weapon that feeds on destruction and grows increasingly difficult to contain. Features Cataclysm [Z]."
+    }
+  },
+  "phases": {
+    "devourer": {
+      "1": {
+        "name": "Phase 1: Hunger",
+        "shortName": "Hunger",
+        "effects": "Basic bone steel edge. Base 5 DMG and 100 HP. Consumes essence from kills to scale in the active phase."
+      },
+      "2": {
+        "name": "Phase 2: Feast",
+        "shortName": "Feast",
+        "effects": "Satiated edge. Base 18 DMG and 180 HP. Cleaves through flesh with hungry fervor."
+      },
+      "3": {
+        "name": "Phase 3: Devourer",
+        "shortName": "Devourer",
+        "effects": "Awakened predatory entity. Base 32 DMG and 280 HP. Siphons life with abyssal resonance."
+      },
+      "4": {
+        "name": "Phase 4: Voracity",
+        "shortName": "Voracity",
+        "effects": "Ravenous devouring fervor. Base 55 DMG and 450 HP. Blazes with scorching hunger."
+      },
+      "5": {
+        "name": "Phase 5: Apex Maw",
+        "shortName": "Apex Maw",
+        "effects": "Apex dominance. Base 95 DMG and 750 HP with wide sweeping 180° cleaves."
+      },
+      "6": {
+        "name": "Phase 6: World Eater",
+        "shortName": "World Eater",
+        "effects": "The cosmic calamity. Base 160 DMG and 1,200 HP. Consumes matter across extensive sweeping arcs."
+      },
+      "7": {
+        "name": "Phase 7: Cosmic Calamity",
+        "shortName": "Cosmic Calamity",
+        "effects": "Galactic essence consumed. Base 260 DMG and 1,800 HP. Broad cleaves tear cosmic rifts."
+      },
+      "8": {
+        "name": "Phase 8: Void Singularity",
+        "shortName": "Void Singularity",
+        "effects": "Bottomless hunger event horizon. Base 400 DMG and 2,600 HP with crushing void pull."
+      },
+      "9": {
+        "name": "Phase 9: Starved Husk",
+        "shortName": "Starved Husk",
+        "effects": "A burned-out, starving husk. Senses dim to base 40 DMG, 58 HP, and 17 SPD. Requires exactly +250 kills to awaken."
+      },
+      "10": {
+        "name": "Phase 10: Ascended Behemoth",
+        "shortName": "Ascended Behemoth",
+        "effects": "Cataclysmic resurrection! Base 650 DMG and 4,000 HP. Unlocks Gluttony [Z] forward energy beam."
+      },
+      "11": {
+        "name": "Phase 11: Cosmic Devourer",
+        "shortName": "Cosmic Devourer",
+        "effects": "The cosmic devourer awakens. Base 1,000 DMG, 6,000 HP, and 126 speed with sweeping solar cleaves."
+      },
+      "12": {
+        "name": "Phase 12: Abyssal Sovereign",
+        "shortName": "Abyssal Sovereign",
+        "effects": "Sovereign of the deep abyss. Massive flanged dual-edged blade inflicting base 1,550 devastation damage and 9,000 HP."
+      },
+      "13": {
+        "name": "Phase 13: Singularity Core",
+        "shortName": "Singularity Core",
+        "effects": "Gravitational event horizon. Orbiting black hole core dealing base 2,300 void damage and 13,500 HP across wide arcs."
+      },
+      "14": {
+        "name": "Phase 14: Eldritch Eclipse",
+        "shortName": "Eldritch Eclipse",
+        "effects": "Twin-horned solar eclipse scythe. Burns through enemy ranks with base 3,400 incinerating damage and 19,000 HP."
+      },
+      "15": {
+        "name": "Phase 15: Cosmic Oblivion",
+        "shortName": "Cosmic Oblivion",
+        "effects": "Transcendent astral constellation blade. Base 4,800 DMG and 25,000 HP shattering reality."
+      },
+      "16": {
+        "name": "Phase 16: Ashen Dormancy",
+        "shortName": "Ashen Dormancy",
+        "effects": "Transitional slumber before final ascension. Senses dull to base 138 DMG and 345 HP. Requires exactly +1,000 kills to reach the apex."
+      },
+      "17": {
+        "name": "Phase 17: The All Devourer",
+        "shortName": "The All Devourer",
+        "effects": "FINAL TRANSFORMATION. The absolute zenith of existence. Base 6,500 DMG, 30,000 HP, divine aura, and permanent All Devourer badge. Unlocks Engulf [X]."
+      }
+    },
+    "overdrive": {
+      "1": {
+        "name": "Phase 1: Quick Silver",
+        "shortName": "Quick Silver",
+        "effects": "Slender white needle rapier with crimson accents. Base 8 DMG, 120 HP, and 50 SPD.",
+        "notification": "The needle stirs with kinetic potential."
+      },
+      "2": {
+        "name": "Phase 2: Velocity Sting",
+        "shortName": "Velocity Sting",
+        "effects": "Enhanced crimson velocity rapier with rapid acceleration. Base 24 DMG, 260 HP, and 80 SPD.",
+        "notification": "Feel the acceleration."
+      },
+      "3": {
+        "name": "Phase 3: Sonic Piercer",
+        "shortName": "Sonic Piercer",
+        "effects": "Elaborate sonic rapier whistling past the sound barrier. Base 65 DMG, 550 HP, and 115 SPD.",
+        "notification": "Faster than the eye can follow."
+      },
+      "4": {
+        "name": "Phase 4: Tachyon Edge",
+        "shortName": "Tachyon Edge",
+        "effects": "Transitional tachyon speed blade warping perception. Base 180 DMG, 1,400 HP, and 155 SPD.",
+        "notification": "The world begins to slow."
+      },
+      "5": {
+        "name": "Phase 5: Flash Katana",
+        "shortName": "Flash Katana",
+        "effects": "Katana transformation! Slashing arcs of white lightning. Base 650 DMG, 4,500 HP, and 200 SPD.",
+        "notification": "Steel flashes like crimson lightning."
+      },
+      "6": {
+        "name": "Phase 6: Godspeed Blade",
+        "shortName": "Godspeed Blade",
+        "effects": "Advanced fancy katana shattering the sonic threshold. Base 2,100 DMG, 12,000 HP, and 250 SPD.",
+        "notification": "Reality fractures beneath the sonic wake."
+      },
+      "7": {
+        "name": "Phase 7: Apex Godspeed",
+        "shortName": "Apex Godspeed",
+        "effects": "FINAL OVERDRIVE TRANSFORMATION. Majestic divine-speed katana. Base 5,500 DMG, 25,500 HP, and 300 SPD.",
+        "notification": "You have become the speed beyond gods."
+      }
+    },
+    "aquatic": {
+      "1": {
+        "name": "Phase 1: Droplet",
+        "shortName": "Droplet",
+        "effects": "A single trembling water drop upon the blade. Base 15 DMG and 150 HP.",
+        "notification": "A single drop rests upon the blade."
+      },
+      "2": {
+        "name": "Phase 2: Ripple",
+        "shortName": "Ripple",
+        "effects": "Water begins circulating with momentum. Produces circular ripples on hit.",
+        "notification": "The water moves."
+      },
+      "3": {
+        "name": "Phase 3: Stream",
+        "shortName": "Stream",
+        "effects": "A fluid stream flows around the blade. Leaves short water trails on swing.",
+        "notification": "The ripple becomes a stream."
+      },
+      "4": {
+        "name": "Phase 4: Current",
+        "shortName": "Current",
+        "effects": "Accelerated current with cyan edge and white core. Water spirals with purpose.",
+        "notification": "The stream finds its current."
+      },
+      "5": {
+        "name": "Phase 5: Undertow",
+        "shortName": "Undertow",
+        "effects": "Constant water vortex underneath player. Base 300 DMG and 3,500 HP.",
+        "notification": "Beneath the surface... something pulls."
+      },
+      "6": {
+        "name": "Phase 6: Maelstrom",
+        "shortName": "Maelstrom",
+        "effects": "Dual rotating water rings and swirling vortex consuming matter. Base 550 DMG and 6,000 HP.",
+        "notification": "The current begins to spiral."
+      },
+      "7": {
+        "name": "Phase 7: Deep",
+        "shortName": "Deep",
+        "effects": "Deep abyssal pressure. Wet trail while moving and crushing dark water aura. Base 900 DMG and 9,000 HP.",
+        "notification": "You have reached the deep."
+      },
+      "8": {
+        "name": "Phase 8: Drought",
+        "shortName": "Drought",
+        "effects": "POWER COLLAPSE. Senses dim to 30 DMG and 300 HP. Droplets evaporate. Requires +750 kills to awaken.",
+        "notification": "The ocean falls silent."
+      },
+      "9": {
+        "name": "Phase 9: Flood",
+        "shortName": "Flood",
+        "effects": "VIOLENT ERUPTION! Base 2,000 DMG and 15,000 HP. Unlocks signature skill: TSUNAMI [Z] (4x DMG = 8,000).",
+        "notification": "The silence breaks. THE FLOOD HAS BEGUN."
+      },
+      "10": {
+        "name": "Phase 10: Monsoon",
+        "shortName": "Monsoon",
+        "effects": "Storm generator. Rain particles fall from the sky. Base 4,000 DMG, 25,000 HP. Tsunami deals 16,000 DMG.",
+        "notification": "One wave becomes a storm. THE MONSOON RISES."
+      },
+      "11": {
+        "name": "Phase 11: Cataclysm",
+        "shortName": "Cataclysm",
+        "effects": "The sea escapes its boundaries. Camera shake on attacks. Base 7,000 DMG, 38,000 HP. Tsunami deals 28,000 DMG.",
+        "notification": "The sea has escaped its boundaries. CATACLYSM."
+      },
+      "12": {
+        "name": "Phase 12: Leviathan",
+        "shortName": "Leviathan",
+        "effects": "Ancient leviathan silhouette manifests behind wielder. Base 11,500 DMG, 50,000 HP. Tsunami deals 46,000 DMG.",
+        "notification": "Something beneath the ocean awakens. THE LEVIATHAN RISES."
+      },
+      "13": {
+        "name": "Phase 13: Omnitidal",
+        "shortName": "Omnitidal",
+        "effects": "FINAL TRANSFORMATION: WALKING NATURAL DISASTER. Base 18,000 DMG, 62,000 HP. Tsunami deals 72,000 cataclysmic damage.",
+        "notification": "There is no ocean left to conquer. Because you have become it. OMNITIDAL."
+      }
+    },
+    "soil": {
+      "1": {
+        "name": "Phase 1: Dirt Blade",
+        "shortName": "Dirt Blade",
+        "effects": "Crude blade pressed from moist topsoil. Base 3 DMG, 250 HP, and 10 SPD.",
+        "notification": "You hold me, weak and crumbling. But inside... there is a seed."
+      },
+      "2": {
+        "name": "Phase 2: Packed Earth",
+        "shortName": "Packed Earth",
+        "effects": "Densely packed soil bonded with roots. Base 15 DMG, 800 HP, and 15 SPD.",
+        "notification": "The roots tighten. I will not let anything reach you."
+      },
+      "3": {
+        "name": "Phase 3: Clay Shard",
+        "shortName": "Clay Shard",
+        "effects": "Sun-baked earthen edge with hardened clay ridges. Base 50 DMG, 2,200 HP, and 21 SPD.",
+        "notification": "The heat bakes us solid. You are safe behind me."
+      },
+      "4": {
+        "name": "Phase 4: Loam Edge",
+        "shortName": "Loam Edge",
+        "effects": "Ancient compacted soil with active mineral veins. Base 150 DMG, 5,500 HP, and 28 SPD. Unlocks Fortitude [Z] shield barrier.",
+        "notification": "Drink from the earth! Stand your ground — I am your shield!"
+      },
+      "5": {
+        "name": "Phase 5: Stoneheart",
+        "shortName": "Stoneheart",
+        "effects": "Heavy petrified soil blade fused with granite veins. Base 400 DMG, 13,000 HP, and 36 SPD.",
+        "notification": "Let them strike. Every blow only presses the soil firmer."
+      },
+      "6": {
+        "name": "Phase 6: Terrene Bastion",
+        "shortName": "Terrene Bastion",
+        "effects": "Layered tectonic edge humming with seismic density. Base 950 DMG, 28,000 HP, and 47 SPD.",
+        "notification": "A fortress is not built in a day. We are the foundation."
+      },
+      "7": {
+        "name": "Phase 7: Bedrock Cleaver",
+        "shortName": "Bedrock Cleaver",
+        "effects": "Unyielding mantle bedrock blade wrapped in stone runes. Base 2,100 DMG, 58,000 HP, and 60 SPD.",
+        "notification": "Bedrock does not break. Neither do we."
+      },
+      "8": {
+        "name": "Phase 8: Mountain's Will",
+        "shortName": "Mountain's Will",
+        "effects": "Towering monolithic soil fortress with orbiting bedrock bulwarks. Base 4,200 DMG, 115,000 HP, and 76 SPD.",
+        "notification": "Nothing moves the mountain. Stand fast, my treasure."
+      },
+      "9": {
+        "name": "Phase 9: Crumbling Husk",
+        "shortName": "Crumbling Husk",
+        "effects": "DELIBERATE COLLAPSE. Soil sheds its heavy shell, cracking down to base 135 DMG, 5,000 HP, and 96 SPD. Endure 40,000 kills to reveal the core.",
+        "notification": "Wait... the outer layers are falling away... hold on, trust me, DO NOT LET GO—"
+      },
+      "10": {
+        "name": "Phase 10: Indestructible Soil Fortress",
+        "shortName": "Soil Fortress",
+        "effects": "FINAL TRANSFORMATION. The ultimate continental bulwark. Base 8,500 DMG, 315,000 HP, and 120 SPD. Grants permanent Indestructible Soil Fortress badge.",
+        "notification": "THE SEED HAS SPROUTED. I AM THE FORTRESS. NOTHING CAN HARM MY TREASURE NOW."
+      }
+    },
+    "metallic": {
+      "1": {
+        "name": "Phase 1: Scrap",
+        "shortName": "Scrap",
+        "effects": "A crude discarded metal shard. Base 5 DMG and 180 HP.",
+        "notification": "I was discarded once. Now, I have another purpose."
+      },
+      "2": {
+        "name": "Phase 2: Forged",
+        "shortName": "Forged",
+        "effects": "The metal has passed through intense forge fire. Base 22 DMG and 650 HP.",
+        "notification": "The heat changed me. I will not remain weak."
+      },
+      "3": {
+        "name": "Phase 3: Tempered",
+        "shortName": "Tempered",
+        "effects": "Hammered and water-quenched crystalline steel forms. Base 70 DMG and 1,800 HP.",
+        "notification": "Every strike leaves a mark. Every mark makes me harder."
+      },
+      "4": {
+        "name": "Phase 4: Steelbound",
+        "shortName": "Steelbound",
+        "effects": "Solid steel plating. Unlocks Iron Will [Z] (40% DMG reduction & retaliatory shrapnel for 6s). Base 200 DMG and 4,800 HP.",
+        "notification": "I have learned to endure. Strike me again."
+      },
+      "5": {
+        "name": "Phase 5: Reinforced",
+        "shortName": "Reinforced",
+        "effects": "Layered steel laminated across the spine. Base 480 DMG and 11,000 HP.",
+        "notification": "Another layer. Another weakness removed. I am becoming stronger."
+      },
+      "6": {
+        "name": "Phase 6: Hardened",
+        "shortName": "Hardened",
+        "effects": "Unmatched metallurgical density under crushing pressure. Base 1,000 DMG and 24,000 HP.",
+        "notification": "Pressure does not frighten me. Pressure creates me."
+      },
+      "7": {
+        "name": "Phase 7: Forgemaster",
+        "shortName": "Forgemaster",
+        "effects": "The blade commands the ancient fire and anvil. Base 2,100 DMG and 50,000 HP.",
+        "notification": "The earth gave me my material. The forge gave me my purpose."
+      },
+      "8": {
+        "name": "Phase 8: Iron Fortress",
+        "shortName": "Iron Fortress",
+        "effects": "Bastion plating encases the user in unyielding armor. Base 4,200 DMG and 110,000 HP.",
+        "notification": "I no longer need a shield. I am the shield."
+      },
+      "9": {
+        "name": "Phase 9: Unyielding",
+        "shortName": "Unyielding",
+        "effects": "Impervious to any force that attempts to bend or break it. Base 7,500 DMG and 210,000 HP.",
+        "notification": "You cannot bend me. You cannot break me."
+      },
+      "10": {
+        "name": "Phase 10: Eternal Steel",
+        "shortName": "Eternal Steel",
+        "effects": "FINAL TRANSFORMATION: ETERNAL STEEL. Monolithic, perfectly refined divine blade. Base 11,500 DMG, 360,000 HP, and 125 SPD.",
+        "notification": "I do not bend. I do not break. I endure."
+      }
+    },
+    "flora": {
+      "1": {
+        "name": "Phase 1: Sprout",
+        "shortName": "Sprout",
+        "effects": "A fragile yet resilient living sprout blade. Base 4 DMG and 220 HP.",
+        "notification": "I was only a seed. Even seeds know how to survive."
+      },
+      "2": {
+        "name": "Phase 2: Rooted",
+        "shortName": "Rooted",
+        "effects": "Fibrous roots anchor the blade directly to the soil. Base 18 DMG and 750 HP.",
+        "notification": "My roots are spreading. I am beginning to take hold."
+      },
+      "3": {
+        "name": "Phase 3: Growing",
+        "shortName": "Growing",
+        "effects": "Vigorous woody stems wrap tightly around the blade spine. Base 60 DMG and 2,100 HP.",
+        "notification": "Every battle feeds me. Every victory makes me grow."
+      },
+      "4": {
+        "name": "Phase 4: Thorned",
+        "shortName": "Thorned",
+        "effects": "Vicious briar thorns line the cutting edge. Unlocks Worldroot [Z] (Entangles foes and regenerates 20% max HP). Base 180 DMG and 5,600 HP.",
+        "notification": "Growth alone is not enough. Even flowers need thorns."
+      },
+      "5": {
+        "name": "Phase 5: Wild",
+        "shortName": "Wild",
+        "effects": "Uninhibited wild jungle flora surges with primordial vitality. Base 440 DMG and 13,000 HP.",
+        "notification": "You call this overgrowth? I have barely begun."
+      },
+      "6": {
+        "name": "Phase 6: Ancient",
+        "shortName": "Ancient",
+        "effects": "Millennia of arboreal memory hardens the blade into ironwood. Base 950 DMG and 28,000 HP.",
+        "notification": "I have survived countless seasons. You will not outlast me."
+      },
+      "7": {
+        "name": "Phase 7: Overgrown",
+        "shortName": "Overgrown",
+        "effects": "Canopies of living foliage expand from the blade across the ground. Base 2,000 DMG and 60,000 HP.",
+        "notification": "The ground beneath you belongs to me. You simply haven't noticed yet."
+      },
+      "8": {
+        "name": "Phase 8: Colossus",
+        "shortName": "Colossus",
+        "effects": "A colossal arboreal titan blade radiating ancient planetary vitality. Base 4,000 DMG and 130,000 HP.",
+        "notification": "I have grown beyond a sword. I am becoming something greater."
+      },
+      "9": {
+        "name": "Phase 9: Worldroot",
+        "shortName": "Worldroot",
+        "effects": "The planetary root system pulses through the blade. Base 7,800 DMG and 240,000 HP.",
+        "notification": "My roots have reached farther than you can see. Where there is soil, I am there."
+      },
+      "10": {
+        "name": "Phase 10: Evergrowth",
+        "shortName": "Evergrowth",
+        "effects": "FINAL TRANSFORMATION: EVERGROWTH. Planetary embodiment of unstoppable nature. Base 12,000 DMG, 400,000 HP, and 130 SPD.",
+        "notification": "Cut me down. I will grow back."
+      }
+    },
+    "hellfire": {
+      "1": {
+        "name": "Phase 1: Ember",
+        "shortName": "Ember",
+        "effects": "A smoldering ember clinging to charcoal steel. Base 7 DMG and 140 HP.",
+        "notification": "A tiny spark. That's all I need."
+      },
+      "2": {
+        "name": "Phase 2: Flame",
+        "shortName": "Flame",
+        "effects": "Steady infernal fire coats the blade spine. Base 28 DMG and 500 HP.",
+        "notification": "Now I burn. Give me something to consume."
+      },
+      "3": {
+        "name": "Phase 3: Blazing",
+        "shortName": "Blazing",
+        "effects": "Violent flames crackle outward with every swipe. Base 90 DMG and 1,500 HP.",
+        "notification": "Every kill feeds the flame. Keep them coming."
+      },
+      "4": {
+        "name": "Phase 4: Infernal",
+        "shortName": "Infernal",
+        "effects": "Infernal hellfire bursts across the blade. Unlocks Cataclysm [Z] (Magma eruption dealing 5x DMG). Base 260 DMG and 4,200 HP.",
+        "notification": "You wanted power? Then face the fire."
+      },
+      "5": {
+        "name": "Phase 5: Hellborn",
+        "shortName": "Hellborn",
+        "effects": "Deep volcanic runes ignite along obsidian steel. Base 650 DMG and 10,000 HP.",
+        "notification": "The flames know my name. Do you?"
+      },
+      "6": {
+        "name": "Phase 6: Magma",
+        "shortName": "Magma",
+        "effects": "Liquid magma seeps from molten fissures in the sword. Base 1,400 DMG and 22,000 HP.",
+        "notification": "My fire has reached the earth. Now even the ground burns."
+      },
+      "7": {
+        "name": "Phase 7: Devastation",
+        "shortName": "Devastation",
+        "effects": "Total incendiary erasure of all matter before the wielder. Base 2,800 DMG and 48,000 HP.",
+        "notification": "I no longer burn what stands before me. I erase it."
+      },
+      "8": {
+        "name": "Phase 8: Cataclysm",
+        "shortName": "Cataclysm",
+        "effects": "Hellfire storm encircles the sword; nowhere is safe. Base 5,600 DMG and 100,000 HP.",
+        "notification": "Look around. There is nowhere left to run."
+      },
+      "9": {
+        "name": "Phase 9: Apocalypse",
+        "shortName": "Apocalypse",
+        "effects": "The blade roars with the burning heat of an ending universe. Base 10,500 DMG and 190,000 HP.",
+        "notification": "Do you hear that? That's the sound of everything burning."
+      },
+      "10": {
+        "name": "Phase 10: Hellfire",
+        "shortName": "The Infernal",
+        "effects": "FINAL TRANSFORMATION: THE INFERNAL. Uncontainable world-ending inferno. Base 16,800 DMG, 320,000 HP, and 145 SPD.",
+        "notification": "Run."
+      }
+    }
+  },
+  "bloodmoon": {
+    "title": "BLOODMOON",
+    "subtitle": "The crimson moon rises — darkness descends upon the grassland!"
+  }
+}

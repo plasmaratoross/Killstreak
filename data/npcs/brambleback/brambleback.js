@@ -1,0 +1,29 @@
+/**
+ * Brambleback NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.brambleback = {
+    id: "brambleback",
+    name: "Brambleback",
+    description: "Thorny primeval guardian covered in razor briars, toxic resin, and an impenetrable bark carapace.",
+    radius: 22,
+    speed: 115,
+    maxHp: 475000,
+    damage: 34000,
+    attackRate: 0.85,
+    attackRange: 22,
+    killsAwarded: 4,
+    killstreakAwarded: 1200,
+    respawnDelay: 5.0,
+    color: "#1b4332",
+    glowColor: "rgba(132, 204, 22, 0.85)",
+    massScale: 0.09,
+    shoveRatio: 0.25,
+    barWidth: 66,
+    barColor: "#84cc16"
+  };
+})(window);

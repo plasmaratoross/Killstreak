@@ -1,0 +1,29 @@
+{
+  "out": "src/ui/toast.js",
+  "backup": "scratch/backup/main.js.toast.bak",
+  "fns": [
+    {
+      "name": "showToast",
+      "params": [
+        "title",
+        "desc",
+        "icon = \"👁️\""
+      ],
+      "lines": 9
+    }
+  ],
+  "callArgs": {},
+  "neededRefs": [
+    "toast",
+    "toastIcon",
+    "toastTitle",
+    "toastDesc"
+  ],
+  "neededUtils": [],
+  "needsI18n": false,
+  "needsConfig": false,
+  "moduleState": [
+    "let toastTimeout = null;"
+  ],
+  "recordedAt": "2026-09-22T15:26:15.314Z"
+}

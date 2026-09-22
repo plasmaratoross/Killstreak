@@ -1,0 +1,120 @@
+/**
+ * CutsceneSystem — single engine for the cutscene lifecycle.
+ *
+ * Replaces Game.getCutsceneDialogue(), the eleven Game.start*Cutscene() methods,
+ * Game.advanceCutscene(), Game.skipCutscene() and Game.finishCutscene().
+ *
+ * The per-cutscene content lives in cutscenes.data.js. The bodies below were
+ * moved verbatim from js/game.js with `this` rebound to the `game` parameter.
+ */
+import { CUTSCENES, runDefaultFinish } from './cutscenes.data.js';
+
+/** Resolve a cutscene's dialogue array without starting it. */
+export function getLines(id) {
+  const def = CUTSCENES[id];
+  return def ? def.lines() : [];
+}
+
+/**
+ * Begin a cutscene.
+ * Effect order matches the original start* methods exactly:
+ *   state -> dialogue -> beforeShake -> shake -> achievement -> onCutsceneStart
+ *
+ * @param {object} game
+ * @param {string} id key into CUTSCENES
+ */
+export function start(game, id) {
+  const def = CUTSCENES[id];
+  if (!def) throw new Error(`Unknown cutscene: ${id}`);
+
+  game.isCutsceneActive = true;
+  game.cutsceneIndex = 0;
+  game.cutsceneTimer = 0;
+  game.cutsceneType = def.type;
+  game.cutsceneDialogue = def.lines();
+
+  if (typeof def.beforeShake === "function") def.beforeShake(game);
+  if (def.shake) game.camera.shake(def.shake[0], def.shake[1]);
+  if (def.achieve) game.unlockAchievement(def.achieve);
+
+  if (game.callbacks.onCutsceneStart) {
+    game.callbacks.onCutsceneStart(game.cutsceneDialogue[0]);
+  }
+}
+
+/**
+ * Advance one line, or finish when the dialogue is exhausted.
+ * @param {object} game
+ */
+export function advance(game) {
+    // Re-resolve bindings that were file-scope in js/game.js.
+    const { Particle } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+  if (!game.isCutsceneActive) return;
+  game.cutsceneIndex++;
+  if (game.cutsceneIndex >= game.cutsceneDialogue.length) {
+    finish(game);
+  } else {
+    game.camera.shake(6, 0.25);
+    const isAq = game.cutsceneType && game.cutsceneType.startsWith("aquatic");
+    const isSoil = game.cutsceneType && game.cutsceneType.startsWith("soil");
+    const isMet = game.cutsceneType && game.cutsceneType.startsWith("metallic");
+    const isFlora = game.cutsceneType && game.cutsceneType.startsWith("flora");
+    const isHell = game.cutsceneType && game.cutsceneType.startsWith("hellfire");
+    for (let i = 0; i < 20; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 70 + Math.random() * 120;
+      let pColor;
+      if (isHell) {
+        pColor = i % 2 === 0 ? "#ef4444" : "#fbbf24";
+      } else if (isFlora) {
+        pColor = i % 2 === 0 ? "#4ade80" : "#22c55e";
+      } else if (isMet) {
+        pColor = i % 2 === 0 ? "#ffffff" : "#cbd5e1";
+      } else if (isSoil) {
+        pColor = i % 3 === 0 ? "#fef08a" : (i % 3 === 1 ? "#f59e0b" : "#78350f");
+      } else if (isAq) {
+        pColor = i % 2 === 0 ? "#06b6d4" : "#ffffff";
+      } else {
+        pColor = "#facc15";
+      }
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4, 0.45)
+      );
+    }
+    if (game.callbacks.onCutsceneStep) {
+      game.callbacks.onCutsceneStep(game.cutsceneDialogue[game.cutsceneIndex]);
+    }
+  }
+}
+
+/**
+ * Skip the active cutscene, running its completion block.
+ * @param {object} game
+ */
+export function skip(game) {
+  if (game.isCutsceneActive) {
+    finish(game);
+  }
+}
+
+/**
+ * Run the completion block for the active cutscene, then clear the active flag.
+ *
+ * The original finishCutscene() tested ten cutsceneType values in order and
+ * otherwise fell through to the default phase-17 block; a keyed lookup into
+ * CUTSCENES is equivalent because each type appears at most once.
+ *
+ * @param {object} game
+ */
+export function finish(game) {
+  game.isCutsceneActive = false;
+
+  const def = CUTSCENES[game.cutsceneType];
+  if (def && typeof def.onFinish === "function") {
+    def.onFinish(game);
+    return;
+  }
+
+  runDefaultFinish(game);
+}

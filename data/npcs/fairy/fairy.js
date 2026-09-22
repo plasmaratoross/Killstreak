@@ -1,0 +1,29 @@
+/**
+ * Fairy NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.fairy = {
+    id: "fairy",
+    name: "Fairy",
+    description: "Agile winged creature residing in mystical groves.",
+    radius: 15,
+    speed: 140,
+    maxHp: 250,
+    damage: 10,
+    attackRate: 1.0,
+    attackRange: 15,
+    killsAwarded: 1,
+    killstreakAwarded: 2,
+    respawnDelay: 6.0,
+    color: "#38bdf8",
+    glowColor: "rgba(56, 189, 248, 0.65)",
+    massScale: 0.45,
+    shoveRatio: 0.85,
+    barWidth: 36,
+    barColor: "#38bdf8"
+  };
+})(window);

@@ -1,0 +1,779 @@
+# KILLSTREAK PROJECT AGENT RULES
+
+You are the coding agent working on the Killstreak project.
+
+## 0. PRIME DIRECTIVE
+
+**REFACTOR, DO NOT REWRITE.**
+
+The existing game is functional. Your job during the refactor is to reorganize and modularize the existing code while preserving its behavior.
+
+The following are NON-NEGOTIABLE unless the user explicitly requests otherwise:
+
+- Do not change gameplay behavior.
+- Do not change balance numbers.
+- Do not change damage, HP, killsRequired, attack speed, movement speed, rewards, phase thresholds, sword data, NPC data, or other gameplay constants.
+- Do not remove existing features.
+- Do not add new gameplay features during the refactor.
+- Do not rename existing localStorage keys.
+- Do not silently "improve" mechanics.
+- Do not replace working logic with a newly invented implementation when the task is a refactor.
+- Do not optimize logic merely because you think it can be cleaner.
+- Do not change visual behavior unless the current task explicitly requires it.
+- Preserve the current player experience.
+
+When uncertain, preserve the existing behavior rather than inventing a better one.
+
+---
+
+# 1. PROJECT SOURCE OF TRUTH
+
+The repository contains the actual implementation of the game.
+
+The project also contains/uses a refactor guide:
+
+`KILLSTREAK_REFACTOR_GUIDE.md`
+
+Treat the guide as the architectural plan, but treat the source code as the authority for what the current game actually does.
+
+If the guide and source code disagree:
+
+1. Inspect the source code.
+2. Identify the discrepancy.
+3. Do NOT silently invent a resolution.
+4. Preserve current behavior.
+5. Report the discrepancy to the user when it materially affects the refactor.
+
+Never assume that a description in the guide is more accurate than the actual implementation.
+
+---
+
+# 2. BEFORE MODIFYING ANYTHING
+
+Before editing a system:
+
+1. Read the relevant source files completely enough to understand all dependencies.
+2. Search for every caller of the functions/classes being moved.
+3. Search for every field/state those functions access.
+4. Search for every global/window dependency.
+5. Search for every reference to the affected swordId/NPC type/key.
+6. Identify whether the function depends on `this` from Player, Game, or another object.
+7. Identify side effects:
+   - state changes
+   - rendering
+   - save/load
+   - DOM updates
+   - event flags
+   - timers
+   - particles
+   - audio
+   - cutscenes
+   - achievements
+8. Only then plan the move.
+
+Do not move a function merely because its name appears to belong in another file.
+
+---
+
+# 3. PRESERVE LOGIC FIRST, CLEAN UP SECOND
+
+During refactoring, use this priority:
+
+1. Preserve behavior.
+2. Preserve data.
+3. Preserve state transitions.
+4. Preserve call order.
+5. Preserve side effects.
+6. Preserve rendering output.
+7. Improve architecture.
+
+Do NOT combine refactoring with speculative cleanup.
+
+For example, when moving:
+
+```js
+Player.drawBlade()
+```
+
+to a sword renderer, first preserve the body of the existing function.
+
+A transformation such as:
+
+```js
+this.x
+```
+
+to:
+
+```js
+player.x
+```
+
+is acceptable when required by the new module boundary.
+
+A transformation such as:
+
+```js
+if (player.phase >= 10) { ... }
+```
+
+being "simplified" into a new abstraction is NOT automatically acceptable.
+
+First make the code structurally equivalent. Refactor abstractions later, in a separate explicit task.
+
+---
+
+# 4. DO NOT TRUST YOUR MEMORY OF THE CODE
+
+Never assume:
+
+- what a sword does
+- what an NPC does
+- how a phase works
+- how damage is calculated
+- how save data works
+- what a cutscene contains
+- what a skill does
+- which variables are global
+- which functions call each other
+
+Read the implementation.
+
+If information is not present in the source or provided documentation, say that it is unknown.
+
+Do not fabricate missing behavior.
+
+---
+
+# 5. GLOBALS AND LEGACY ARCHITECTURE
+
+The original project uses global state / `window.Killstreak` and many script tags.
+
+The target architecture uses ES modules.
+
+When migrating:
+
+- Preserve the value and behavior of existing globals until all consumers are migrated.
+- Do not remove a global just because it looks obsolete.
+- Search all references before deleting or renaming one.
+- Do not assume a global is unused based on one file.
+- Check HTML, JS, inline handlers, dynamically evaluated code, and data modules.
+
+When replacing:
+
+```js
+window.Killstreak.X
+```
+
+with imports, verify every consumer before removing the old path.
+
+---
+
+# 6. SWORD ARCHITECTURE
+
+The target architecture is:
+
+```text
+src/swords/
+├── SwordRegistry.js
+├── devourer/
+│   ├── devourer.data.json
+│   ├── devourer.render.js
+│   └── devourer.ability.js
+├── overdrive/
+├── aquatic/
+├── soil/
+├── metallic/
+├── flora/
+└── hellfire/
+```
+
+Each sword should expose three concerns:
+
+- data
+- renderer
+- ability
+
+The registry is the single lookup point.
+
+Conceptually:
+
+```js
+{
+  devourer: {
+    data,
+    render,
+    ability
+  }
+}
+```
+
+Do not scatter sword-specific logic back into Player or Game after migration.
+
+However:
+
+**Do not move logic merely because it is theoretically sword-specific.**
+
+First verify that the code actually belongs to that sword and identify its dependencies.
+
+Current known swords:
+
+- devourer
+- overdrive
+- aquatic
+- soil
+- metallic
+- flora
+- hellfire
+
+Do not invent additional swords.
+
+---
+
+# 7. PLAYER REFACTOR
+
+`Player` should eventually contain player state, physics, combat state, lifecycle, and generic player behavior.
+
+Sword-specific rendering should move out.
+
+The intended end state is approximately:
+
+```js
+const sword = getSword(this.swordId);
+
+sword.render.drawBlade(ctx, geom, this);
+sword.render.drawAura(ctx, this);
+```
+
+Do not remove or alter generic Player behavior simply to make the file smaller.
+
+If a sword renderer needs information from Player, explicitly pass the required Player/context object rather than creating hidden global dependencies.
+
+---
+
+# 8. ABILITY REFACTOR
+
+Sword active abilities should be dispatched through the sword definition.
+
+Conceptually:
+
+```js
+const sword = getSword(player.swordId);
+sword.ability.activate(game, player);
+```
+
+Known abilities:
+
+- Devourer → Gluttony
+- Overdrive → Engulf
+- Aquatic → Tsunami
+- Soil → Fortitude
+- Metallic → Iron Will
+- Flora → Worldroot
+- Hellfire → Cataclysm
+
+Preserve:
+
+- cooldown behavior
+- damage
+- timing
+- animation
+- particles
+- state flags
+- killstreak effects
+- save effects
+- UI effects
+- sound/effect triggers
+- existing side effects
+
+Do not "standardize" abilities by changing their behavior.
+
+---
+
+# 9. CUTSCENE REFACTOR
+
+Cutscenes should become data-driven.
+
+Target:
+
+```text
+src/systems/
+├── CutsceneSystem.js
+└── cutscenes.data.js
+```
+
+Extract data from existing cutscene functions.
+
+Do NOT rewrite dialogue.
+
+Do NOT paraphrase dialogue.
+
+Do NOT reorder dialogue.
+
+Do NOT change trigger conditions.
+
+Do NOT change flags.
+
+Do NOT change skip/advance behavior.
+
+The generic engine should reproduce the old behavior.
+
+If two cutscenes look similar but differ in a subtle way, preserve the difference.
+
+---
+
+# 10. RENDERING REFACTOR
+
+Rendering should eventually be separated from orchestration.
+
+Target examples:
+
+```text
+src/render/
+├── WorldRenderer.js
+├── LobbyRenderer.js
+└── HudCanvasRenderer.js
+```
+
+Move existing drawing logic with minimal semantic changes.
+
+Do not change:
+
+- coordinates
+- dimensions
+- colors
+- animation timing
+- layer order
+- alpha values
+- collision-related visual assumptions
+- sword appearance
+- map appearance
+
+unless explicitly requested.
+
+Rendering refactor means relocating responsibility, not redesigning graphics.
+
+---
+
+# 11. UI REFACTOR
+
+DOM/UI logic should move out of the core game.
+
+Target:
+
+```text
+src/ui/
+├── hud.js
+├── library.js
+├── badges.js
+├── swordStandPanel.js
+├── skillsPanel.js
+├── modals.js
+├── debugPanel.js
+└── toast.js
+```
+
+Preserve:
+
+- DOM IDs
+- element relationships
+- displayed values
+- button behavior
+- modal behavior
+- language behavior
+- debug behavior
+
+Do not rename HTML IDs unless explicitly requested.
+
+---
+
+# 12. DATA FILES
+
+Data is not code to be "cleaned up" casually.
+
+Do not modify:
+
+- sword stats
+- NPC stats
+- phase requirements
+- damage
+- HP
+- reward values
+- formation positions
+- map coordinates
+- localization text
+
+unless explicitly requested.
+
+When moving JSON/data:
+
+**copy the data faithfully.**
+
+Do not reorder or normalize it unless there is a technical requirement and the resulting runtime behavior is proven equivalent.
+
+---
+
+# 13. SAVE DATA
+
+Save compatibility is mandatory.
+
+Never rename or remove existing localStorage keys during the refactor.
+
+Never change save-data schema casually.
+
+Before touching `storage.js` / `SaveManager`:
+
+1. Read the entire implementation.
+2. Identify all keys.
+3. Search every use.
+4. Preserve serialization/deserialization behavior.
+5. Preserve validation/default behavior.
+6. Preserve backward compatibility.
+
+Existing players must not lose progress because of the refactor.
+
+---
+
+# 14. I18N
+
+The current i18n implementation contains both translation data and logic.
+
+Target:
+
+```text
+src/i18n/
+├── I18n.js
+├── en.json
+└── vi.json
+```
+
+Move translation data faithfully.
+
+Do not translate existing text.
+
+Do not rewrite wording.
+
+Do not remove keys.
+
+Do not silently add fallback strings.
+
+After migration, verify EN ⇄ VI and check for missing keys.
+
+---
+
+# 15. CONFIGURATION
+
+Separate configuration from NPC formations where appropriate.
+
+Target:
+
+```text
+src/config/
+├── gameConfig.js
+└── npcFormations.js
+```
+
+Preserve values exactly.
+
+---
+
+# 16. GAME CLASS
+
+`Game` should become an orchestrator rather than the home of every system.
+
+It may retain state such as:
+
+```js
+this.currentArea
+this.player
+this.npcs
+this.bloodmoonActive
+this.achievements
+```
+
+But system-specific behavior should be delegated where the architecture requires it.
+
+Do not blindly turn Game into a giant service locator.
+
+Prefer explicit dependencies.
+
+---
+
+# 17. PHASED EXECUTION
+
+Follow the documented phases rather than performing a giant rewrite.
+
+Recommended order:
+
+### Phase 0
+Safety:
+- establish git baseline/branch
+- make sure original project is preserved
+- establish build/dev environment
+
+### Phase 1
+Pure data:
+- sword JSON
+- NPC JSON
+- map data
+- i18n data
+- config data
+
+### Phase 2
+Sword Strategy Pattern:
+- renderers
+- abilities
+- SwordRegistry
+- Player integration
+- Game ability integration
+
+### Phase 3
+Cutscene system.
+
+### Phase 4
+World/lobby rendering.
+
+### Phase 5
+Bloodmoon and Achievement systems.
+
+### Phase 6
+UI/main.js split.
+
+### Phase 7
+innerHTML review.
+
+### Responsive work
+Only add responsive behavior according to the project specification. Do not use responsive work as an excuse to redesign the UI.
+
+---
+
+# 18. TEST AFTER EVERY PHASE
+
+Never assume a successful build means a successful refactor.
+
+After every phase, test at minimum:
+
+- Main Menu loads.
+- No console errors.
+- Lobby loads.
+- Sword equip/unequip works.
+- Combat loads.
+- Player attacks NPC.
+- Damage remains correct.
+- Killstreak increments correctly.
+- Phase progression works.
+- Blade rendering works.
+- Aura rendering works.
+- Active ability works.
+- Relevant cutscene works.
+- Skip/advance works.
+- Library works.
+- Achievements work.
+- Settings work.
+- EN ⇄ VI works.
+- No translation displays `undefined`.
+- Save/load preserves progress.
+- Debug panel works where applicable.
+
+The documented checklist in `KILLSTREAK_REFACTOR_GUIDE.md` is authoritative for the required refactor verification.
+
+---
+
+# 19. WHEN A TEST FAILS
+
+Do not immediately rewrite the affected system.
+
+Instead:
+
+1. Identify the first observable difference.
+2. Compare old and new implementation.
+3. Trace the changed call path.
+4. Check `this` binding/context.
+5. Check initialization order.
+6. Check import/module evaluation order.
+7. Check state mutation order.
+8. Check missing side effects.
+9. Fix the smallest structural cause.
+10. Retest.
+
+The goal is to restore equivalence, not to invent a third implementation.
+
+---
+
+# 20. DIFF-DRIVEN REFACTORING
+
+Whenever practical, use this mental model:
+
+```text
+OLD:
+old function
+    ↓
+old caller
+    ↓
+old side effects
+
+NEW:
+new module
+    ↓
+new caller
+    ↓
+same side effects
+```
+
+Ask:
+
+> "What changed structurally?"
+
+and separately:
+
+> "What changed behaviorally?"
+
+During this project, behavioral changes should normally be ZERO.
+
+---
+
+# 21. DO NOT MAKE MULTIPLE CLASSES OF CHANGES AT ONCE
+
+Bad:
+
+- move function
+- rename variables
+- optimize algorithm
+- change UI
+- change balance
+- change architecture
+- fix unrelated bug
+
+all in one commit.
+
+Good:
+
+```text
+Commit 1:
+Move Devourer renderer without behavior change.
+
+Commit 2:
+Move Devourer ability without behavior change.
+
+Commit 3:
+Connect Devourer to SwordRegistry.
+
+Commit 4:
+Remove old Devourer branches after verification.
+```
+
+Small, reversible changes are preferred.
+
+---
+
+# 22. UNRELATED BUGS
+
+If you discover a pre-existing bug while refactoring:
+
+- Do not silently fix it unless required to complete the current refactor.
+- Record it.
+- Explain why it is unrelated.
+- Suggest a separate fix.
+
+If the bug blocks the refactor, fix the minimum necessary amount and explicitly tell the user.
+
+---
+
+# 23. FILE SIZE
+
+The architecture guide recommends roughly 300–400 lines per file as a warning threshold.
+
+Treat this as a design signal, NOT an absolute rule.
+
+Do not split code into meaningless fragments merely to hit a line count.
+
+A module should have one coherent responsibility.
+
+---
+
+# 24. VITE / ES MODULE MIGRATION
+
+When introducing Vite and ES modules:
+
+- preserve asset paths
+- preserve HTML IDs
+- preserve canvas dimensions unless explicitly changing responsive behavior
+- preserve runtime behavior
+- verify all imports
+- verify case-sensitive paths
+- verify JSON imports
+- verify dev server
+- verify production build
+
+Do not assume that moving from script tags to modules automatically preserves initialization order.
+
+Explicitly reproduce required initialization dependencies.
+
+---
+
+# 25. COMMUNICATION WITH THE USER
+
+When reporting work, be concrete.
+
+Do NOT say:
+
+> "Refactored the project successfully."
+
+unless you actually verified it.
+
+Instead report:
+
+- files changed
+- systems moved
+- tests performed
+- tests not performed
+- known issues
+- deviations from the guide
+- any assumptions
+
+If you could not run the game, say so.
+
+If you only performed static analysis, say so.
+
+Never claim runtime verification that did not happen.
+
+---
+
+# 26. STOP CONDITIONS
+
+Stop and ask the user instead of guessing when:
+
+- source code contradicts the refactor guide in a behaviorally important way
+- a migration requires changing gameplay
+- a save-data migration appears necessary
+- an undocumented dependency cannot be resolved safely
+- multiple interpretations would produce different behavior
+- an existing feature is unclear and source code alone cannot establish intent
+
+A question is better than silently breaking the game.
+
+---
+
+# 27. FINAL PRINCIPLE
+
+This project is already a functioning game.
+
+The objective is NOT:
+
+> "Make the code look modern."
+
+The objective is:
+
+> "Transform the architecture while making the game behave as though nothing changed."
+
+Architecture may change.
+
+File boundaries may change.
+
+Imports may change.
+
+Module boundaries may change.
+
+The player's experience should not.
+
+**Preserve first. Refactor second. Verify third. Optimize only when explicitly authorized.**

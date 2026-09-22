@@ -1,0 +1,2183 @@
+/**
+ * Application Entry Point & UI Controller
+ * Binds Main Menu, Walkable Lobby, Devourer Sword Stand, 2-Section Library, and Grassland Map.
+ */
+import { activatePrimary, activateSecondary } from '../src/systems/AbilitySystem.js';
+import * as CutsceneSystem from '../src/systems/CutsceneSystem.js';
+import * as BloodmoonEventSystem from '../src/systems/BloodmoonEventSystem.js';
+
+// DOM refs hoisted out of this IIFE in Phase 6 — see src/ui/domRefs.js
+import {
+  canvas,
+  mainMenu,
+  gameplayHud,
+  swordModal,
+  libraryModal,
+  achievementsModal,
+  settingsModal,
+  mapModal,
+  gameOverScreen,
+  interactionPrompt,
+  interactionText,
+  minimapWidget,
+  menuPlayBtn,
+  menuLibraryBtn,
+  menuAchievementsBtn,
+  menuSettingsBtn,
+  menuLobbyBtn,
+  hudHpText,
+  hudHpBar,
+  hudShieldBar,
+  hudKillstreakVal,
+  hudKillsVal,
+  hudSwordName,
+  hudPhasePill,
+  hudPhaseText,
+  hudAreaLabel,
+  hudStatsBtn,
+  hudLibraryBtn,
+  hudLobbyBtn,
+  hudMenuBtn,
+  skillGluttonyBtn,
+  skillGluttonyVal,
+  skillEngulfBtn,
+  skillEngulfVal,
+  standSwordName,
+  standSwordPhase,
+  standSwordBase,
+  standSwordScaling,
+  standSwordDamage,
+  standEquipBtn,
+  closeSwordBtn,
+  swordStandCloseBtn,
+  standSwordIcon,
+  standWeaponTitle,
+  standSwordLockHint,
+  standCurrentKills,
+  hudDmgVal,
+  hudScaleVal,
+  closeLibraryBtn,
+  closeLibraryBtnBottom,
+  tabSwordsBtn,
+  tabBadgesBtn,
+  tabNpcsBtn,
+  librarySwordsSection,
+  libraryBadgesSection,
+  libraryNpcsSection,
+  libraryPhasesContainer,
+  libraryBadgesContainer,
+  libraryNpcsContainer,
+  libNpcsTotalCount,
+  libTabDevourer,
+  libTabOverdrive,
+  libTabAquatic,
+  libTabSoil,
+  libTabMetallic,
+  libTabFlora,
+  libTabHellfire,
+  libSwordTag,
+  libSwordName,
+  libSwordDesc,
+  closeAchievementsBtn,
+  closeAchievementsBtnBottom,
+  badgesList,
+  closeSettingsBtn,
+  closeSettingsBtnBottom,
+  langBtnEn,
+  langBtnVi,
+  settingShake,
+  settingNumbers,
+  settingDamageTaken,
+  resetSaveBtn,
+  settingsCogTrigger,
+  debugAuthContainer,
+  debugPasswordInput,
+  debugPasswordSubmit,
+  debugPasswordError,
+  debugPanel,
+  debugModeToggle,
+  debugStatusPill,
+  debugActionsArea,
+  debugCustomKillsInput,
+  debugAddCustomKillsBtn,
+  debugSetCustomKillsBtn,
+  debugGrantAllBadgesBtn,
+  debugIndividualBadgesList,
+  debugKillstreakHud,
+  debugHudStreakInput,
+  debugHudStreakApply,
+  debugHudEventBtn,
+  debugSummonBloodmoonBtn,
+  debugEndBloodmoonBtn,
+  statsModal,
+  closeStatsBtn,
+  closeStatsBtnBottom,
+  statTotalPlaytime,
+  statTotalKills,
+  statHighestStreak,
+  statCurrentPhase,
+  runStreak,
+  runWeapon,
+  runPhase,
+  runBestStreak,
+  respawnCombatBtn,
+  returnLobbyBtn,
+  toast,
+  toastIcon,
+  toastTitle,
+  toastDesc,
+  cutsceneOverlay,
+  cutsceneSpeaker,
+  cutsceneText,
+  cutsceneSkipBtn
+} from '../src/ui/domRefs.js';
+
+(function() {
+  const { Config, Game, Storage, I18n } = window.Killstreak;
+
+
+  // Screens & Panels
+
+  // Main Menu Buttons
+
+  // Gameplay HUD
+
+  // Skill Cooldown Elements
+
+  // Sword Stand Modal Elements (Devourer)
+
+
+  // Library Modal Elements (SWORDS & BADGES)
+
+  // Library Sword Tabs & Headers
+
+  let inspectedSwordId = "devourer";
+  let selectedLibrarySword = "devourer";
+  let game = null;
+
+  // Achievements Modal Elements
+
+  // Settings & Debug Modal Elements
+
+  let cogClickCount = 0;
+  let cogClickTimeout = null;
+  let isDebugUnlocked = false;
+
+  // Statistics Modal Elements
+
+  // Game Over Elements
+
+  // Toast
+  let toastTimeout = null;
+
+  // Cutscene Overlay Elements
+
+  let panelOrigin = "MENU";
+
+  function showToast(title, desc, icon = "👁️") {
+    if (!toast || !toastTitle || !toastDesc) return;
+    toastTitle.textContent = title;
+    toastDesc.textContent = desc;
+    if (toastIcon) toastIcon.textContent = icon;
+    toast.classList.remove("hidden");
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 3000);
+  }
+
+  function closeAllModals() {
+    swordModal.classList.add("hidden");
+    libraryModal.classList.add("hidden");
+    achievementsModal.classList.add("hidden");
+    settingsModal.classList.add("hidden");
+    statsModal.classList.add("hidden");
+    if (mapModal) mapModal.classList.add("hidden");
+    if (window.Killstreak && window.Killstreak.MapSystem) {
+      window.Killstreak.MapSystem.closeFullMap();
+    }
+    gameOverScreen.classList.add("hidden");
+    if (!isDebugUnlocked) {
+      if (debugAuthContainer) debugAuthContainer.classList.add("hidden");
+      if (debugPasswordError) debugPasswordError.classList.add("hidden");
+      if (debugPasswordInput) debugPasswordInput.value = "";
+      if (debugPanel) debugPanel.classList.add("hidden");
+      cogClickCount = 0;
+    }
+  }
+
+  function openScreen(screenName, origin = "MENU") {
+    panelOrigin = origin;
+    closeAllModals();
+
+    switch (screenName) {
+      case "MENU":
+        mainMenu.classList.remove("hidden");
+        gameplayHud.classList.add("hidden");
+        if (minimapWidget) minimapWidget.classList.add("hidden");
+        game.state = "MENU";
+        if (menuLobbyBtn) {
+          if (game && game.currentArea === "COMBAT") {
+            menuLobbyBtn.classList.remove("hidden");
+          } else {
+            menuLobbyBtn.classList.add("hidden");
+          }
+        }
+        break;
+
+      case "GAME":
+        mainMenu.classList.add("hidden");
+        gameplayHud.classList.remove("hidden");
+        if (minimapWidget) minimapWidget.classList.remove("hidden");
+        if (game) {
+          game.setPaused(false);
+          game.state = game.currentArea || "LOBBY";
+        }
+        updateHudCounters();
+        updateHudPhaseTracking();
+        if (hudLibraryBtn) hudLibraryBtn.classList.remove("hidden");
+        if (hudLobbyBtn) {
+          if (game && game.currentArea === "COMBAT") {
+            hudLobbyBtn.classList.remove("hidden");
+          } else {
+            hudLobbyBtn.classList.add("hidden");
+          }
+        }
+        if (isDebugUnlocked && game.isDebugModeActive && debugKillstreakHud) {
+          debugKillstreakHud.classList.remove("hidden");
+        } else if (debugKillstreakHud) {
+          debugKillstreakHud.classList.add("hidden");
+        }
+        break;
+
+      case "ACHIEVEMENTS":
+        mainMenu.classList.add("hidden");
+        if (debugKillstreakHud) debugKillstreakHud.classList.add("hidden");
+        renderBadges(game.saveData.badges, badgesList);
+        achievementsModal.classList.remove("hidden");
+        break;
+
+      case "SETTINGS":
+        mainMenu.classList.add("hidden");
+        if (debugKillstreakHud) debugKillstreakHud.classList.add("hidden");
+        if (isDebugUnlocked) {
+          if (debugPanel) debugPanel.classList.remove("hidden");
+          if (debugAuthContainer) debugAuthContainer.classList.add("hidden");
+        } else {
+          if (debugPanel) debugPanel.classList.add("hidden");
+          if (debugAuthContainer) debugAuthContainer.classList.add("hidden");
+          if (debugPasswordError) debugPasswordError.classList.add("hidden");
+          if (debugPasswordInput) debugPasswordInput.value = "";
+          cogClickCount = 0;
+        }
+        settingsModal.classList.remove("hidden");
+        break;
+
+      case "STATISTICS":
+        mainMenu.classList.add("hidden");
+        updateStatsUI();
+        statsModal.classList.remove("hidden");
+        break;
+
+      case "SWORD_STAND":
+        updateSwordStandUI();
+        swordModal.classList.remove("hidden");
+        break;
+
+      case "LIBRARY":
+        if (game && origin === "GAME") game.setPaused(true);
+        renderLibrary();
+        libraryModal.classList.remove("hidden");
+        break;
+    }
+  }
+
+  function returnFromModal() {
+    closeAllModals();
+    if (panelOrigin === "MENU") {
+      openScreen("MENU");
+    } else {
+      if (game) game.setPaused(false);
+      openScreen("GAME");
+    }
+  }
+
+  function formatPlaytime(totalSeconds) {
+    const totalSec = Math.floor(totalSeconds || 0);
+    const hours = Math.floor(totalSec / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    }
+    return `${minutes}m ${seconds}s`;
+  }
+
+  /**
+   * Format large numbers into shortened units: K, M, B, T, Q up to Googol (10^100).
+   * Numbers < 10,000 are shown as-is with locale formatting.
+   */
+  const NUMBER_UNITS = [
+    { threshold: 1e100, suffix: " Googol" },
+    { threshold: 1e99,  suffix: "Dtg" },  // Duotrigintillion
+    { threshold: 1e96,  suffix: "Utg" },  // Untrigintillion
+    { threshold: 1e93,  suffix: "Tg" },   // Trigintillion
+    { threshold: 1e90,  suffix: "Novg" }, // Novemvigintillion
+    { threshold: 1e87,  suffix: "Ocvg" }, // Octovigintillion
+    { threshold: 1e84,  suffix: "Spvg" }, // Septenvigintillion
+    { threshold: 1e81,  suffix: "Sxvg" }, // Sexvigintillion
+    { threshold: 1e78,  suffix: "Qivg" }, // Quinvigintillion
+    { threshold: 1e75,  suffix: "Qavg" }, // Quattuorvigintillion
+    { threshold: 1e72,  suffix: "Tvg" },  // Tresvigintillion
+    { threshold: 1e69,  suffix: "Dvg" },  // Duovigintillion
+    { threshold: 1e66,  suffix: "Uvg" },  // Unvigintillion
+    { threshold: 1e63,  suffix: "Vg" },   // Vigintillion
+    { threshold: 1e60,  suffix: "Nod" },  // Novemdecillion
+    { threshold: 1e57,  suffix: "Ocd" },  // Octodecillion
+    { threshold: 1e54,  suffix: "Spd" },  // Septendecillion
+    { threshold: 1e51,  suffix: "Sxd" },  // Sexdecillion
+    { threshold: 1e48,  suffix: "Qid" },  // Quindecillion
+    { threshold: 1e45,  suffix: "Qad" },  // Quattuordecillion
+    { threshold: 1e42,  suffix: "Td" },   // Tredecillion
+    { threshold: 1e39,  suffix: "Dd" },   // Duodecillion
+    { threshold: 1e36,  suffix: "Ud" },   // Undecillion
+    { threshold: 1e33,  suffix: "Dc" },   // Decillion
+    { threshold: 1e30,  suffix: "No" },   // Nonillion
+    { threshold: 1e27,  suffix: "Oc" },   // Octillion
+    { threshold: 1e24,  suffix: "Sp" },   // Septillion
+    { threshold: 1e21,  suffix: "Sx" },   // Sextillion
+    { threshold: 1e18,  suffix: "Qi" },   // Quintillion
+    { threshold: 1e15,  suffix: "Qa" },   // Quadrillion
+    { threshold: 1e12,  suffix: "T" },    // Trillion
+    { threshold: 1e9,   suffix: "B" },    // Billion
+    { threshold: 1e6,   suffix: "M" },    // Million
+    { threshold: 1e3,   suffix: "K" }     // Thousand
+  ];
+
+  /**
+   * Format numbers into compact strings with clean suffix tags up to Googol (10^100).
+   * @param {number} num - The number to format
+   * @returns {{ short: string, full: string }} short display string and full number string
+   */
+  function formatNumber(num) {
+    const n = typeof num === "number" ? num : (parseFloat(num) || 0);
+    const abs = Math.abs(n);
+    const full = abs < 1e15 ? Math.round(n).toLocaleString() : (abs <= 1e21 ? n.toLocaleString("en-US", { maximumFractionDigits: 0 }) : n.toExponential(2));
+    if (abs < 10000) return { short: full, full };
+    for (let i = 0; i < NUMBER_UNITS.length; i++) {
+      const { threshold, suffix } = NUMBER_UNITS[i];
+      if (abs >= threshold * 0.9995) {
+        const val = n / threshold;
+        if (threshold === 1e100 && val >= 1000) {
+          const gShort = formatNumber(val).short;
+          return { short: `${gShort} Googol`, full };
+        }
+        const display = val < 100 ? val.toFixed(1).replace(/\.0$/, "") : (val < 1000 ? Math.round(val).toString() : val.toFixed(0));
+        return { short: display + suffix, full };
+      }
+    }
+    return { short: full, full };
+  }
+
+  function parseNumberInput(val) {
+    if (typeof val === "number") return val;
+    if (!val && val !== 0) return 0;
+    const raw = String(val).trim();
+    if (raw === "") return 0;
+
+    const lower = raw.toLowerCase().replace(/,/g, "");
+
+    if (lower.includes("googol")) {
+      const numPart = parseFloat(lower.replace(/googol/g, "").trim());
+      return (isNaN(numPart) || numPart === 0 ? 1 : numPart) * 1e100;
+    }
+
+    for (const { threshold, suffix } of NUMBER_UNITS) {
+      const s = suffix.trim().toLowerCase();
+      if (s && lower.endsWith(s)) {
+        const numPart = parseFloat(lower.slice(0, -s.length).trim());
+        return (isNaN(numPart) || numPart === 0 ? 1 : numPart) * threshold;
+      }
+    }
+
+    const n = Number(lower);
+    if (!isNaN(n)) return n;
+    const f = parseFloat(lower);
+    return isNaN(f) ? 0 : f;
+  }
+
+  window.formatNumber = formatNumber;
+  window.parseNumberInput = parseNumberInput;
+  if (window.Killstreak) {
+    window.Killstreak.formatNumber = formatNumber;
+    window.Killstreak.parseNumberInput = parseNumberInput;
+  }
+
+  /**
+   * Set element textContent to a shortened number with full value in title tooltip.
+   * @param {HTMLElement} el - Target element
+   * @param {number} num - The number to display
+   */
+  function setNumContent(el, num) {
+    if (!el) return;
+    const f = formatNumber(num);
+    el.textContent = f.short;
+    el.title = f.full;
+  }
+
+  function updateHudCounters() {
+    const totalKills = (game && game.saveData && (typeof game.saveData.totalKills === "number" ? game.saveData.totalKills : game.saveData.kills)) || 0;
+    const streak = (game && typeof game.killstreak === "number") ? game.killstreak : 0;
+    setNumContent(hudKillsVal, totalKills);
+    setNumContent(hudKillstreakVal, streak);
+    setNumContent(standCurrentKills, totalKills);
+    setNumContent(statTotalKills, totalKills);
+    if (statHighestStreak && game && game.saveData) {
+      setNumContent(statHighestStreak, game.saveData.highestKillstreak || 0);
+    }
+  }
+
+  function updateStatsUI() {
+    if (!game || !game.saveData || !statTotalPlaytime) return;
+    statTotalPlaytime.textContent = formatPlaytime(game.saveData.playTime || 0);
+    updateHudCounters();
+    if (game.player && game.player.isSwordEquipped && game.player.phase) {
+      const sInfo = I18n ? I18n.getSwordInfo(game.player.swordId) : { name: game.player.swordName || "Devourer" };
+      const pInfo = I18n ? I18n.getPhaseInfo(game.player.swordId, game.player.phase.phase) : game.player.phase;
+      statCurrentPhase.textContent = `${sInfo.name} — ${pInfo.name}`;
+    } else {
+      statCurrentPhase.textContent = I18n ? I18n.t("stats.none_unequipped") : "None (Unequipped)";
+    }
+  }
+
+  function updateHudPhaseTracking() {
+    if (!game || !game.player || !hudSwordName || !hudPhaseText || !hudPhasePill) return;
+    if (game.player && game.player.isSwordEquipped && game.player.phase) {
+      const sInfo = I18n ? I18n.getSwordInfo(game.player.swordId) : { name: game.player.swordName || "DEVOURER" };
+      const pInfo = I18n ? I18n.getPhaseInfo(game.player.swordId, game.player.phase.phase) : game.player.phase;
+      hudSwordName.textContent = (sInfo.name || game.player.swordName || "DEVOURER").toUpperCase();
+      hudPhaseText.textContent = I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || game.player.phase.shortName).toUpperCase() }) : `PHASE: ${game.player.phase.shortName.toUpperCase()}`;
+      hudPhasePill.className = `phase-pill ${game.player.phase.cssClass || "phase-1"}`;
+    } else {
+      hudSwordName.textContent = I18n ? I18n.t("hud.no_sword_caps") : "NO SWORD";
+      hudPhaseText.textContent = I18n ? I18n.t("hud.unequipped_caps") : "UNEQUIPPED";
+      hudPhasePill.className = "phase-pill phase-unequipped";
+    }
+  }
+
+  function updateSkillsUI(skillsData) {
+    if (!skillGluttonyBtn || !skillEngulfBtn) return;
+    const hudSkillsBar = document.getElementById("hud-skills-bar");
+    const isEquipped = skillsData && typeof skillsData.isSwordEquipped === "boolean"
+      ? skillsData.isSwordEquipped
+      : Boolean(game && game.player && game.player.isSwordEquipped);
+
+    const swordId = (skillsData && skillsData.swordId) || (game && game.player && game.player.swordId) || "devourer";
+
+    // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, or Hellfire is equipped
+    if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire")) {
+      if (hudSkillsBar) hudSkillsBar.classList.add("hidden");
+      skillGluttonyBtn.disabled = true;
+      skillEngulfBtn.disabled = true;
+      return;
+    }
+
+    if (hudSkillsBar) hudSkillsBar.classList.remove("hidden");
+
+    const phase = (skillsData && skillsData.phase) || (game.player && game.player.phase.phase) || 1;
+
+    // METALLIC SKILL: Iron Will (Z)
+    if (swordId === "metallic") {
+      skillEngulfBtn.classList.add("hidden");
+      skillGluttonyBtn.classList.remove("hidden");
+
+      const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+      if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.iron_will_label") : "[ Z — IRON WILL ]";
+      skillGluttonyBtn.title = I18n ? I18n.t("skills.iron_will_title") : "Iron Will [Z] — 46% damage reduction for 6.9s + reflective shrapnel (Phase 4+, 17s CD)";
+
+      const iwCd = (skillsData && typeof skillsData.ironWillCooldown === "number")
+        ? skillsData.ironWillCooldown
+        : (game && typeof game.ironWillCooldown === "number" ? game.ironWillCooldown : 0);
+      const isIwActive = (skillsData && skillsData.ironWillActive) || (game && game.player && (game.player.ironWillActive || game.player.ironWillTimer > 0));
+
+      if (phase < 4) {
+        skillGluttonyBtn.className = "skill-btn skill-locked";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+      } else if (isIwActive) {
+        skillGluttonyBtn.className = "skill-btn skill-ready";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.active") : "ACTIVE";
+      } else if (iwCd > 0) {
+        skillGluttonyBtn.className = "skill-btn skill-cooldown";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = `${iwCd.toFixed(1)}s`;
+      } else {
+        skillGluttonyBtn.className = "skill-btn skill-ready";
+        skillGluttonyBtn.disabled = false;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+      }
+      return;
+    }
+
+    // FLORA SKILL: Worldroot (Z)
+    if (swordId === "flora") {
+      skillEngulfBtn.classList.add("hidden");
+      skillGluttonyBtn.classList.remove("hidden");
+
+      const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+      if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.worldroot_label") : "[ Z — WORLDROOT ]";
+      skillGluttonyBtn.title = I18n ? I18n.t("skills.worldroot_title") : "Worldroot [Z] — Roots all nearby enemies for 2.9s and restores 23% max HP over 4s (Phase 4+, 19s CD)";
+
+      const wrCd = (skillsData && typeof skillsData.worldrootCooldown === "number")
+        ? skillsData.worldrootCooldown
+        : (game && typeof game.worldrootCooldown === "number" ? game.worldrootCooldown : 0);
+
+      if (phase < 4) {
+        skillGluttonyBtn.className = "skill-btn skill-locked";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+      } else if (wrCd > 0) {
+        skillGluttonyBtn.className = "skill-btn skill-cooldown";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = `${wrCd.toFixed(1)}s`;
+      } else {
+        skillGluttonyBtn.className = "skill-btn skill-ready";
+        skillGluttonyBtn.disabled = false;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+      }
+      return;
+    }
+
+    // HELLFIRE SKILL: Cataclysm (Z)
+    if (swordId === "hellfire") {
+      skillEngulfBtn.classList.add("hidden");
+      skillGluttonyBtn.classList.remove("hidden");
+
+      const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+      if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.cataclysm_label") : "[ Z — CATACLYSM ]";
+      skillGluttonyBtn.title = I18n ? I18n.t("skills.cataclysm_title") : "Cataclysm [Z] — Erupts surrounding ground in magma, dealing 5.75x weapon damage (Phase 4+, 15.3s CD)";
+
+      const ccCd = (skillsData && typeof skillsData.cataclysmCooldown === "number")
+        ? skillsData.cataclysmCooldown
+        : (game && typeof game.cataclysmCooldown === "number" ? game.cataclysmCooldown : 0);
+
+      if (phase < 4) {
+        skillGluttonyBtn.className = "skill-btn skill-locked";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+      } else if (ccCd > 0) {
+        skillGluttonyBtn.className = "skill-btn skill-cooldown";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = `${ccCd.toFixed(1)}s`;
+      } else {
+        skillGluttonyBtn.className = "skill-btn skill-ready";
+        skillGluttonyBtn.disabled = false;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+      }
+      return;
+    }
+
+    // SOIL SKILL: Fortitude (Z)
+    if (swordId === "soil") {
+      skillEngulfBtn.classList.add("hidden");
+      skillGluttonyBtn.classList.remove("hidden");
+
+      const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+      if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.fortitude_label") : "[ Z — FORTITUDE ]";
+      skillGluttonyBtn.title = I18n ? I18n.t("skills.fortitude_title") : "Fortitude [Z] — Shield equal to 15% of current HP for 5s (Phase 4+, 20s CD)";
+
+      const fCd = (skillsData && typeof skillsData.fortitudeCooldown === "number")
+        ? skillsData.fortitudeCooldown
+        : (game && typeof game.fortitudeCooldown === "number" ? game.fortitudeCooldown : 0);
+
+      if (phase < 4) {
+        skillGluttonyBtn.className = "skill-btn skill-locked";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+      } else if (fCd > 0) {
+        skillGluttonyBtn.className = "skill-btn skill-cooldown";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = `${fCd.toFixed(1)}s`;
+      } else {
+        skillGluttonyBtn.className = "skill-btn skill-ready";
+        skillGluttonyBtn.disabled = false;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+      }
+      return;
+    }
+
+    // AQUATIC SKILL: Tsunami (Z)
+    if (swordId === "aquatic") {
+      skillEngulfBtn.classList.add("hidden");
+      skillGluttonyBtn.classList.remove("hidden");
+
+      const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+      if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.tsunami_label") : "[ Z — TSUNAMI ]";
+      skillGluttonyBtn.title = I18n ? I18n.t("skills.tsunami_title") : "Tsunami [Z] — Sweeping wave dealing 4x sword damage (Phase 9+)";
+
+      const tCd = (skillsData && typeof skillsData.tsunamiCooldown === "number")
+        ? skillsData.tsunamiCooldown
+        : (game && typeof game.tsunamiCooldown === "number" ? game.tsunamiCooldown : 0);
+
+      if (phase < 9) {
+        skillGluttonyBtn.className = "skill-btn skill-locked";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p9") : "LOCKED (P9)";
+      } else if (tCd > 0) {
+        skillGluttonyBtn.className = "skill-btn skill-cooldown";
+        skillGluttonyBtn.disabled = true;
+        skillGluttonyVal.textContent = `${tCd.toFixed(1)}s`;
+      } else {
+        skillGluttonyBtn.className = "skill-btn skill-ready";
+        skillGluttonyBtn.disabled = false;
+        skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+      }
+      return;
+    }
+
+    // DEVOURER SKILLS: Gluttony (Z) & Engulf (X)
+    skillEngulfBtn.classList.remove("hidden");
+    skillGluttonyBtn.classList.remove("hidden");
+
+    const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+    if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.gluttony_label") : "[ Z — GLUTTONY ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.gluttony_title") : "Gluttony [Z] — Beam attack (Phase 10+)";
+    skillEngulfBtn.title = I18n ? I18n.t("skills.engulf_title") : "Engulf [X] — Devourer AoE aura (Phase 17)";
+
+    const gCd = (skillsData && skillsData.gluttonyCooldown) || 0;
+    const eCd = (skillsData && skillsData.engulfCooldown) || 0;
+
+    // 1. Gluttony (Phase 10+)
+    if (phase < 10) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p10") : "LOCKED (P10)";
+    } else if (gCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${gCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+
+    // 2. Engulf (Phase 17+)
+    if (phase < 17) {
+      skillEngulfBtn.className = "skill-btn skill-locked";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.locked_p17") : "LOCKED (P17)";
+    } else if (skillsData && skillsData.isEngulfActive) {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.active") : "ACTIVE";
+    } else if (eCd > 0) {
+      skillEngulfBtn.className = "skill-btn skill-cooldown";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = eCd >= 10 ? `${Math.ceil(eCd)}s` : `${eCd.toFixed(1)}s`;
+    } else {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+  }
+
+  function updateSwordStandUI() {
+    if (!game || !game.player) return;
+    const sId = inspectedSwordId || "devourer";
+    const swordDef = (Config.SWORDS && Config.SWORDS[sId]) || Config.SWORDS.devourer;
+    const sInfo = I18n ? I18n.getSwordInfo(sId) : swordDef;
+    const isOverdrive = sId === "overdrive";
+    const isAquatic = sId === "aquatic";
+    const isSoil = sId === "soil";
+    const isMetallic = sId === "metallic";
+    const isFlora = sId === "flora";
+    const isHellfire = sId === "hellfire";
+    const totalKills = (game.saveData && game.saveData.totalKills) || 0;
+    const unlockReq = swordDef.unlockKills || 0;
+    const isLocked = unlockReq > 0 && totalKills < unlockReq;
+
+    standSwordName.textContent = sInfo.name.toUpperCase();
+    if (standWeaponTitle) standWeaponTitle.textContent = sInfo.name.toUpperCase();
+    if (standSwordIcon) standSwordIcon.textContent = swordDef.icon || (isHellfire ? "🔥" : (isFlora ? "🌿" : (isMetallic ? "⚙️" : (isSoil ? "🛡️" : (isAquatic ? "🌊" : (isOverdrive ? "⚡" : "👁️"))))));
+
+    let p = null;
+    const isEquippedWithThis = game.player.isSwordEquipped && game.player.swordId === sId;
+    if (game.player.swordId === sId) {
+      p = game.player.phase;
+    } else {
+      let pList = Config.SWORD_PHASES;
+      let savedNum = game.saveData.swordPhase || 1;
+      if (isSoil) {
+        pList = Config.SOIL_PHASES;
+        savedNum = game.saveData.soilPhase || 1;
+      } else if (isAquatic) {
+        pList = Config.AQUATIC_PHASES;
+        savedNum = game.saveData.aquaticPhase || 1;
+      } else if (isOverdrive) {
+        pList = Config.OVERDRIVE_PHASES;
+        savedNum = game.saveData.overdrivePhase || 1;
+      } else if (isMetallic) {
+        pList = Config.METALLIC_PHASES;
+        savedNum = game.saveData.metallicPhase || 1;
+      } else if (isFlora) {
+        pList = Config.FLORA_PHASES;
+        savedNum = game.saveData.floraPhase || 1;
+      } else if (isHellfire) {
+        pList = Config.HELLFIRE_PHASES;
+        savedNum = game.saveData.hellfirePhase || 1;
+      }
+      p = (pList && pList.find(x => x.phase === savedNum)) || (pList && pList[0]) || Config.SWORD_PHASES[0];
+    }
+    const pInfo = I18n ? I18n.getPhaseInfo(sId, p.phase) : p;
+
+    if (standSwordPhase) {
+      if (isLocked) {
+        standSwordPhase.textContent = I18n ? I18n.t("pedestal.phase_locked", { kills: formatNumber(unlockReq).short }) : `LOCKED (${formatNumber(unlockReq).short} LIFETIME KILLS NEEDED)`;
+        standSwordPhase.title = `${unlockReq.toLocaleString()} kills`;
+      } else if (isEquippedWithThis) {
+        standSwordPhase.textContent = I18n ? I18n.t("pedestal.phase_desc", { phase: p.phase, name: (pInfo.shortName || p.shortName).toUpperCase(), kills: formatNumber(p.killsRequired).short }) : `PHASE ${p.phase}: ${p.shortName.toUpperCase()} (${formatNumber(p.killsRequired).short} KILLSTREAK)`;
+        standSwordPhase.title = `${p.killsRequired.toLocaleString()} killstreak`;
+      } else {
+        standSwordPhase.textContent = I18n ? I18n.t("pedestal.phase_pedestal", { phase: p.phase, name: (pInfo.shortName || p.shortName).toUpperCase() }) : `PHASE ${p.phase}: ${p.shortName.toUpperCase()} (PEDESTAL)`;
+        standSwordPhase.title = "";
+      }
+    }
+
+    if (standSwordBase) {
+      const fDmg = formatNumber(p.damage);
+      const fHp = formatNumber(p.maxHp);
+      standSwordBase.textContent = I18n ? I18n.t("pedestal.base_stats_val", { damage: fDmg.short, hp: fHp.short }) : `${fDmg.short} DMG • ${fHp.short} HP`;
+      standSwordBase.title = `${fDmg.full} DMG • ${fHp.full} HP`;
+    }
+
+    if (standSwordScaling) {
+      if (isEquippedWithThis) {
+        const phaseKills = game.player.phaseKills || 0;
+        const fPhaseKills = formatNumber(phaseKills);
+        const scaledPct = Math.round(((game.player.damage / p.damage) - 1) * 100);
+        const dmgBonus = game.player.damage > p.damage ? (I18n ? I18n.t("pedestal.scaled_bonus", { pct: scaledPct }) : ` (+${scaledPct}% scaled)`) : " (+0%)";
+        standSwordScaling.textContent = I18n ? I18n.t("pedestal.scaling_val", { kills: fPhaseKills.short, bonus: dmgBonus }) : `+${fPhaseKills.short} Phase Kills${dmgBonus}`;
+      } else {
+        standSwordScaling.textContent = I18n ? I18n.t("pedestal.scaling_pedestal") : "+0 Phase Kills (Pedestal)";
+      }
+    }
+
+    if (standSwordDamage) {
+      const curDmg = isEquippedWithThis ? game.player.damage : p.damage;
+      const curHp = isEquippedWithThis ? game.player.maxHp : p.maxHp;
+      const fDmg = formatNumber(curDmg);
+      const fHp = formatNumber(curHp);
+      standSwordDamage.textContent = I18n
+        ? I18n.t("pedestal.active_power_val", { damage: fDmg.short, hp: fHp.short, speed: p.speed || 20, reach: p.bladeLength })
+        : `${fDmg.short} DMG • ${fHp.short} HP • ${p.speed || 20} SPD • Reach: ${p.bladeLength}px`;
+      standSwordDamage.title = `${fDmg.full} DMG • ${fHp.full} HP`;
+    }
+
+    if (isLocked) {
+      if (standSwordLockHint) {
+        standSwordLockHint.classList.remove("hidden");
+        const fKills = formatNumber(totalKills);
+        const fReq = formatNumber(unlockReq);
+        standSwordLockHint.textContent = I18n
+          ? I18n.t("pedestal.lock_hint", { req: fReq.short, kills: fKills.short })
+          : `🔒 Requires ${fReq.short} Lifetime Kills to Equip (Current: ${fKills.short})`;
+        standSwordLockHint.title = `Current: ${fKills.full}`;
+      }
+      standEquipBtn.textContent = I18n ? I18n.t("pedestal.btn_locked") : "LOCKED 🔒";
+      standEquipBtn.className = "btn btn-equip locked";
+      standEquipBtn.disabled = true;
+    } else {
+      if (standSwordLockHint) standSwordLockHint.classList.add("hidden");
+      standEquipBtn.disabled = false;
+      if (isEquippedWithThis) {
+        standEquipBtn.textContent = I18n ? I18n.t("pedestal.btn_equipped") : "EQUIPPED ✓";
+        standEquipBtn.className = "btn btn-equip equipped";
+      } else if (game.player.swordId === sId) {
+        standEquipBtn.textContent = I18n ? I18n.t("pedestal.btn_equip") : "EQUIP";
+        standEquipBtn.className = "btn btn-equip";
+      } else {
+        standEquipBtn.textContent = I18n ? I18n.t("pedestal.btn_switch", { name: sInfo.name.toUpperCase() }) : `SWITCH TO ${swordDef.name.toUpperCase()}`;
+        standEquipBtn.className = "btn btn-equip";
+      }
+    }
+  }
+
+  function renderLibrary() {
+    renderLibrarySwords();
+
+    // 2. BADGES Section
+    libraryBadgesContainer.innerHTML = "";
+    Config.ACHIEVEMENTS.forEach((badge) => {
+      const isUnlocked = game.saveData.badges.includes(badge.id || badge.badge);
+      const achInfo = I18n ? I18n.getAchievementInfo(badge.id) : badge;
+      const item = document.createElement("div");
+      item.className = `badge-item ${isUnlocked ? "unlocked" : "locked"}`;
+      const statusText = isUnlocked ? (I18n ? I18n.t("library.badge_unlocked") : "UNLOCKED") : (I18n ? I18n.t("library.badge_locked") : "LOCKED");
+      item.innerHTML = `
+        <div class="badge-icon">${badge.icon}</div>
+        <div class="badge-details">
+          <div class="badge-name">${achInfo.title}</div>
+          <div class="badge-desc">${achInfo.description}</div>
+        </div>
+        <span class="badge-status-tag ${isUnlocked ? "unlocked" : "locked"}">
+          ${statusText}
+        </span>
+      `;
+      libraryBadgesContainer.appendChild(item);
+    });
+
+    // 3. BESTIARY (NPCS) Section
+    renderLibraryNpcs();
+  }
+
+  function renderLibraryNpcs() {
+    if (!libraryNpcsContainer) return;
+    libraryNpcsContainer.innerHTML = "";
+
+    const Data = window.Killstreak.Data || {};
+    const npcsData = Data.NPCs || {};
+    const npcList = Object.values(npcsData);
+
+    // Sort strictly from weakest to strongest (ascending maxHp)
+    npcList.sort((a, b) => (a.maxHp || 0) - (b.maxHp || 0));
+
+    if (libNpcsTotalCount) {
+      libNpcsTotalCount.textContent = I18n
+        ? I18n.t("library.npc_count", { count: npcList.length })
+        : `${npcList.length} KNOWN ENTITIES`;
+    }
+
+    const NPC_ICONS = {
+      normal: "🌲",
+      fairy: "🧚",
+      thug: "🗡️",
+      guard: "🛡️",
+      swordman: "⚔️",
+      buff_man: "💪",
+      elf: "🏹",
+      ironborn: "⛓️",
+      bloodfang: "🐺",
+      arcanist: "🔮",
+      colossus: "🗿",
+      starforged: "✨",
+      grizzlehorn: "🦏",
+      brambleback: "🪵",
+      embermane: "🔥",
+      duskhorn: "🌒",
+      mirewalker: "🍄",
+      thunderhoof: "⚡",
+      gloomscale: "🐉",
+      wildtusk: "🐗",
+      moonmane: "🌙",
+      crimsonhide: "👑"
+    };
+
+    const NPC_ZONES = {
+      normal: "zone_north",
+      fairy: "zone_fairy_north",
+      thug: "zone_thug_camp",
+      guard: "zone_guard",
+      swordman: "zone_swordman",
+      buff_man: "zone_buff_man",
+      elf: "zone_elf",
+      ironborn: "zone_ironborn",
+      bloodfang: "zone_bloodfang",
+      arcanist: "zone_arcanist",
+      colossus: "zone_colossus",
+      starforged: "zone_starforged",
+      grizzlehorn: "zone_grizzlehorn",
+      brambleback: "zone_brambleback",
+      embermane: "zone_embermane",
+      duskhorn: "zone_duskhorn",
+      mirewalker: "zone_mirewalker",
+      thunderhoof: "zone_thunderhoof",
+      gloomscale: "zone_gloomscale",
+      wildtusk: "zone_wildtusk",
+      moonmane: "zone_moonmane",
+      crimsonhide: "zone_crimsonhide"
+    };
+
+    function getTierBadge(rank) {
+      if (rank <= 4) return { cls: "tier-novice", label: I18n ? I18n.t("library.tier_1") : "TIER I • NOVICE", border: "#64748b" };
+      if (rank <= 8) return { cls: "tier-adept", label: I18n ? I18n.t("library.tier_2") : "TIER II • ADEPT", border: "#10b981" };
+      if (rank <= 12) return { cls: "tier-elite", label: I18n ? I18n.t("library.tier_3") : "TIER III • ELITE", border: "#0284c7" };
+      if (rank <= 17) return { cls: "tier-dread", label: I18n ? I18n.t("library.tier_4") : "TIER IV • DREAD", border: "#f59e0b" };
+      return { cls: "tier-apex", label: I18n ? I18n.t("library.tier_5") : "TIER V • APEX", border: "#ef4444" };
+    }
+
+    const statHpLabel = I18n ? I18n.t("library.stat_hp") : "HP";
+    const statDmgLabel = I18n ? I18n.t("library.stat_damage") : "DAMAGE";
+    const statAtkLabel = I18n ? I18n.t("library.stat_attack_speed") : "ATK RATE";
+    const statStreakLabel = I18n ? I18n.t("library.stat_streak") : "STREAK";
+    const statKillsLabel = I18n ? I18n.t("library.stat_kills") : "KILLS";
+    const statRespawnLabel = I18n ? I18n.t("library.stat_respawn") : "RESPAWN";
+    const statZoneLabel = I18n ? I18n.t("library.stat_location") : "ZONE";
+
+    npcList.forEach((npc, index) => {
+      const rank = index + 1;
+      const tier = getTierBadge(rank);
+      const icon = NPC_ICONS[npc.id] || "👾";
+      const npcInfo = I18n ? I18n.getNpcInfo(npc.id) : null;
+      const name = (npcInfo && npcInfo.name) || npc.name || npc.id.toUpperCase();
+      const desc = (npcInfo && npcInfo.desc) || npc.description || "";
+
+      const zoneKey = NPC_ZONES[npc.id] || `zone_${npc.id}`;
+      const zoneName = I18n ? I18n.getZoneLabel(zoneKey) : zoneKey;
+
+      const hpFormatted = Number(npc.maxHp || 0).toLocaleString();
+      const dmgFormatted = Number(npc.damage || 0).toLocaleString();
+      const atkRate = (npc.attackRate || 0).toFixed(2) + "s";
+      const streakFormatted = "+" + Number(npc.killstreakAwarded || 0).toLocaleString();
+      const killsFormatted = "+" + Number(npc.killsAwarded || 1);
+      const respawn = (npc.respawnDelay || 5).toFixed(1) + "s";
+
+      const card = document.createElement("div");
+      card.className = "library-npc-card";
+      card.style.borderLeftColor = npc.color || tier.border;
+
+      card.innerHTML = `
+        <div class="library-npc-card-top">
+          <div class="npc-avatar-box">
+            <canvas class="npc-avatar-canvas" width="44" height="44" data-npc-id="${npc.id}"></canvas>
+          </div>
+          <div class="npc-meta-group">
+            <div class="npc-title-row">
+              <span class="npc-rank-badge">#${rank}</span>
+              <span class="npc-name">${icon} ${name}</span>
+              <span class="npc-tier-pill ${tier.cls}">${tier.label}</span>
+            </div>
+            <p class="npc-desc">${desc}</p>
+          </div>
+        </div>
+        <div class="npc-stats-grid">
+          <div class="npc-stat-item">
+            <span class="npc-stat-label">${statHpLabel}</span>
+            <span class="npc-stat-value hp-val">${hpFormatted}</span>
+          </div>
+          <div class="npc-stat-item">
+            <span class="npc-stat-label">${statDmgLabel}</span>
+            <span class="npc-stat-value dmg-val">${dmgFormatted}</span>
+          </div>
+          <div class="npc-stat-item">
+            <span class="npc-stat-label">${statAtkLabel}</span>
+            <span class="npc-stat-value">${atkRate}</span>
+          </div>
+          <div class="npc-stat-item">
+            <span class="npc-stat-label">${statStreakLabel}</span>
+            <span class="npc-stat-value streak-val">${streakFormatted}</span>
+          </div>
+          <div class="npc-stat-item">
+            <span class="npc-stat-label">${statKillsLabel}</span>
+            <span class="npc-stat-value">${killsFormatted}</span>
+          </div>
+          <div class="npc-stat-item">
+            <span class="npc-stat-label">${statRespawnLabel}</span>
+            <span class="npc-stat-value">${respawn}</span>
+          </div>
+          <div class="npc-stat-item" style="grid-column: span 2;">
+            <span class="npc-stat-label">${statZoneLabel}</span>
+            <span class="npc-stat-value zone-val" title="${zoneName}">📍 ${zoneName}</span>
+          </div>
+        </div>
+      `;
+
+      libraryNpcsContainer.appendChild(card);
+
+      // Render crisp canvas avatar
+      const canvas = card.querySelector(".npc-avatar-canvas");
+      if (canvas && window.Killstreak && window.Killstreak.NPC) {
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, 44, 44);
+        ctx.save();
+        // Circular clipping
+        ctx.beginPath();
+        ctx.arc(22, 22, 21, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Background glow matching NPC color
+        const glow = ctx.createRadialGradient(22, 22, 4, 22, 22, 22);
+        glow.addColorStop(0, npc.glowColor || npc.color || "rgba(56, 189, 248, 0.4)");
+        glow.addColorStop(1, "rgba(10, 16, 28, 0.8)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, 44, 44);
+
+        const radius = npc.radius || 18;
+        const scale = Math.min(0.85, 16 / radius);
+        ctx.translate(22, 22);
+        ctx.scale(scale, scale);
+        ctx.translate(-22, -22);
+
+        try {
+          const dummyNpc = new window.Killstreak.NPC(22, 22, 0, npc.id, 0);
+          dummyNpc.hp = dummyNpc.maxHp;
+          dummyNpc.isHostile = false;
+          dummyNpc.draw(ctx);
+        } catch(e) {
+          ctx.beginPath();
+          ctx.arc(22, 22, radius, 0, Math.PI * 2);
+          ctx.fillStyle = npc.color || "#ef4444";
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    });
+  }
+
+  function renderLibrarySwords() {
+    const sId = selectedLibrarySword;
+    const swordDef = (Config.SWORDS && Config.SWORDS[sId]) || Config.SWORDS.devourer;
+    const sInfo = I18n ? I18n.getSwordInfo(sId) : swordDef;
+
+    if (libSwordTag) libSwordTag.textContent = sInfo.tag || "WEAPON";
+    if (libSwordName) libSwordName.textContent = `${swordDef.icon} ${sInfo.name.toUpperCase()}`;
+    if (libSwordDesc) libSwordDesc.textContent = sInfo.description;
+
+    if (libTabDevourer) {
+      libTabDevourer.textContent = I18n ? I18n.getSwordInfo("devourer").name.toUpperCase() : "DEVOURER";
+      if (sId === "devourer") libTabDevourer.classList.add("active");
+      else libTabDevourer.classList.remove("active");
+    }
+    if (libTabOverdrive) {
+      libTabOverdrive.textContent = I18n ? I18n.getSwordInfo("overdrive").name.toUpperCase() : "OVERDRIVE";
+      if (sId === "overdrive") libTabOverdrive.classList.add("active");
+      else libTabOverdrive.classList.remove("active");
+    }
+    if (libTabAquatic) {
+      libTabAquatic.textContent = I18n ? I18n.getSwordInfo("aquatic").name.toUpperCase() : "AQUATIC";
+      if (sId === "aquatic") libTabAquatic.classList.add("active");
+      else libTabAquatic.classList.remove("active");
+    }
+    if (libTabSoil) {
+      libTabSoil.textContent = I18n ? I18n.getSwordInfo("soil").name.toUpperCase() : "SOIL";
+      if (sId === "soil") libTabSoil.classList.add("active");
+      else libTabSoil.classList.remove("active");
+    }
+    if (libTabMetallic) {
+      libTabMetallic.textContent = I18n ? I18n.getSwordInfo("metallic").name.toUpperCase() : "METALLIC";
+      if (sId === "metallic") libTabMetallic.classList.add("active");
+      else libTabMetallic.classList.remove("active");
+    }
+    if (libTabFlora) {
+      libTabFlora.textContent = I18n ? I18n.getSwordInfo("flora").name.toUpperCase() : "FLORA";
+      if (sId === "flora") libTabFlora.classList.add("active");
+      else libTabFlora.classList.remove("active");
+    }
+    if (libTabHellfire) {
+      libTabHellfire.textContent = I18n ? I18n.getSwordInfo("hellfire").name.toUpperCase() : "HELLFIRE";
+      if (sId === "hellfire") libTabHellfire.classList.add("active");
+      else libTabHellfire.classList.remove("active");
+    }
+
+    const phases = swordDef.phases;
+    libraryPhasesContainer.innerHTML = "";
+
+    phases.forEach((p) => {
+      const isCurrent = game.player.swordId === sId && p.phase === game.player.phase.phase;
+      const card = document.createElement("div");
+      card.className = `library-phase-card ${isCurrent ? "current-phase-card" : ""}`;
+      const pInfo = I18n ? I18n.getPhaseInfo(sId, p.phase) : p;
+      const finalBadgeText = I18n ? I18n.t("library.final_badge") : "👑 FINAL TRANSFORMATION";
+      const finalBadge = p.isFinal ? `<span class="library-final-badge">${finalBadgeText}</span>` : "";
+      const weakBadgeText = I18n ? I18n.t("library.transitional_hurdle") : "TRANSITIONAL HURDLE";
+      const collapseText = I18n ? I18n.t("library.deliberate_collapse") : "DELIBERATE COLLAPSE";
+      const isWeakDev = sId === "devourer" && (p.phase === 9 || p.phase === 16);
+      const isWeakAq = sId === "aquatic" && p.phase === 8;
+      const isWeakSoil = sId === "soil" && p.phase === 9;
+      const isWeakMet = sId === "metallic" && p.phase === 8;
+      const isWeakFlora = sId === "flora" && p.phase === 7;
+      const isWeakHell = sId === "hellfire" && p.phase === 7;
+      const weakBadge = (isWeakDev || isWeakAq || isWeakSoil || isWeakMet || isWeakFlora || isWeakHell)
+        ? `<span style="font-size: 10px; color: #94a3b8; border: 1px solid rgba(148,163,184,0.4); border-radius: 4px; padding: 1px 5px; margin-left: 6px;">${(isWeakAq || isWeakSoil || isWeakMet || isWeakFlora || isWeakHell) ? collapseText : weakBadgeText}</span>`
+        : "";
+
+      let scaledRow = "";
+      if (isCurrent && game.player.isSwordEquipped) {
+        const fScDmg = formatNumber(game.player.damage);
+        const fScHp = formatNumber(game.player.maxHp);
+        const fScKills = formatNumber(game.player.phaseKills || 0);
+        scaledRow = `
+          <div style="font-size: 11px; color: #38bdf8; font-weight: 700; margin: 2px 0;" title="${fScDmg.full} DMG • ${fScHp.full} HP">
+            ${I18n ? I18n.t("library.active_scaled", { damage: fScDmg.short, hp: fScHp.short, kills: fScKills.short }) : `Active Scaled: ${fScDmg.short} DMG • ${fScHp.short} HP (+${fScKills.short} kills in active phase)`}
+          </div>
+        `;
+      }
+
+      const notifRow = pInfo.notification ? `<div style="font-size: 11px; color: #cbd5e1; font-style: italic; margin-top: 4px;">"${pInfo.notification}"</div>` : "";
+      const fBaseDmg = formatNumber(p.damage);
+      const fBaseHp = formatNumber(p.maxHp);
+      const fReqKills = formatNumber(p.killsRequired);
+      const baseStatsText = I18n ? I18n.t("pedestal.base_stats_val", { damage: fBaseDmg.short, hp: fBaseHp.short }) : `Base: ${fBaseDmg.short} DMG • ${fBaseHp.short} HP`;
+      const reqText = I18n ? I18n.t("library.req_streak", { kills: fReqKills.short }) : `Requirement: ${fReqKills.short} Killstreak`;
+      const spdUnit = I18n ? I18n.t("library.speed_unit") : "SPD";
+
+      card.innerHTML = `
+        <div class="library-phase-header">
+          <span class="library-phase-title" style="color: ${p.color};">
+            ${isCurrent ? "▶ " : ""}${sInfo.name.toUpperCase()} — ${pInfo.name.toUpperCase()} ${finalBadge}${weakBadge}
+          </span>
+          <span class="library-phase-dmg">${baseStatsText} • ${p.speed || 20} ${spdUnit}</span>
+        </div>
+        <div class="library-phase-req">${reqText}</div>
+        ${scaledRow}
+        <div class="library-phase-desc">${pInfo.effects}</div>
+        ${notifRow}
+      `;
+      libraryPhasesContainer.appendChild(card);
+    });
+  }
+
+  function renderBadges(unlockedBadges = [], targetElement = badgesList) {
+    targetElement.innerHTML = "";
+    Config.ACHIEVEMENTS.forEach((ach) => {
+      const isUnlocked = unlockedBadges.includes(ach.badge || ach.id);
+      const achInfo = I18n ? I18n.getAchievementInfo(ach.id) : ach;
+      const item = document.createElement("div");
+      item.className = `badge-item ${isUnlocked ? "unlocked" : "locked"}`;
+      const statusText = isUnlocked ? (I18n ? I18n.t("achievements.status_unlocked") : "Unlocked") : (I18n ? I18n.t("achievements.status_locked") : "Locked");
+      item.innerHTML = `
+        <div class="badge-icon">${ach.icon}</div>
+        <div class="badge-details">
+          <div class="badge-name">${achInfo.title}</div>
+          <div class="badge-desc">${achInfo.description}</div>
+        </div>
+        <div class="badge-status-tag ${isUnlocked ? "unlocked" : "locked"}">
+          ${statusText}
+        </div>
+      `;
+      targetElement.appendChild(item);
+    });
+  }
+
+  // Initialize Game
+  game = new Game(canvas, {
+    onKill(streak, highestStreak, kills, totalKills) {
+      setNumContent(hudKillstreakVal, streak || 0);
+      hudKillstreakVal.classList.add("streak-pulse");
+      setTimeout(() => hudKillstreakVal.classList.remove("streak-pulse"), 180);
+      updateHudCounters();
+      updateStatsUI();
+      updateHudPhaseTracking();
+      if (!swordModal.classList.contains("hidden")) {
+        updateSwordStandUI();
+      }
+    },
+
+    onPhaseChange(phase) {
+      updateHudPhaseTracking();
+      if (!swordModal.classList.contains("hidden")) {
+        updateSwordStandUI();
+      }
+      if (!statsModal.classList.contains("hidden")) {
+        updateStatsUI();
+      }
+    },
+
+    onAreaChange(areaId, areaName) {
+      const displayName = I18n ? I18n.getMapName(areaId) : areaName;
+      hudAreaLabel.textContent = I18n ? I18n.t("hud.area_prefix", { name: displayName.toUpperCase() }) : `AREA: ${areaName.toUpperCase()}`;
+      // In-Game Library button is ALWAYS accessible in both Lobby and Combat
+      if (hudLibraryBtn) hudLibraryBtn.classList.remove("hidden");
+
+      // Return to Lobby button is visible when in COMBAT
+      if (areaId === "COMBAT") {
+        if (hudLobbyBtn) hudLobbyBtn.classList.remove("hidden");
+        if (menuLobbyBtn) menuLobbyBtn.classList.remove("hidden");
+      } else {
+        if (hudLobbyBtn) hudLobbyBtn.classList.add("hidden");
+        if (menuLobbyBtn) menuLobbyBtn.classList.add("hidden");
+      }
+    },
+
+    onPrompt(show, text) {
+      if (show) {
+        interactionText.textContent = text;
+        interactionPrompt.classList.remove("hidden");
+      } else {
+        interactionPrompt.classList.add("hidden");
+      }
+    },
+
+    onOpenSwordModal(swordId) {
+      inspectedSwordId = swordId || "devourer";
+      openScreen("SWORD_STAND", "LOBBY");
+    },
+
+    onGameOver(finalStreak, finalPhaseName, bestStreak) {
+      closeAllModals();
+      setNumContent(runStreak, finalStreak);
+      const sInfo = I18n ? I18n.getSwordInfo(game.player.swordId) : { name: game.player.swordName || "DEVOURER" };
+      if (runWeapon) {
+        runWeapon.textContent = (sInfo.name || "DEVOURER").toUpperCase();
+      }
+      if (game.player.isSwordEquipped && game.player.phase) {
+        const pInfo = I18n ? I18n.getPhaseInfo(game.player.swordId, game.player.phase.phase) : game.player.phase;
+        runPhase.textContent = `${sInfo.name.toUpperCase()} — ${I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || game.player.phase.shortName).toUpperCase() }) : `PHASE: ${game.player.phase.shortName.toUpperCase()}`}`;
+      } else {
+        runPhase.textContent = I18n ? I18n.t("hud.unequipped_caps") : "UNEQUIPPED";
+      }
+      setNumContent(runBestStreak, bestStreak);
+      updateHudCounters();
+      updateHudPhaseTracking();
+      if (minimapWidget) minimapWidget.classList.add("hidden");
+      gameOverScreen.classList.remove("hidden");
+    },
+
+    onRespawn() {
+      closeAllModals();
+      updateHudCounters();
+      if (minimapWidget) minimapWidget.classList.remove("hidden");
+      updateHudPhaseTracking();
+      openScreen("GAME");
+    },
+
+    onToast(title, desc, icon) {
+      showToast(title, desc, icon);
+    },
+
+    onBadgesUpdated(badges) {
+      renderBadges(badges, badgesList);
+      renderBadges(badges, libraryBadgesContainer);
+      if (isDebugUnlocked) {
+        renderDebugBadges();
+      }
+    },
+
+    onCutsceneStart(step) {
+      cutsceneSpeaker.textContent = step.speaker;
+      cutsceneText.textContent = step.text;
+      const iconEl = cutsceneOverlay.querySelector(".cutscene-icon");
+      if (iconEl) {
+        if (step.speaker.includes("SOIL") || step.speaker.includes("EARTH") || step.speaker.includes("FORTRESS")) {
+          iconEl.textContent = "🛡️";
+        } else if (step.speaker.includes("AQUATIC") || step.speaker.includes("SPRING") || step.speaker.includes("OCEAN")) {
+          iconEl.textContent = "🌊";
+        } else if (step.speaker.includes("METALLIC") || step.speaker.includes("FORGED") || step.speaker.includes("UNBREAKABLE")) {
+          iconEl.textContent = "⚙️";
+        } else if (step.speaker.includes("FLORA") || step.speaker.includes("EVERGROWTH") || step.speaker.includes("WORLDROOT") || step.speaker.includes("NATURE")) {
+          iconEl.textContent = "🌿";
+        } else if (step.speaker.includes("HELLFIRE") || step.speaker.includes("INFERNAL") || step.speaker.includes("CATACLYSM") || step.speaker.includes("FLAME")) {
+          iconEl.textContent = "🔥";
+        } else {
+          iconEl.textContent = "👑";
+        }
+      }
+      cutsceneOverlay.classList.remove("hidden");
+    },
+
+    onCutsceneStep(step) {
+      cutsceneSpeaker.textContent = step.speaker;
+      cutsceneText.textContent = step.text;
+    },
+
+    onCutsceneEnd() {
+      cutsceneOverlay.classList.add("hidden");
+    },
+
+    onSkillsUpdate(data) {
+      updateSkillsUI(data);
+    }
+  });
+
+  window.Killstreak.game = game;
+  window.Killstreak.GameInstance = game;
+
+  settingShake.checked = Boolean(game.saveData.settings.screenShake);
+  settingNumbers.checked = Boolean(game.saveData.settings.damageNumbers);
+  if (settingDamageTaken) {
+    settingDamageTaken.checked = Boolean(game.saveData.settings.damageTaken !== false);
+  }
+
+  settingShake.addEventListener("change", (e) => {
+    game.saveData.settings.screenShake = e.target.checked;
+    Storage.save(game.saveData);
+  });
+
+  settingNumbers.addEventListener("change", (e) => {
+    game.saveData.settings.damageNumbers = e.target.checked;
+    Storage.save(game.saveData);
+  });
+
+  if (settingDamageTaken) {
+    settingDamageTaken.addEventListener("change", (e) => {
+      game.saveData.settings.damageTaken = e.target.checked;
+      Storage.save(game.saveData);
+    });
+  }
+
+  resetSaveBtn.addEventListener("click", () => {
+    const confirmMsg = I18n ? I18n.t("settings.reset_confirm") : "Reset all lifetime kills, highest streak, and unlocked badges?";
+    if (confirm(confirmMsg)) {
+      game.resetAllProgress();
+
+      // Reset developer debug mode state and interface
+      isDebugUnlocked = false;
+      cogClickCount = 0;
+      if (cogClickTimeout) clearTimeout(cogClickTimeout);
+      if (debugAuthContainer) debugAuthContainer.classList.add("hidden");
+      if (debugPasswordError) debugPasswordError.classList.add("hidden");
+      if (debugPasswordInput) debugPasswordInput.value = "";
+      if (debugPanel) debugPanel.classList.add("hidden");
+      if (debugModeToggle) debugModeToggle.checked = false;
+      updateDebugModeUI(false);
+      if (debugKillstreakHud) debugKillstreakHud.classList.add("hidden");
+      if (debugHudStreakInput) debugHudStreakInput.value = "";
+      if (debugCustomKillsInput) debugCustomKillsInput.value = "";
+
+      // Reset badges UI
+      renderBadges([], badgesList);
+      renderBadges([], libraryBadgesContainer);
+      if (debugIndividualBadgesList) debugIndividualBadgesList.innerHTML = "";
+
+      // Reset settings toggles back to default
+      if (settingShake) settingShake.checked = true;
+      if (settingNumbers) settingNumbers.checked = true;
+
+      // Reset all HUD and modal UI elements
+      updateHudCounters();
+      updateStatsUI();
+      updateHudPhaseTracking();
+
+      const hudHpBar = document.getElementById("hud-hp-bar");
+      const hudHpText = document.getElementById("hud-hp-text");
+      const hudDmgVal = document.getElementById("hud-dmg-val");
+      const hudScaleVal = document.getElementById("hud-scale-val");
+
+      if (hudHpBar) hudHpBar.style.width = "100%";
+      if (hudShieldBar) hudShieldBar.style.width = "0%";
+      if (hudHpText) hudHpText.textContent = `${game.player.maxHp} / ${game.player.maxHp}`;
+      if (hudDmgVal) hudDmgVal.textContent = `⚔️ ${game.player.damage} DMG`;
+      if (hudScaleVal) hudScaleVal.textContent = `Base: ${game.player.baseDamage} DMG • ${game.player.baseMaxHp} HP`;
+
+      updateSwordStandUI();
+      const toastTitle = I18n ? I18n.t("toasts.save_reset_title") : "Save Reset";
+      const toastDesc = I18n ? I18n.t("toasts.save_reset_desc") : "All progress has been reset.";
+      showToast(toastTitle, toastDesc, "🔄");
+    }
+  });
+
+  menuPlayBtn.addEventListener("click", () => {
+    openScreen("GAME");
+    game.startInLobby();
+  });
+
+  menuAchievementsBtn.addEventListener("click", () => {
+    openScreen("ACHIEVEMENTS", "MENU");
+  });
+
+  menuSettingsBtn.addEventListener("click", () => {
+    openScreen("SETTINGS", "MENU");
+  });
+
+  // ========================================================
+  // HIDDEN DEVELOPER DEBUG MODE CONTROLLER
+  // Trigger: 12 clicks on the Settings cog icon within 2.5s
+  // Password: supercalifragilisticexpialidocious
+  // ========================================================
+
+  function updateDebugModeUI(active) {
+    if (game && typeof game.setDebugMode === "function") {
+      game.setDebugMode(active);
+    }
+    if (debugStatusPill) {
+      if (active) {
+        debugStatusPill.textContent = I18n ? I18n.t("debug.status_on") : "[ ON ]";
+        debugStatusPill.className = "debug-status-pill on";
+      } else {
+        debugStatusPill.textContent = I18n ? I18n.t("debug.status_off") : "[ OFF ]";
+        debugStatusPill.className = "debug-status-pill off";
+      }
+    }
+    if (debugActionsArea) {
+      if (active) {
+        debugActionsArea.classList.remove("disabled");
+      } else {
+        debugActionsArea.classList.add("disabled");
+      }
+    }
+    if (debugKillstreakHud) {
+      if (active && isDebugUnlocked && game && game.state !== "MENU") {
+        debugKillstreakHud.classList.remove("hidden");
+      } else {
+        debugKillstreakHud.classList.add("hidden");
+      }
+    }
+  }
+
+  function renderDebugBadges() {
+    if (!debugIndividualBadgesList) return;
+    debugIndividualBadgesList.innerHTML = "";
+    Config.ACHIEVEMENTS.forEach((ach) => {
+      const isUnlocked = game.saveData.badges.includes(ach.badge || ach.id);
+      const achInfo = I18n ? I18n.getAchievementInfo(ach.id) : ach;
+      const row = document.createElement("div");
+      row.className = "debug-badge-row";
+      const statusText = isUnlocked ? (I18n ? I18n.t("library.badge_unlocked") : "UNLOCKED") : (I18n ? I18n.t("library.badge_locked") : "LOCKED");
+      const btnText = isUnlocked ? (I18n ? I18n.t("debug.granted_btn") : "Granted") : (I18n ? I18n.t("debug.grant_btn") : "Grant");
+      row.innerHTML = `
+        <div class="debug-badge-info">
+          <span>${ach.icon}</span>
+          <strong>${achInfo.title}</strong>
+        </div>
+        <div class="debug-badge-action-group">
+          <span class="badge-status-tag ${isUnlocked ? "unlocked" : "locked"}">${statusText}</span>
+          <button type="button" class="btn-debug-grant" data-badge-id="${ach.id}" ${isUnlocked ? "disabled" : ""}>
+            ${btnText}
+          </button>
+        </div>
+      `;
+      const grantBtn = row.querySelector(".btn-debug-grant");
+      if (grantBtn && !isUnlocked) {
+        grantBtn.addEventListener("click", () => {
+          if (!game.isDebugModeActive) return;
+          game.grantDebugBadge(ach.id);
+          renderDebugBadges();
+        });
+      }
+      debugIndividualBadgesList.appendChild(row);
+    });
+  }
+
+  function handleDebugPasswordSubmit() {
+    const entered = (debugPasswordInput && debugPasswordInput.value) || "";
+    if (entered === "supercalifragilisticexpialidocious") {
+      isDebugUnlocked = true;
+      if (debugAuthContainer) debugAuthContainer.classList.add("hidden");
+      if (debugPasswordError) debugPasswordError.classList.add("hidden");
+      if (debugPasswordInput) debugPasswordInput.value = "";
+      if (debugPanel) debugPanel.classList.remove("hidden");
+
+      // Debug Mode is OFF by default when unlocked
+      if (debugModeToggle) debugModeToggle.checked = false;
+      updateDebugModeUI(false);
+      renderDebugBadges();
+      const devTitle = I18n ? I18n.t("toasts.dev_mode_title") : "Developer Mode";
+      const devDesc = I18n ? I18n.t("toasts.dev_mode_desc") : "Access granted. Debug controls available.";
+      showToast(devTitle, devDesc, "🛠️");
+    } else {
+      if (debugPasswordError) debugPasswordError.classList.remove("hidden");
+      if (debugPasswordInput) debugPasswordInput.select();
+    }
+  }
+
+  if (settingsCogTrigger) {
+    settingsCogTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isDebugUnlocked) {
+        if (debugPanel) debugPanel.classList.remove("hidden");
+        return;
+      }
+
+      cogClickCount++;
+      if (cogClickTimeout) clearTimeout(cogClickTimeout);
+      cogClickTimeout = setTimeout(() => {
+        cogClickCount = 0;
+      }, 2500);
+
+      if (cogClickCount >= 12) {
+        cogClickCount = 0;
+        if (cogClickTimeout) clearTimeout(cogClickTimeout);
+        if (debugAuthContainer) debugAuthContainer.classList.remove("hidden");
+        if (debugPasswordError) debugPasswordError.classList.add("hidden");
+        if (debugPasswordInput) {
+          debugPasswordInput.value = "";
+          debugPasswordInput.focus();
+        }
+      }
+    });
+  }
+
+  if (debugPasswordSubmit) {
+    debugPasswordSubmit.addEventListener("click", handleDebugPasswordSubmit);
+  }
+
+  if (debugPasswordInput) {
+    debugPasswordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleDebugPasswordSubmit();
+      }
+    });
+  }
+
+  if (debugModeToggle) {
+    debugModeToggle.addEventListener("change", (e) => {
+      updateDebugModeUI(e.target.checked);
+    });
+  }
+
+  // Debug Total Kills Quick Buttons (Modifies Total Kills ONLY, not Killstreak)
+  document.querySelectorAll("[data-debug-kills]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      const amount = parseInt(btn.dataset.debugKills, 10);
+      if (amount > 0) {
+        game.addDebugTotalKills(amount);
+        updateHudCounters();
+        updateStatsUI();
+        updateSwordStandUI();
+      }
+    });
+  });
+
+  // Debug Custom Total Kills: Add Kills
+  if (debugAddCustomKillsBtn) {
+    debugAddCustomKillsBtn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      const amount = parseNumberInput(debugCustomKillsInput.value);
+      if (amount > 0) {
+        game.addDebugTotalKills(amount);
+        debugCustomKillsInput.value = "";
+        updateHudCounters();
+        updateStatsUI();
+        updateSwordStandUI();
+      }
+    });
+  }
+
+  // Debug Custom Total Kills: Set Total
+  if (debugSetCustomKillsBtn) {
+    debugSetCustomKillsBtn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      const rawVal = (debugCustomKillsInput && debugCustomKillsInput.value.trim()) || "";
+      if (rawVal === "") return;
+      const amount = parseNumberInput(rawVal);
+      if (isNaN(amount) || amount < 0) {
+        const invTitle = I18n ? I18n.t("toasts.invalid_amount_title") : "Invalid Amount";
+        const invDesc = I18n ? I18n.t("toasts.invalid_amount_desc") : "Total kills must be 0 or positive.";
+        showToast(invTitle, invDesc, "⚠️");
+        return;
+      }
+      game.setDebugTotalKills(amount);
+      debugCustomKillsInput.value = "";
+      updateHudCounters();
+      updateStatsUI();
+      updateSwordStandUI();
+    });
+  }
+
+  if (debugCustomKillsInput) {
+    debugCustomKillsInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (debugAddCustomKillsBtn) debugAddCustomKillsBtn.click();
+      }
+    });
+  }
+
+  // Top-Right In-Game Debug Killstreak Controller
+  function handleApplyDebugKillstreak() {
+    if (!game.isDebugModeActive) return;
+    const raw = (debugHudStreakInput && debugHudStreakInput.value.trim()) || "";
+    if (raw === "") {
+      const invTitle = I18n ? I18n.t("toasts.invalid_input_title") : "Invalid Input";
+      const invDesc = I18n ? I18n.t("toasts.invalid_input_desc") : "Please enter a killstreak amount.";
+      showToast(invTitle, invDesc, "⚠️");
+      return;
+    }
+    const val = parseNumberInput(raw);
+    if (isNaN(val) || val < 0) {
+      const invTitle = I18n ? I18n.t("toasts.invalid_streak_title") : "Invalid Killstreak";
+      const invDesc = I18n ? I18n.t("toasts.invalid_streak_desc") : "Killstreak must be 0 or positive.";
+      showToast(invTitle, invDesc, "⚠️");
+      return;
+    }
+    game.setDebugKillstreak(val);
+    updateHudCounters();
+    updateStatsUI();
+    updateHudPhaseTracking();
+    debugHudStreakInput.value = "";
+  }
+
+  if (debugHudStreakApply) {
+    debugHudStreakApply.addEventListener("click", handleApplyDebugKillstreak);
+  }
+
+  if (debugHudStreakInput) {
+    debugHudStreakInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleApplyDebugKillstreak();
+      }
+    });
+  }
+
+  // Debug Grant All Badges
+  if (debugGrantAllBadgesBtn) {
+    debugGrantAllBadgesBtn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      game.grantAllDebugBadges();
+      renderDebugBadges();
+    });
+  }
+
+  // Debug Summon Game Event
+  if (debugSummonBloodmoonBtn) {
+    debugSummonBloodmoonBtn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      BloodmoonEventSystem.startBloodmoon(game);
+      showToast("Bloodmoon Summoned!", "Event active for 5 minutes.", "🩸");
+    });
+  }
+
+  if (debugEndBloodmoonBtn) {
+    debugEndBloodmoonBtn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      BloodmoonEventSystem.endBloodmoon(game);
+      showToast("Bloodmoon Ended", "Event concluded.", "🌑");
+    });
+  }
+
+  if (debugHudEventBtn) {
+    debugHudEventBtn.addEventListener("click", () => {
+      if (!game.isDebugModeActive) return;
+      if (game.bloodmoon.isActive) {
+        BloodmoonEventSystem.endBloodmoon(game);
+        showToast("Bloodmoon Ended", "Event concluded.", "🌑");
+      } else {
+        BloodmoonEventSystem.startBloodmoon(game);
+        showToast("Bloodmoon Summoned!", "Event active for 5 minutes.", "🩸");
+      }
+    });
+  }
+
+  window.summonEvent = (name = "bloodmoon") => game && BloodmoonEventSystem.summonEvent(game, name);
+  window.toggleBloodmoon = () => game && (game.bloodmoon.isActive ? (BloodmoonEventSystem.endBloodmoon(game), false) : (BloodmoonEventSystem.startBloodmoon(game), true));
+
+  hudStatsBtn.addEventListener("click", () => {
+    openScreen("STATISTICS", "GAME");
+  });
+
+  function promptReturnToLobby() {
+    if (!game) return;
+    if (game.killstreak > 0) {
+      const confirmMsg = I18n
+        ? I18n.t("prompts.confirm_return_lobby", { streak: game.killstreak })
+        : `Return to Sanctuary Lobby? Current sword killstreak (${game.killstreak}) will reset to 0.`;
+      if (!window.confirm(confirmMsg)) {
+        return;
+      }
+    }
+    closeAllModals();
+    game.returnToLobby();
+    openScreen("GAME");
+  }
+
+  if (hudLobbyBtn) {
+    hudLobbyBtn.addEventListener("click", promptReturnToLobby);
+  }
+
+  if (menuLobbyBtn) {
+    menuLobbyBtn.addEventListener("click", promptReturnToLobby);
+  }
+
+  if (menuLibraryBtn) {
+    menuLibraryBtn.addEventListener("click", () => {
+      openScreen("LIBRARY", "MENU");
+    });
+  }
+
+  hudMenuBtn.addEventListener("click", () => {
+    openScreen("MENU");
+  });
+
+  hudLibraryBtn.addEventListener("click", () => {
+    openScreen("LIBRARY", "GAME");
+  });
+
+  // Library Three-Section Navigation (SWORDS, BADGES, BESTIARY)
+  if (tabSwordsBtn) {
+    tabSwordsBtn.addEventListener("click", () => {
+      tabSwordsBtn.classList.add("active");
+      if (tabBadgesBtn) tabBadgesBtn.classList.remove("active");
+      if (tabNpcsBtn) tabNpcsBtn.classList.remove("active");
+      if (librarySwordsSection) librarySwordsSection.classList.remove("hidden");
+      if (libraryBadgesSection) libraryBadgesSection.classList.add("hidden");
+      if (libraryNpcsSection) libraryNpcsSection.classList.add("hidden");
+    });
+  }
+
+  if (tabBadgesBtn) {
+    tabBadgesBtn.addEventListener("click", () => {
+      tabBadgesBtn.classList.add("active");
+      if (tabSwordsBtn) tabSwordsBtn.classList.remove("active");
+      if (tabNpcsBtn) tabNpcsBtn.classList.remove("active");
+      if (libraryBadgesSection) libraryBadgesSection.classList.remove("hidden");
+      if (librarySwordsSection) librarySwordsSection.classList.add("hidden");
+      if (libraryNpcsSection) libraryNpcsSection.classList.add("hidden");
+    });
+  }
+
+  if (tabNpcsBtn) {
+    tabNpcsBtn.addEventListener("click", () => {
+      tabNpcsBtn.classList.add("active");
+      if (tabSwordsBtn) tabSwordsBtn.classList.remove("active");
+      if (tabBadgesBtn) tabBadgesBtn.classList.remove("active");
+      if (libraryNpcsSection) libraryNpcsSection.classList.remove("hidden");
+      if (librarySwordsSection) librarySwordsSection.classList.add("hidden");
+      if (libraryBadgesSection) libraryBadgesSection.classList.add("hidden");
+      renderLibraryNpcs();
+    });
+  }
+
+  if (libTabDevourer) {
+    libTabDevourer.addEventListener("click", () => {
+      selectedLibrarySword = "devourer";
+      renderLibrarySwords();
+    });
+  }
+
+  if (libTabOverdrive) {
+    libTabOverdrive.addEventListener("click", () => {
+      selectedLibrarySword = "overdrive";
+      renderLibrarySwords();
+    });
+  }
+
+  if (libTabAquatic) {
+    libTabAquatic.addEventListener("click", () => {
+      selectedLibrarySword = "aquatic";
+      renderLibrarySwords();
+    });
+  }
+
+  if (libTabSoil) {
+    libTabSoil.addEventListener("click", () => {
+      selectedLibrarySword = "soil";
+      renderLibrarySwords();
+    });
+  }
+
+  if (libTabMetallic) {
+    libTabMetallic.addEventListener("click", () => {
+      selectedLibrarySword = "metallic";
+      renderLibrarySwords();
+    });
+  }
+
+  if (libTabFlora) {
+    libTabFlora.addEventListener("click", () => {
+      selectedLibrarySword = "flora";
+      renderLibrarySwords();
+    });
+  }
+
+  if (libTabHellfire) {
+    libTabHellfire.addEventListener("click", () => {
+      selectedLibrarySword = "hellfire";
+      renderLibrarySwords();
+    });
+  }
+
+  standEquipBtn.addEventListener("click", () => {
+    const sId = inspectedSwordId || "devourer";
+    const swordDef = (Config.SWORDS && Config.SWORDS[sId]) || Config.SWORDS.devourer;
+    const totalKills = (game.saveData && game.saveData.totalKills) || 0;
+    const unlockReq = swordDef.unlockKills || 0;
+
+    if (unlockReq > 0 && totalKills < unlockReq) {
+      const lockTitle = I18n ? I18n.t("toasts.weapon_locked_title") : "Weapon Locked";
+      const sInfo = I18n ? I18n.getSwordInfo(sId) : swordDef;
+      const lockDesc = I18n
+        ? I18n.t("toasts.weapon_locked_req_desc", { req: formatNumber(unlockReq).short, name: sInfo.name })
+        : `Requires ${formatNumber(unlockReq).short} Lifetime Kills to equip ${swordDef.name}!`;
+      showToast(lockTitle, lockDesc, "🔒");
+      return;
+    }
+
+    let isEquipped = false;
+    if (game.player.swordId === sId) {
+      isEquipped = game.toggleSwordEquip();
+    } else {
+      const success = game.equipSword(sId);
+      isEquipped = success && game.player.isSwordEquipped;
+    }
+
+    updateSwordStandUI();
+    updateHudPhaseTracking();
+    updateHudCounters();
+    updateStatsUI();
+    updateSkillsUI({
+      isSwordEquipped: isEquipped,
+      swordId: game.player.swordId,
+      phase: game.player.phase.phase,
+      gluttonyCooldown: game.gluttonyCooldown,
+      engulfCooldown: game.engulfCooldown,
+      fortitudeCooldown: game.fortitudeCooldown,
+      tsunamiCooldown: game.tsunamiCooldown,
+      ironWillCooldown: game.ironWillCooldown,
+      ironWillActive: Boolean(game.player.ironWillActive || game.player.ironWillTimer > 0),
+      worldrootCooldown: game.worldrootCooldown,
+      cataclysmCooldown: game.cataclysmCooldown
+    });
+
+    const sInfo = I18n ? I18n.getSwordInfo(sId) : swordDef;
+    if (isEquipped) {
+      const sIcon = sId === "soil" ? "🛡️" : (sId === "aquatic" ? "🌊" : (sId === "metallic" ? "⚙️" : (sId === "flora" ? "🌿" : (sId === "hellfire" ? "🔥" : (sId === "overdrive" ? "⚡" : "👁️")))));
+      const eqTitle = I18n ? I18n.t("toasts.sword_equipped_title", { name: sInfo.name }) : `${game.player.swordName || "Sword"} Equipped`;
+      const eqDesc = I18n ? I18n.t("toasts.sword_equipped_desc") : "Ready to fight in the grassland.";
+      showToast(eqTitle, eqDesc, sIcon);
+    } else {
+      const ueqTitle = I18n ? I18n.t("toasts.sword_unequipped_title") : "Sword Unequipped";
+      const ueqDesc = I18n ? I18n.t("toasts.sword_unequipped_desc") : "Returned to weapon pedestal.";
+      showToast(ueqTitle, ueqDesc, "🛡️");
+    }
+  });
+
+  closeSwordBtn.addEventListener("click", returnFromModal);
+  swordStandCloseBtn.addEventListener("click", returnFromModal);
+  closeLibraryBtn.addEventListener("click", returnFromModal);
+  closeLibraryBtnBottom.addEventListener("click", returnFromModal);
+  closeAchievementsBtn.addEventListener("click", returnFromModal);
+  closeAchievementsBtnBottom.addEventListener("click", returnFromModal);
+  closeSettingsBtn.addEventListener("click", returnFromModal);
+  closeSettingsBtnBottom.addEventListener("click", returnFromModal);
+  closeStatsBtn.addEventListener("click", returnFromModal);
+  closeStatsBtnBottom.addEventListener("click", returnFromModal);
+
+  // Skill Button Click Handlers
+  skillGluttonyBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    activatePrimary(game);
+  });
+
+  skillEngulfBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    activateSecondary(game);
+  });
+
+  respawnCombatBtn.addEventListener("click", () => {
+    closeAllModals();
+    game.respawnInCombat();
+  });
+
+  returnLobbyBtn.addEventListener("click", () => {
+    closeAllModals();
+    game.returnToLobby();
+  });
+
+  // Cutscene Event Handlers
+  cutsceneOverlay.addEventListener("click", (e) => {
+    if (e.target === cutsceneSkipBtn) return;
+    CutsceneSystem.advance(game);
+  });
+
+  cutsceneSkipBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    CutsceneSystem.skip(game);
+  });
+
+  window.addEventListener("keydown", (e) => {
+    // Intercept input during Phase 17 cutscene
+    if (game.isCutsceneActive) {
+      if (e.code === "Space" || e.code === "KeyE" || e.code === "Enter") {
+        CutsceneSystem.advance(game);
+        e.preventDefault();
+        return;
+      }
+      if (e.code === "Escape") {
+        CutsceneSystem.skip(game);
+        e.preventDefault();
+        return;
+      }
+      return; // Ignore WASD movement/attack during cutscene
+    }
+
+    if (e.code === "Escape") {
+      if ((mapModal && !mapModal.classList.contains("hidden")) ||
+          (window.Killstreak && window.Killstreak.MapSystem && window.Killstreak.MapSystem.isFullMapOpen())) {
+        returnFromModal();
+        return;
+      }
+
+      if (!swordModal.classList.contains("hidden") ||
+          !libraryModal.classList.contains("hidden") ||
+          !achievementsModal.classList.contains("hidden") ||
+          !settingsModal.classList.contains("hidden") ||
+          !statsModal.classList.contains("hidden")) {
+        returnFromModal();
+        return;
+      }
+
+      if (game.state !== "MENU") {
+        openScreen("MENU");
+      } else {
+        openScreen("GAME");
+      }
+      return;
+    }
+
+    if (e.code === "KeyM") {
+      if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
+        return;
+      }
+      if (game && game.state !== "MENU") {
+        if (window.Killstreak && window.Killstreak.MapSystem) {
+          window.Killstreak.MapSystem.toggleFullMap();
+        }
+      }
+      return;
+    }
+
+    if (e.code === "KeyZ") {
+      if (game.player && game.player.isSwordEquipped) {
+        activatePrimary(game);
+      }
+      return;
+    }
+
+    if (e.code === "KeyX") {
+      if (game.player && game.player.isSwordEquipped) {
+        activateSecondary(game);
+      }
+      return;
+    }
+
+    if (e.code === "KeyE") {
+      game.handleInteraction();
+      return;
+    }
+
+    switch (e.code) {
+      case "KeyW":
+      case "ArrowUp":
+        game.input.up = true;
+        break;
+      case "KeyS":
+      case "ArrowDown":
+        game.input.down = true;
+        break;
+      case "KeyA":
+      case "ArrowLeft":
+        game.input.left = true;
+        break;
+      case "KeyD":
+      case "ArrowRight":
+        game.input.right = true;
+        break;
+      case "Space":
+        if (game.isGameOver) {
+          closeAllModals();
+          game.respawnInCombat();
+        } else if (game.state === "COMBAT") {
+          game.handleAttackInput();
+        }
+        e.preventDefault();
+        break;
+    }
+  });
+
+  window.addEventListener("keyup", (e) => {
+    switch (e.code) {
+      case "KeyW":
+      case "ArrowUp":
+        game.input.up = false;
+        break;
+      case "KeyS":
+      case "ArrowDown":
+        game.input.down = false;
+        break;
+      case "KeyA":
+      case "ArrowLeft":
+        game.input.left = false;
+        break;
+      case "KeyD":
+      case "ArrowRight":
+        game.input.right = false;
+        break;
+    }
+  });
+
+  function updateMouseCoordinates(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    game.input.screenMouseX = (e.clientX - rect.left) * scaleX;
+    game.input.screenMouseY = (e.clientY - rect.top) * scaleY;
+  }
+
+  canvas.addEventListener("mousemove", updateMouseCoordinates);
+
+  canvas.addEventListener("mousedown", (e) => {
+    if (e.button === 0) {
+      game.input.isMouseDown = true;
+      if (game.state === "COMBAT") {
+        game.handleAttackInput();
+      }
+    }
+  });
+
+  window.addEventListener("mouseup", () => {
+    game.input.isMouseDown = false;
+  });
+
+  let lastTimestamp = performance.now();
+
+  function loop(currentTimestamp) {
+    const dt = Math.min(0.1, (currentTimestamp - lastTimestamp) / 1000);
+    lastTimestamp = currentTimestamp;
+
+    game.update(dt);
+
+    if (game.input.isMouseDown && game.state === "COMBAT" && !game.isGameOver) {
+      game.handleAttackInput();
+    }
+
+    game.render();
+
+    const playerShield = game.player.shield || 0;
+    const effectiveTotal = Math.max(game.player.maxHp, game.player.hp + playerShield);
+    const hpRatio = Math.max(0, game.player.hp / effectiveTotal);
+    hudHpBar.style.width = `${hpRatio * 100}%`;
+
+    if (hudShieldBar) {
+      const shieldRatio = Math.max(0, playerShield / effectiveTotal);
+      hudShieldBar.style.width = `${shieldRatio * 100}%`;
+      const hpOuter = hudHpBar.parentElement;
+      if (hpOuter) {
+        if (playerShield > 0) {
+          hpOuter.classList.add("has-shield");
+        } else {
+          hpOuter.classList.remove("has-shield");
+        }
+      }
+    }
+
+    const fHp = formatNumber(Math.ceil(game.player.hp));
+    const fMaxHp = formatNumber(game.player.maxHp);
+    if (playerShield > 0) {
+      const fShield = formatNumber(Math.ceil(playerShield));
+      hudHpText.textContent = `${fHp.short} / ${fMaxHp.short} (+${fShield.short} 🛡️)`;
+      hudHpText.title = `${fHp.full} / ${fMaxHp.full} (+${fShield.full} 🛡️)`;
+    } else {
+      hudHpText.textContent = `${fHp.short} / ${fMaxHp.short}`;
+      hudHpText.title = `${fHp.full} / ${fMaxHp.full}`;
+    }
+
+    if (hudDmgVal && hudScaleVal) {
+      if (game.player.isSwordEquipped) {
+        const fDmg = formatNumber(game.player.damage);
+        hudDmgVal.textContent = I18n
+          ? I18n.t("hud.dmg_tag", { damage: fDmg.short })
+          : `⚔️ ${fDmg.short} DMG`;
+        hudDmgVal.title = `${fDmg.full} DMG`;
+        // Show streak scaling for ALL swords (not just devourer)
+        const fBaseDmg = formatNumber(game.player.baseDamage);
+        const fBaseHp = formatNumber(game.player.baseMaxHp);
+        const fStreak = formatNumber(game.player.phaseKills || 0);
+        hudScaleVal.textContent = I18n
+          ? I18n.t("hud.scale_streak", { dmg: fBaseDmg.short, hp: fBaseHp.short, streak: fStreak.short })
+          : `Base: ${fBaseDmg.short} DMG / ${fBaseHp.short} HP (+${fStreak.short} streak)`;
+        hudScaleVal.title = `Base: ${fBaseDmg.full} DMG / ${fBaseHp.full} HP (+${fStreak.full} streak)`;
+      } else {
+        hudDmgVal.textContent = I18n ? I18n.t("hud.no_sword") : `🛡️ NO SWORD`;
+        hudScaleVal.textContent = I18n ? I18n.t("hud.unequipped") : `Unequipped`;
+      }
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  // Language Selection Handlers
+  function updateLanguageUI(lang) {
+    if (langBtnEn && langBtnVi) {
+      if (lang === "vi") {
+        langBtnVi.classList.add("active");
+        langBtnEn.classList.remove("active");
+      } else {
+        langBtnEn.classList.add("active");
+        langBtnVi.classList.remove("active");
+      }
+    }
+  }
+
+  if (langBtnEn) {
+    langBtnEn.addEventListener("click", () => {
+      if (I18n.getLanguage() !== "en") {
+        I18n.setLanguage("en");
+        if (game && game.saveData && game.saveData.settings) {
+          game.saveData.settings.language = "en";
+          Storage.save(game.saveData);
+        }
+      }
+    });
+  }
+
+  if (langBtnVi) {
+    langBtnVi.addEventListener("click", () => {
+      if (I18n.getLanguage() !== "vi") {
+        I18n.setLanguage("vi");
+        if (game && game.saveData && game.saveData.settings) {
+          game.saveData.settings.language = "vi";
+          Storage.save(game.saveData);
+        }
+      }
+    });
+  }
+
+  function updateDebugQuickButtons() {
+    document.querySelectorAll("[data-debug-kills]").forEach((btn) => {
+      const amount = parseInt(btn.dataset.debugKills, 10);
+      const fAmount = formatNumber(amount).short;
+      btn.textContent = I18n ? I18n.t("debug.quick_add_kills", { n: fAmount }) : `+${fAmount} Kills`;
+    });
+  }
+
+  if (I18n) {
+    I18n.onLanguageChange((newLang) => {
+      updateLanguageUI(newLang);
+      updateHudCounters();
+      updateHudPhaseTracking();
+      updateStatsUI();
+      updateSwordStandUI();
+      updateDebugQuickButtons();
+      if (hudAreaLabel && game.currentMap) {
+        const displayName = I18n.getMapName(game.currentMap.id);
+        hudAreaLabel.textContent = I18n.t("hud.area_prefix", { name: displayName.toUpperCase() });
+      }
+      if (libraryModal && !libraryModal.classList.contains("hidden")) {
+        renderLibrary();
+      }
+      if (achievementsModal && !achievementsModal.classList.contains("hidden")) {
+        renderBadges(game.saveData.badges, badgesList);
+      }
+      if (isDebugUnlocked) {
+        renderDebugBadges();
+      }
+      updateSkillsUI({
+        isSwordEquipped: game.player.isSwordEquipped,
+        swordId: game.player.swordId,
+        phase: game.player.phase.phase,
+        gluttonyCooldown: game.gluttonyCooldown,
+        engulfCooldown: game.engulfCooldown,
+        fortitudeCooldown: game.fortitudeCooldown,
+        tsunamiCooldown: game.tsunamiCooldown,
+        ironWillCooldown: game.ironWillCooldown,
+        ironWillActive: Boolean(game.player.ironWillActive || game.player.ironWillTimer > 0),
+        worldrootCooldown: game.worldrootCooldown,
+        cataclysmCooldown: game.cataclysmCooldown
+      });
+    });
+
+    const currentLang = (game && game.saveData && game.saveData.settings && game.saveData.settings.language) || "en";
+    I18n.init(currentLang);
+    updateLanguageUI(currentLang);
+    updateDebugQuickButtons();
+  }
+
+  updateSkillsUI({
+    isSwordEquipped: game.player.isSwordEquipped,
+    phase: game.player.phase.phase,
+    gluttonyCooldown: 0,
+    engulfCooldown: 0
+  });
+  if (debugAuthContainer) debugAuthContainer.classList.add("hidden");
+  if (debugPanel) debugPanel.classList.add("hidden");
+  if (debugPasswordError) debugPasswordError.classList.add("hidden");
+  if (debugKillstreakHud) debugKillstreakHud.classList.add("hidden");
+  updateHudCounters();
+  updateHudPhaseTracking();
+  updateStatsUI();
+  requestAnimationFrame(loop);
+})();

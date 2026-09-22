@@ -1,0 +1,80 @@
+{
+  "out": "src/ui/debugPanel.js",
+  "backup": "scratch/backup/main.js.debugPanel.bak",
+  "fns": [
+    {
+      "name": "updateDebugQuickButtons",
+      "params": [],
+      "lines": 5
+    },
+    {
+      "name": "updateDebugModeUI",
+      "params": [
+        "game",
+        "active"
+      ],
+      "lines": 26
+    },
+    {
+      "name": "handleDebugPasswordSubmit",
+      "params": [
+        "game"
+      ],
+      "lines": 19
+    },
+    {
+      "name": "handleApplyDebugKillstreak",
+      "params": [
+        "game"
+      ],
+      "lines": 20
+    }
+  ],
+  "callArgs": {
+    "updateDebugModeUI": "game"
+  },
+  "callbacks": {
+    "handleDebugPasswordSubmit": {
+      "args": "game"
+    },
+    "handleApplyDebugKillstreak": {
+      "args": "game"
+    }
+  },
+  "neededRefs": [
+    "debugAuthContainer",
+    "debugPasswordInput",
+    "debugPasswordError",
+    "debugPanel",
+    "debugModeToggle",
+    "debugStatusPill",
+    "debugActionsArea",
+    "debugKillstreakHud",
+    "debugHudStreakInput"
+  ],
+  "refsImport": "./domRefs.js",
+  "neededUtils": [
+    {
+      "file": "format",
+      "names": [
+        "formatNumber",
+        "parseNumberInput"
+      ]
+    }
+  ],
+  "needsI18n": true,
+  "needsConfig": false,
+  "moduleState": [
+    "export let isDebugUnlocked = false;"
+  ],
+  "stateSetters": {
+    "isDebugUnlocked": "setIsDebugUnlocked"
+  },
+  "excludeRefs": [],
+  "extraImports": [
+    "import { renderDebugBadges } from './badges.js';",
+    "import { updateHudCounters, updateStatsUI, updateHudPhaseTracking } from './hud.js';",
+    "import { showToast } from './toast.js';"
+  ],
+  "recordedAt": "2026-09-22T15:39:07.925Z"
+}
