@@ -193,9 +193,8 @@ for (const c of cases) {
   const out = [...src];
   for (const r of ranges) out.splice(r.start, r.end - r.start + 1);
 
-  // Windy sword additions: these lines postdate the backup entirely, so they are
-  // removed from BOTH sides before the byte comparison. They are listed exactly, so
-  // any other change outside the removed methods still fails here.
+  // Windy sword lines added inside existing methods (they postdate this backup), so
+  // they are removed from both sides before the byte comparison.
   const WINDY_ADDITIONS = [
     '      const isWindy = this.swordId === "windy";',
     '      else if (isWindy) shadowCol = "rgba(34, 211, 238, 0.45)";',
@@ -204,7 +203,26 @@ for (const c of cases) {
     '      else if (isWindy) eyeColor = "#06b6d4";'
   ];
   const stripWindy = (t) => t.split(eol).filter((l) => !WINDY_ADDITIONS.includes(l)).join(eol);
-  const expected = stripWindy(c.post(out.join(eol), eol));
+
+  // Windy changes that ADD or REWRITE lines, so they are folded into the
+  // reconstructed `expected` exactly as they were made to the file. Every entry is an
+  // exact match, so any other change outside the removed methods still fails.
+  const WINDY_TRANSFORMS = [
+    ['      const isHellfire = this.swordId === "hellfire";\n      const phaseColor = isLocked',
+     '      const isHellfire = this.swordId === "hellfire";\n      const isWindy = this.swordId === "windy";\n      const phaseColor = isLocked'],
+    ['          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {',
+     '          compactSub = `PHASE ${pNum}`;\n        } else if (isWindy) {\n          compactTitle = "WINDY";\n          subColor = "#22d3ee";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {'],
+    ['          headerColor = isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))));',
+     '          headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));'],
+    ['        headerColor = isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))));',
+     '        headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));'],
+    ['        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: EMBER";\n      } else if (isFlora) {',
+     '        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: EMBER";\n      } else if (isWindy) {\n        fullTitle = "🌬️ WINDY";\n        subColor = "#22d3ee";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("windy", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";\n      } else if (isFlora) {']
+  ];
+  const applyWindy = (t) => WINDY_TRANSFORMS.reduce(
+    (acc, [from, to]) => acc.split(from.split('\n').join(eol)).join(to.split('\n').join(eol)), t);
+
+  const expected = stripWindy(applyWindy(c.post(out.join(eol), eol)));
   const actual = stripWindy(fs.readFileSync(path.join(root, c.cur), 'utf8'));
   let detail = '';
   if (expected !== actual) {

@@ -2427,6 +2427,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isMetallic = this.swordId === "metallic";
       const isFlora = this.swordId === "flora";
       const isHellfire = this.swordId === "hellfire";
+      const isWindy = this.swordId === "windy";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
@@ -2675,7 +2676,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         let compactTitle = "";
         let compactSub = "";
         if (isLocked) {
-          headerColor = isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))));
+          headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));
           subColor = "#94a3b8";
           const unlockReq = this.unlockKills || (window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Swords && window.Killstreak.Data.Swords[this.swordId] && window.Killstreak.Data.Swords[this.swordId].unlockKills) || 0;
           const formattedK = unlockReq >= 1000 ? `${parseFloat((unlockReq / 1000).toFixed(2))}K` : `${unlockReq}`;
@@ -2684,6 +2685,10 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         } else if (isHellfire) {
           compactTitle = "HELLFIRE";
           subColor = "#ef4444";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isWindy) {
+          compactTitle = "WINDY";
+          subColor = "#22d3ee";
           compactSub = `PHASE ${pNum}`;
         } else if (isFlora) {
           compactTitle = "FLORA";
@@ -2737,6 +2742,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isMetallic = this.swordId === "metallic";
       const isFlora = this.swordId === "flora";
       const isHellfire = this.swordId === "hellfire";
+      const isWindy = this.swordId === "windy";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
@@ -2750,7 +2756,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       let subColor = phaseColor;
 
       if (isLocked) {
-        headerColor = isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))));
+        headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));
         const sName = (I18n ? (I18n.getSwordInfo(this.swordId) || {}).name || this.swordId : this.swordId).toUpperCase();
         fullTitle = `🔒 ${sName} (${I18n && I18n.currentLang === "vi" ? "ĐÃ KHÓA" : "LOCKED"})`;
         subColor = "#94a3b8";
@@ -2763,6 +2769,11 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         subColor = "#ef4444";
         const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("hellfire", activePhase.phase) : activePhase;
         fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: EMBER";
+      } else if (isWindy) {
+        fullTitle = "🌬️ WINDY";
+        subColor = "#22d3ee";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("windy", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";
       } else if (isFlora) {
         fullTitle = "🌿 FLORA";
         subColor = "#4ade80";
