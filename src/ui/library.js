@@ -347,11 +347,14 @@ export function renderLibrarySwords(game) {
     const isWeakDev = sId === "devourer" && (p.phase === 9 || p.phase === 16);
     const isWeakAq = sId === "aquatic" && p.phase === 8;
     const isWeakSoil = sId === "soil" && p.phase === 9;
-    const isWeakMet = sId === "metallic" && p.phase === 8;
-    const isWeakFlora = sId === "flora" && p.phase === 7;
-    const isWeakHell = sId === "hellfire" && p.phase === 7;
-    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakMet || isWeakFlora || isWeakHell;
-    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakMet || isWeakFlora || isWeakHell;
+    // metallic p8, flora p7 and hellfire p7 were flagged here too, so they carried a
+    // DELIBERATE COLLAPSE badge. They are not weak phases: their stats rise normally
+    // (e.g. hellfire p7 9,072 DMG -> p8 18,144 DMG) and none of their render modules
+    // has a collapse variant, unlike aquatic p8 and soil p9 whose data carries
+    // weaponType "collapse" plus a cracked/weakened visual. A weak badge on them was
+    // simply wrong, so they were dropped rather than relabelled TRANSITIONAL HURDLE.
+    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil;
+    const weakIsCollapse = isWeakAq || isWeakSoil;
 
     let scaledRow = null;
     if (isCurrent && game.player.isSwordEquipped) {
