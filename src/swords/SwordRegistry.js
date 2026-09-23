@@ -1,5 +1,5 @@
 /**
- * SwordRegistry — central lookup for all 7 swords.
+ * SwordRegistry — central lookup for all 8 swords.
  *
  * Maps swordId → { data, render } so Player and Game never contain per-sword
  * if/switch chains.
@@ -18,6 +18,7 @@ import soilData       from './soil/soil.data.json';
 import metallicData   from './metallic/metallic.data.json';
 import floraData      from './flora/flora.data.json';
 import hellfireData   from './hellfire/hellfire.data.json';
+import windyData      from './windy/windy.data.json';
 
 import devourerRender  from './devourer/devourer.render.js';
 import overdriveRender from './overdrive/overdrive.render.js';
@@ -26,6 +27,7 @@ import soilRender      from './soil/soil.render.js';
 import metallicRender  from './metallic/metallic.render.js';
 import floraRender     from './flora/flora.render.js';
 import hellfireRender  from './hellfire/hellfire.render.js';
+import windyRender     from './windy/windy.render.js';
 
 // Ability modules are deliberately NOT imported here — see the header. They are
 // imported by src/systems/AbilitySystem.js, which owns the dispatch.
@@ -36,7 +38,7 @@ import hellfireRender  from './hellfire/hellfire.render.js';
  *   devourer  → Gluttony (Z) + Engulf (X)
  *   overdrive → none; its Z falls through to Gluttony, whose
  *               `swordId !== "devourer"` guard rejects it
- *   aquatic, soil, metallic, flora, hellfire → their own Z ability
+ *   aquatic, soil, metallic, flora, hellfire, windy → their own Z ability
  *
  * @type {Record<string, { data: object, render: object }>}
  */
@@ -48,6 +50,7 @@ const SwordRegistry = {
   metallic:  { data: metallicData,  render: metallicRender },
   flora:     { data: floraData,     render: floraRender },
   hellfire:  { data: hellfireData,  render: hellfireRender },
+  windy:     { data: windyData,     render: windyRender },
 };
 
 export default SwordRegistry;
@@ -63,4 +66,4 @@ export function getSwordRenderer(swordId) {
 }
 
 /** All valid sword IDs in progression order */
-export const SWORD_IDS = ['devourer', 'overdrive', 'aquatic', 'soil', 'metallic', 'flora', 'hellfire'];
+export const SWORD_IDS = ['devourer', 'overdrive', 'aquatic', 'soil', 'metallic', 'flora', 'hellfire', 'windy'];

@@ -47,6 +47,8 @@
     "worldroot_title": "Thế Giới Căn [Z] — Gai rễ giam hãm kẻ địch trong 2.9s và hồi 23% Máu tối đa trong 4s (GĐ 4+, 19s hồi chiêu)",
     "cataclysm_label": "[ Z — ĐẠI HỌA DIỆT THẾ ]",
     "cataclysm_title": "Đại Họa Diệt Thế [Z] — Cắm kiếm bộc phát cột dung nham gây sát thương gấp 5.75 lần kiếm (GĐ 4+, 15.3s hồi chiêu)",
+    "cyclone_label": "[ Z — LỐC XOÁY ]",
+    "cyclone_title": "Lốc Xoáy [Z] — Xoáy kiếm cuốn phăng mọi kẻ địch trong bán kính gấp 3 lần tầm chém, gây sát thương gấp 5.5 lần (GĐ 4+, 35s hồi chiêu)",
     "locked_p4": "KHÓA (GĐ4)",
     "locked_p9": "KHÓA (GĐ9)",
     "locked_p10": "KHÓA (GĐ10)",
@@ -65,6 +67,8 @@
     "flora_p10": "VẠN VẬT TÁI SINH!",
     "hellfire_unlocked": "ĐÃ MỞ KHÓA ĐỊA NGỤC HỎA!",
     "hellfire_p10": "CHÚA TỂ HỎA NGỤC!",
+    "windy_unlocked": "ĐÃ MỞ KHÓA WINDY!",
+    "windy_p13": "HÃY TRỞ THÀNH CƠN BÃO!",
     "all_devourer": "THE ALL DEVOURER THĂNG HOA!",
     "fortitude": "KIÊN CƯỜNG!",
     "tsunami": "SÓNG THẦN!",
@@ -171,6 +175,10 @@
       "hellfire_ascended": {
         "title": "Hỏa Ngục Tuyệt Diệt",
         "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Hellfire (264,375 chuỗi hạ gục)."
+      },
+      "windy_ascended": {
+        "title": "Kẻ Trên Không",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Windy (266,000 chuỗi hạ gục)."
       }
     }
   },
@@ -243,6 +251,8 @@
     "speaker_flora_p10": "FLORA — GIAI ĐOẠN 10: VẠN VẬT TÁI SINH",
     "speaker_hellfire": "HELLFIRE",
     "speaker_hellfire_p10": "HELLFIRE — GIAI ĐOẠN 10: CHÚA TỂ HỎA NGỤC",
+    "speaker_windy": "WINDY",
+    "speaker_windy_p13": "WINDY — GIAI ĐOẠN 13: BÃO TỐ TỐI THƯỢNG",
     "speaker_grove": "RỪNG CỔ THỤ",
     "speaker_anvil": "ĐE SẮT Ý CHÍ",
     "speaker_abyss": "VỰC THẲM HỎA NGỤC",
@@ -313,6 +323,15 @@
     "hellfire_p10_9": "[Những rung chấn dữ dội làm rung chuyển toàn màn hình. Ngọn lửa gầm lên với cường độ kinh hoàng.]\n\nCHÁY ĐI!",
     "hellfire_p10_10": "Ta là Chúa Tể Hỏa Ngục.",
     "hellfire_p10_11": "Và mọi thứ kết thúc trong tro tàn.",
+    "windy_unlock_1": "Một luồng khí mỏng lướt qua vai ngươi. Nó không đẩy. Nó chờ.",
+    "windy_unlock_2": "Hai mươi bốn nghìn mạng, và không một mạng nào để lại dấu vết trên không khí.",
+    "windy_unlock_3": "Ngươi có cảm nhận được không? Có gì đó đang chuyển động.",
+    "windy_unlock_4": "Nó đi theo ngươi rồi. Hãy bảo nó đánh vào đâu.",
+    "windy_p13_1": "[Gió ngừng lại. Hoàn toàn. Không một chiếc lá lay động. Sự im lặng còn lớn hơn cả cơn bão.]",
+    "windy_p13_2": "Không còn làn gió nhẹ.",
+    "windy_p13_3": "Không còn cơn gió lớn.",
+    "windy_p13_4": "[Chân trời gấp vào trong. Mọi tầng xoáy của bầu trời cùng lúc đáp lại.]\n\nChỉ còn lại cơn bão.",
+    "windy_p13_5": "Hãy trở thành cơn bão.",
     "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
     "btn_skip": "BỎ QUA [ESC]"
   },
@@ -359,6 +378,12 @@
     "flora_up_desc": "Đã đạt {name}",
     "hellfire_up_title": "HELLFIRE BÙNG CHÁY",
     "hellfire_up_desc": "Đã đạt {name}",
+    "windy_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "windy_unlock_desc": "Windy — Vũ Khí Không Trung hiện đã sẵn sàng!",
+    "windy_p13_title": "BÃO TỐ TỐI THƯỢNG",
+    "windy_p13_desc": "Giai đoạn 13: Bão Tố Tối Thượng — Windy trở thành cơn bão.",
+    "windy_up_title": "BÃO TỐ NỔI LÊN",
+    "windy_up_desc": "Đã đạt {name}",
     "devourer_up_title": "DEVOURER THỨC TỈNH",
     "devourer_up_desc": "GIAI ĐOẠN: {name}",
     "achievement_unlocked_title": "Mở Khóa Thành Tựu!",
@@ -588,6 +613,11 @@
       "name": "Hellfire",
       "tag": "CHÚA TỂ HỎA NGỤC",
       "description": "Vũ khí địa ngục nuôi dưỡng bởi sự hủy diệt và ngày càng trở nên khó kìm hãm. Sở hữu kỹ năng hủy diệt Cataclysm [Z]."
+    },
+    "windy": {
+      "name": "Windy",
+      "tag": "VŨ KHÍ KHÔNG TRUNG",
+      "description": "Vũ khí trên không phát triển qua chuyển động và áp suất khí quyển thay vì trọng lượng. Sở hữu kỹ năng Cyclone [Z]."
     }
   },
   "phases": {
@@ -1048,6 +1078,86 @@
         "shortName": "Chúa Tể Hỏa Ngục",
         "effects": "BIẾN ĐỔI TỐI HẬU: CHÚA TỂ HỎA NGỤC. Hỏa ngục diệt thế không thể kìm hãm. Cơ bản 16,800 Sát thương, 320,000 Máu và 145 Tốc độ.",
         "notification": "Chạy đi."
+      }
+    },
+    "windy": {
+      "1": {
+        "name": "Giai đoạn 1: Gió Nhẹ",
+        "shortName": "Gió Nhẹ",
+        "effects": "Một luồng khí mỏng quấn quanh lưỡi kiếm đơn sơ. Cơ bản 15 Sát thương và 40 Máu.",
+        "notification": "Ngươi có cảm nhận được không?"
+      },
+      "2": {
+        "name": "Giai đoạn 2: Luồng Gió",
+        "shortName": "Luồng Gió",
+        "effects": "Gió đã bắt đầu đi theo người cầm kiếm. Những hạt nhỏ lơ lửng quanh lưỡi kiếm. Cơ bản 25 Sát thương và 120 Máu.",
+        "notification": "Nó đi theo ngươi rồi."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Cơn Gió",
+        "shortName": "Cơn Gió",
+        "effects": "Làn gió nhẹ đã có thể tạo ra lực. Vệt gió rõ rệt và một vòng khí nhỏ. Cơ bản 50 Sát thương và 300 Máu.",
+        "notification": "Một làn gió nhẹ có thể trở thành sức mạnh."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Khí Lưu",
+        "shortName": "Khí Lưu",
+        "effects": "Không khí bắt đầu hành xử gần như có trí tuệ. Mở khóa Cyclone [Z] (Xoáy kiếm gây 5.5x sát thương trong bán kính gấp 3 lần tầm chém). Cơ bản 100 Sát thương và 650 Máu.",
+        "notification": "Không khí đang lắng nghe."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Cuồng Phong",
+        "shortName": "Cuồng Phong",
+        "effects": "Thanh kiếm không còn mang theo gió nữa; gió bắt đầu mang theo thanh kiếm. Cơ bản 220 Sát thương và 1,500 Máu.",
+        "notification": "Gió đang gào to hơn."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Bão Tố",
+        "shortName": "Bão Tố",
+        "effects": "Gió trở nên dữ dội và khó lường, bóp méo không khí quanh người cầm kiếm. Cơ bản 500 Sát thương và 3,000 Máu.",
+        "notification": "Nó không còn là làn gió nhẹ nữa."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Đại Bão",
+        "shortName": "Đại Bão",
+        "effects": "Cơn bão thật sự đầu tiên. Hào quang gió lớn, hạt dày đặc và mảnh vụn bay lơ lửng. Cơ bản 4,500 Sát thương và 12,500 Máu.",
+        "notification": "Ngươi đã gọi cơn bão."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Tĩnh Lặng",
+        "shortName": "Tĩnh Lặng",
+        "effects": "SỰ SỤP ĐỔ CÓ CHỦ ĐÍCH. Cơn bão im bặt và lưỡi kiếm trở về hình dạng trần trụi nhất. Cơ bản 250 Sát thương và 500 Máu. Hãy sống sót qua sự tĩnh lặng để được tái tạo.",
+        "notification": "Nó biến mất rồi. Không. Nó đang chờ."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Thức Tỉnh",
+        "shortName": "Thức Tỉnh",
+        "effects": "Gió trở lại, và nó không còn là cơn gió cũ. Hào quang tái tạo quanh những xoáy khí mạnh dần. Cơ bản 3,500 Sát thương và 8,000 Máu.",
+        "notification": "Sự im lặng chưa bao giờ là dấu chấm hết."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Lốc Xoáy",
+        "shortName": "Lốc Xoáy",
+        "effects": "Gió tạo thành những vòng xoáy hủy diệt có tổ chức. Vệt tròn lớn và hạt xoay tròn. Cơ bản 9,000 Sát thương và 20,000 Máu.",
+        "notification": "Không gì thoát khỏi tâm bão."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Bão Cuồng",
+        "shortName": "Bão Cuồng",
+        "effects": "Cơn bão trở nên khổng lồ, nuốt chửng chân trời trong những tầng gió xoay. Cơ bản 17,500 Sát thương và 38,000 Máu.",
+        "notification": "Chân trời biến mất."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Siêu Bão",
+        "shortName": "Siêu Bão",
+        "effects": "Thanh kiếm đã trở thành một hiện tượng khí quyển thảm khốc với chuyển động không ngừng. Cơ bản 35,000 Sát thương và 67,000 Máu.",
+        "notification": "Bầu trời đã trở thành vũ khí của ngươi."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Bão Tố Tối Thượng",
+        "shortName": "Bão Tố Tối Thượng",
+        "effects": "BIẾN ĐỔI TỐI HẬU: BÃO TỐ TỐI THƯỢNG. Windy không còn điều khiển gió — Windy đã trở thành cơn bão. Cơ bản 70,000 Sát thương, 145,000 Máu và 220 Tốc độ. Hãy trở thành cơn bão.",
+        "notification": "Chỉ còn lại cơn bão."
       }
     }
   },

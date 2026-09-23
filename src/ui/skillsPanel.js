@@ -31,8 +31,8 @@ export function updateSkillsUI(game, skillsData) {
 
   const swordId = (skillsData && skillsData.swordId) || (game && game.player && game.player.swordId) || "devourer";
 
-  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, or Hellfire is equipped
-  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire")) {
+  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire or Windy is equipped
+  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy")) {
     if (hudSkillsBar) hudSkillsBar.classList.add("hidden");
     skillGluttonyBtn.disabled = true;
     skillEngulfBtn.disabled = true;
@@ -127,6 +127,35 @@ export function updateSkillsUI(game, skillsData) {
       skillGluttonyBtn.className = "skill-btn skill-cooldown";
       skillGluttonyBtn.disabled = true;
       skillGluttonyVal.textContent = `${ccCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // WINDY SKILL: Cyclone (Z)
+  if (swordId === "windy") {
+    skillEngulfBtn.classList.add("hidden");
+    skillGluttonyBtn.classList.remove("hidden");
+
+    const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+    if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.cyclone_label") : "[ Z — CYCLONE ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.cyclone_title") : "Cyclone [Z] — Spinning vortex striking everything within 3x your swing radius for 5.5x weapon damage (Phase 4+, 35s CD)";
+
+    const cyCd = (skillsData && typeof skillsData.cycloneCooldown === "number")
+      ? skillsData.cycloneCooldown
+      : (game && typeof game.cycloneCooldown === "number" ? game.cycloneCooldown : 0);
+
+    if (phase < 4) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+    } else if (cyCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${cyCd.toFixed(1)}s`;
     } else {
       skillGluttonyBtn.className = "skill-btn skill-ready";
       skillGluttonyBtn.disabled = false;

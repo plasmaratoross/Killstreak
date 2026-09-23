@@ -50,18 +50,28 @@ for (const m of read('src/ui/domRefs.js')
 // `staleRemoved` check below fails if one of these names comes back, so this
 // allowance cannot quietly mask a genuine regression.
 const REMOVED_AFTER_HOIST = new Map([['menuLobbyBtn', 'menu-lobby-btn']]);
+// Refs ADDED after the hoist, for features that did not exist then. Same reasoning in
+// reverse: listed explicitly rather than relaxing the counts, and the guard below
+// proves each added name really has its element in index.html.
+const ADDED_AFTER_HOIST = new Map([['libTabWindy', 'lib-tab-windy']]);
 
 console.log('--- fidelity ---');
 check(`original main.js declared ${beforeFull.size} refs`, beforeFull.size === 122, `found ${beforeFull.size}`);
-check(`src/ui/domRefs.js exports ${afterFull.size} refs (${REMOVED_AFTER_HOIST.size} intentionally removed)`,
-  afterFull.size === 122 - REMOVED_AFTER_HOIST.size, `found ${afterFull.size}`);
+check(`src/ui/domRefs.js exports ${afterFull.size} refs (${REMOVED_AFTER_HOIST.size} removed, ${ADDED_AFTER_HOIST.size} added)`,
+  afterFull.size === 122 - REMOVED_AFTER_HOIST.size + ADDED_AFTER_HOIST.size, `found ${afterFull.size}`);
 
 const staleRemoved = [...REMOVED_AFTER_HOIST.keys()].filter((k) => afterFull.has(k));
 check('refs listed as removed are really gone', staleRemoved.length === 0,
   `${staleRemoved.join(', ')} is back in domRefs.js — drop it from REMOVED_AFTER_HOIST`);
 
+const indexHtml = read('index.html');
+const inventedAdded = [...ADDED_AFTER_HOIST.entries()]
+  .filter(([name, id]) => !afterFull.has(name) || !indexHtml.includes(`id="${id}"`));
+check('refs listed as added really exist in domRefs.js and index.html', inventedAdded.length === 0,
+  inventedAdded.map(([n, id]) => `${n} -> #${id}`).join(', '));
+
 const missing = [...beforeFull.keys()].filter((k) => !afterFull.has(k) && !REMOVED_AFTER_HOIST.has(k));
-const extra = [...afterFull.keys()].filter((k) => !beforeFull.has(k));
+const extra = [...afterFull.keys()].filter((k) => !beforeFull.has(k) && !ADDED_AFTER_HOIST.has(k));
 check('no ref lost in the move', missing.length === 0, missing.join(', '));
 check('no ref invented', extra.length === 0, extra.join(', '));
 
@@ -99,7 +109,7 @@ const consumers = [['js/main.js', main]];
 
 const union = new Set(consumers.flatMap(([, text]) => collectImports(text)));
 const notImported = [...beforeFull.keys()].filter((n) => !union.has(n) && !REMOVED_AFTER_HOIST.has(n));
-const unknown = [...union].filter((n) => !beforeFull.has(n));
+const unknown = [...union].filter((n) => !beforeFull.has(n) && !ADDED_AFTER_HOIST.has(n));
 check(`every live hoisted ref is imported somewhere (${beforeFull.size - REMOVED_AFTER_HOIST.size})`, notImported.length === 0, notImported.join(', '));
 check('no unknown name imported anywhere', unknown.length === 0, unknown.join(', '));
 check('no ref imported twice by one module',

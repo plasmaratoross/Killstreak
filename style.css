@@ -880,6 +880,12 @@ body {
   color: #fca5a5;
 }
 
+.subtab-btn.active#lib-tab-windy {
+  background: rgba(6, 182, 212, 0.28);
+  border-color: rgba(34, 211, 238, 0.8);
+  color: #a5f3fc;
+}
+
 .library-section {
   max-height: 360px;
   overflow-y: auto;

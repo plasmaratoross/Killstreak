@@ -83,6 +83,10 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       // Hellfire Skill (Cataclysm)
       this.cataclysmCooldown = 0;
       this.activeCataclysms = [];
+
+      // Windy Skill (Cyclone)
+      this.cycloneCooldown = 0;
+      this.activeCyclones = [];
       this.isPaused = false;
 
       // Bloodmoon Event State
@@ -316,6 +320,16 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           }
           return false;
         }
+      } else if (swordId === "windy") {
+        if ((this.saveData.totalKills || 0) < 24000) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_windy_locked_desc", { defaultValue: "Requires 24,000 Total Kills to equip Windy!" }) : "Requires 24,000 Total Kills to equip Windy!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
       }
 
       const isSwitchingSword = this.player.swordId !== swordId;
@@ -324,7 +338,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       }
 
       this.player.swordId = swordId;
-      this.player.swordName = swordId === "hellfire" ? "Hellfire" : (swordId === "flora" ? "Flora" : (swordId === "metallic" ? "Metallic" : (swordId === "soil" ? "Soil" : (swordId === "aquatic" ? "Aquatic" : (swordId === "overdrive" ? "Overdrive" : "Devourer")))));
+      this.player.swordName = swordId === "windy" ? "Windy" : (swordId === "hellfire" ? "Hellfire" : (swordId === "flora" ? "Flora" : (swordId === "metallic" ? "Metallic" : (swordId === "soil" ? "Soil" : (swordId === "aquatic" ? "Aquatic" : (swordId === "overdrive" ? "Overdrive" : "Devourer"))))));
       this.player.isSwordEquipped = true;
       this.saveData.equippedSword = swordId;
       this.saveData.isSwordEquipped = true;
@@ -371,6 +385,12 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.activeCataclysms = [];
       }
 
+      // Windy skills disabled when not using Windy
+      if (swordId !== "windy") {
+        this.cycloneCooldown = 0;
+        this.activeCyclones = [];
+      }
+
       this.syncSwordPhase(true);
       if (this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
         this.player.applyKillstreakScaling(this.killstreak);
@@ -394,6 +414,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
           worldrootCooldown: this.worldrootCooldown,
           cataclysmCooldown: this.cataclysmCooldown,
+          cycloneCooldown: this.cycloneCooldown,
           phase: this.player.phase.phase
         });
       }
@@ -424,6 +445,11 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       // First time equipping Hellfire -> Play unlock cutscene
       if (swordId === "hellfire" && !this.saveData.hellfireUnlockCutsceneSeen) {
         CutsceneSystem.start(this, "hellfire_unlock");
+      }
+
+      // First time equipping Windy -> Play unlock cutscene
+      if (swordId === "windy" && !this.saveData.windyUnlockCutsceneSeen) {
+        CutsceneSystem.start(this, "windy_unlock");
       }
 
       return true;
@@ -479,7 +505,10 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const isMetallic = this.player.swordId === "metallic";
       const isFlora = this.player.swordId === "flora";
       const isHellfire = this.player.swordId === "hellfire";
-      const phases = isHellfire
+      const isWindy = this.player.swordId === "windy";
+      const phases = isWindy
+        ? Config.WINDY_PHASES
+        : (isHellfire
         ? Config.HELLFIRE_PHASES
         : (isFlora
           ? Config.FLORA_PHASES
@@ -489,7 +518,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
               ? Config.SOIL_PHASES
               : (isAquatic
                 ? Config.AQUATIC_PHASES
-                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))));
+                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))));
       let matchedPhase = phases[0];
 
       for (let i = phases.length - 1; i >= 0; i--) {
@@ -502,7 +531,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const previousPhase = this.player.phase;
       const isPhaseUp = Boolean(previousPhase && matchedPhase.phase > previousPhase.phase);
       const prevSwordId = (previousPhase && typeof previousPhase.cssClass === "string")
-        ? (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer"))))))
+        ? (previousPhase.cssClass.startsWith("phase-wd") ? "windy" : (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer")))))))
         : null;
       const isDifferentSword = Boolean(previousPhase && prevSwordId !== this.player.swordId);
       const phaseChanged = Boolean(previousPhase && (matchedPhase.phase !== previousPhase.phase || isDifferentSword));
@@ -511,7 +540,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.player.setPhase(matchedPhase, isPhaseUp);
       }
 
-      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire) {
+      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire || isWindy) {
         this.gluttonyCooldown = 0;
         this.engulfCooldown = 0;
         this.isEngulfActive = false;
@@ -526,6 +555,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
 
       if (isHellfire) {
         this.saveData.hellfirePhase = matchedPhase.phase;
+      } else if (isWindy) {
+        this.saveData.windyPhase = matchedPhase.phase;
       } else if (isFlora) {
         this.saveData.floraPhase = matchedPhase.phase;
       } else if (isMetallic) {
@@ -782,6 +813,45 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           const title = I18n ? I18n.t("toasts.hellfire_up_title", { defaultValue: "INFERNO IGNITED" }) : "INFERNO IGNITED";
           const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.hellfire_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
           this.callbacks.onToast(title, desc, "🔥");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "windy") {
+        if (phase.phase === 13) {
+          AchievementSystem.unlockAchievement(this, "windy_ascended");
+        }
+
+        if (phase.phase === 13 && !this.saveData.windyPhase13CutsceneSeen) {
+          CutsceneSystem.start(this, "windy_p13");
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 13 ? 22 : (phase.phase >= 9 ? 14 : 8), 0.35);
+        }
+
+        const pCount = phase.phase === 13 ? 80 : (phase.phase >= 9 ? 45 : 30);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 240;
+          let pColor = phase.phase === 13 ? (i % 3 === 0 ? "#67e8f9" : (i % 3 === 1 ? "#22d3ee" : "#e0f2fe")) : (i % 2 === 0 ? (phase.color || "#38bdf8") : "#e0f2fe");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("windy", phase.phase) : phase;
+        const phaseTitle = `WINDY: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#38bdf8", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.windy_up_title", { defaultValue: "THE STORM RISES" }) : "THE STORM RISES";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.windy_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "🌬️");
         }
         return;
       }
@@ -1267,6 +1337,17 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         }
       }
 
+      // Update Windy Cyclone Skill Cooldown & Active Effects
+      if (this.cycloneCooldown > 0) {
+        this.cycloneCooldown -= dt;
+      }
+      for (let i = this.activeCyclones.length - 1; i >= 0; i--) {
+        this.activeCyclones[i].timer -= dt;
+        if (this.activeCyclones[i].timer <= 0) {
+          this.activeCyclones.splice(i, 1);
+        }
+      }
+
       // Update Particles
       for (let i = this.particles.length - 1; i >= 0; i--) {
         this.particles[i].update(dt);
@@ -1298,6 +1379,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           ironWillActive: Boolean(this.player.ironWillActive || this.player.ironWillTimer > 0),
           worldrootCooldown: this.worldrootCooldown,
           cataclysmCooldown: this.cataclysmCooldown,
+          cycloneCooldown: this.cycloneCooldown,
           phase: this.player.phase.phase
         });
       }
@@ -1601,6 +1683,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.cataclysmCooldown = 0;
       this.activeWorldroots = [];
       this.activeCataclysms = [];
+      this.cycloneCooldown = 0;
+      this.activeCyclones = [];
       if (this.player) {
         this.player.isEngulfActive = false;
         this.player.swordId = "devourer";
@@ -1649,6 +1733,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           ironWillActive: false,
           worldrootCooldown: this.worldrootCooldown,
           cataclysmCooldown: this.cataclysmCooldown,
+          cycloneCooldown: this.cycloneCooldown,
           phase: this.player.phase.phase
         });
       }
@@ -1677,6 +1762,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.cataclysmCooldown = 0;
       this.activeWorldroots = [];
       this.activeCataclysms = [];
+      this.cycloneCooldown = 0;
+      this.activeCyclones = [];
       if (this.player) {
         this.player.shield = 0;
         this.player.shieldDuration = 0;
@@ -1753,8 +1840,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.player.swordId === sId && this.player.isSwordEquipped) {
             standPhase = this.player.phase;
           } else {
-            const pList = sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))));
-            const pNum = sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))));
+            const pList = sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))));
+            const pNum = sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1)))))));
             standPhase = pList.find(p => p.phase === pNum) || pList[0];
           }
           stand.draw(this.ctx, standPhase, isLocked, false, Boolean(nearbyStand));
@@ -1769,8 +1856,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.player.swordId === sId && this.player.isSwordEquipped) {
             standPhase = this.player.phase;
           } else {
-            const pList = sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))));
-            const pNum = sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))));
+            const pList = sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))));
+            const pNum = sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1)))))));
             standPhase = pList.find(p => p.phase === pNum) || pList[0];
           }
           nearbyStand.drawBadge(this.ctx, standPhase, isLocked);
@@ -1837,6 +1924,30 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.ctx.arc(c.x, c.y, c.radius * (1 - progress * 0.12), 0, Math.PI * 2);
         this.ctx.stroke();
         this.ctx.fillStyle = `rgba(220, 38, 38, ${progress * 0.25})`;
+        this.ctx.fill();
+        this.ctx.restore();
+      }
+
+      // Draw Active Cyclones (if any) — Windy: a rotating vortex, not a blast ring
+      for (let cy of this.activeCyclones) {
+        const progress = cy.timer / cy.maxTimer;
+        this.ctx.save();
+        this.ctx.strokeStyle = `rgba(34, 211, 238, ${progress * 0.9})`;
+        this.ctx.lineWidth = 4;
+        this.ctx.beginPath();
+        this.ctx.arc(cy.x, cy.y, cy.radius * (1 - progress * 0.12), 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        // A counter-rotating inner ring is what makes it read as spinning.
+        this.ctx.strokeStyle = `rgba(224, 242, 254, ${progress * 0.7})`;
+        this.ctx.lineWidth = 2;
+        this.ctx.setLineDash([14, 9]);
+        this.ctx.beginPath();
+        this.ctx.arc(cy.x, cy.y, cy.radius * (1 - progress * 0.12) * 0.68, progress * 6, progress * 6 + Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.setLineDash([]);
+
+        this.ctx.fillStyle = `rgba(6, 182, 212, ${progress * 0.18})`;
         this.ctx.fill();
         this.ctx.restore();
       }

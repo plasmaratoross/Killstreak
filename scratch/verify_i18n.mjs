@@ -21,7 +21,11 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 // been dead since Phase 1, when src/main.js switched to src/i18n/I18n.js. The
 // parity check is kept and re-pointed at the preserved copy, because it is still
 // the only thing that proves the extracted dictionaries were not altered.
-const legacyText = read('scratch/backup/obsolete/js-i18n.js');
+// CRLF-tolerant: core.autocrlf=true means this file is CRLF in a Windows working
+// tree, but the slice below anchors on LF markers ('\n  };\n'). Without this the
+// slice comes back EMPTY and the sandbox throws "translations is not defined" — a
+// platform-dependent failure that has nothing to do with the dictionary data.
+const legacyText = read('scratch/backup/obsolete/js-i18n.js').replace(/\r\n/g, '\n');
 const START = 'const translations = {';
 const startIdx = legacyText.indexOf(START);
 const END = '\n  };\n';
@@ -40,7 +44,7 @@ const check = (label, ok, detail = '') => {
 
 // -------------------------------------- INTENTIONAL DIVERGENCE: dialogue resync
 // ============ INTENTIONAL DIVERGENCES FROM THE LEGACY DICTIONARY ==============
-// Three deliberate, scoped changes were made after extraction. Each is asserted to be
+// Four deliberate, scoped changes were made after extraction. Each is asserted to be
 // the ONLY kind of difference, so any genuine drift anywhere else still fails.
 //
 // 1. CUTSCENE RESYNC (both languages). The flora/metallic/hellfire unlock + p10
@@ -67,9 +71,26 @@ const PHASE_NAME_TRANSLATION = /^phases\.[a-z]+\.\d+\.(shortName|name)$/;
 //    The pattern is anchored to this one exact key, so any OTHER removal still fails.
 const MAIN_MENU_BUTTON_REMOVAL = /^menu\.return_lobby$/;
 
+// 4. WINDY SWORD ADDITION (both languages). A new sword's cutscene speakers and
+//    dialogue exist only in the current dictionaries — the retained legacy copy
+//    predates the sword, so these keys have nothing to match. Anchored to the windy
+//    cutscene keys only, so an accidental drift elsewhere still fails.
+const WINDY_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_windy(?:_p13)?|windy_(?:unlock|p13)_\\d+)'
+  + '|swords\\.windy\\.(?:name|tag|description)'
+  + '|phases\\.windy\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.cyclone_(?:label|title)'
+  + '|floating\\.windy_(?:unlocked|p13)'
+  + '|toasts\\.windy_[a-z0-9_]+'
+  + '|achievements\\.items\\.windy_ascended\\.(?:title|description)'
+  + ')$'
+);
+
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
+  || WINDY_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 /** Flatten to { 'a.b.c': value } so differences can be located precisely. */

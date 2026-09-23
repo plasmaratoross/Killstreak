@@ -30,6 +30,7 @@ import {
   libTabMetallic,
   libTabFlora,
   libTabHellfire,
+  libTabWindy,
   libSwordTag,
   libSwordName,
   libSwordDesc
@@ -332,6 +333,11 @@ export function renderLibrarySwords(game) {
     if (sId === "hellfire") libTabHellfire.classList.add("active");
     else libTabHellfire.classList.remove("active");
   }
+  if (libTabWindy) {
+    libTabWindy.textContent = I18n ? I18n.getSwordInfo("windy").name.toUpperCase() : "WINDY";
+    if (sId === "windy") libTabWindy.classList.add("active");
+    else libTabWindy.classList.remove("active");
+  }
 
   const phases = swordDef.phases;
   libraryPhasesContainer.innerHTML = "";
@@ -535,6 +541,13 @@ export function initLibraryWiring(game) {
   if (libTabHellfire) {
     libTabHellfire.addEventListener("click", () => {
       setSelectedLibrarySword("hellfire");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabWindy) {
+    libTabWindy.addEventListener("click", () => {
+      setSelectedLibrarySword("windy");
       renderLibrarySwords(game);
     });
   }

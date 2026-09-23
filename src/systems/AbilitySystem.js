@@ -28,6 +28,7 @@ import soilAbility from '../swords/soil/soil.ability.js';
 import metallicAbility from '../swords/metallic/metallic.ability.js';
 import floraAbility from '../swords/flora/flora.ability.js';
 import hellfireAbility from '../swords/hellfire/hellfire.ability.js';
+import windyAbility from '../swords/windy/windy.ability.js';
 
 /**
  * Primary (Z) ability for the currently equipped sword.
@@ -44,6 +45,7 @@ export function activatePrimary(game) {
   if (swordId === "metallic") return metallicAbility.activate(game);
   if (swordId === "flora") return floraAbility.activate(game);
   if (swordId === "hellfire") return hellfireAbility.activate(game);
+  if (swordId === "windy") return windyAbility.activate(game);
 
   return devourerAbility.activate(game);
 }

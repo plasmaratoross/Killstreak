@@ -57,5 +57,6 @@ export const ACHIEVEMENTS = [
   { id: "soil_ascended",      badge: "soil_ascended",      icon: "🛡️", title: "Soil Ascended",        description: "Unlock when reaching the final phase of Soil (160,000 killstreak).",                 killsRequired: 160000 },
   { id: "metallic_ascended",  badge: "metallic_ascended",  icon: "⚙️", title: "Eternal Steel",        description: "Unlock when reaching the final phase of Metallic (198,000 killstreak).",             killsRequired: 198000 },
   { id: "flora_ascended",     badge: "flora_ascended",     icon: "🌿",  title: "The Evergrowth",       description: "Unlock when reaching the final phase of Flora (230,000 killstreak).",                killsRequired: 230000 },
-  { id: "hellfire_ascended",  badge: "hellfire_ascended",  icon: "🔥",  title: "The Infernal",         description: "Unlock when reaching the final phase of Hellfire (264,375 killstreak).",             killsRequired: 264375 }
+  { id: "hellfire_ascended",  badge: "hellfire_ascended",  icon: "🔥",  title: "The Infernal",         description: "Unlock when reaching the final phase of Hellfire (264,375 killstreak).",             killsRequired: 264375 },
+  { id: "windy_ascended",     badge: "windy_ascended",     icon: "🌬️", title: "The Aerial",           description: "Unlock when reaching the final phase of Windy (266,000 killstreak).",                killsRequired: 266000 }
 ];

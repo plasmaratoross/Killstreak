@@ -30,6 +30,7 @@ import '../data/swords/soil/soil.js';
 import '../data/swords/metallic/metallic.js';
 import '../data/swords/flora/flora.js';
 import '../data/swords/hellfire/hellfire.js';
+import '../data/swords/windy/windy.js';
 
 // 3. NPC Data Modules
 import '../data/npcs/normal/normal.js';

@@ -644,6 +644,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isMetallic = this.swordId === "metallic";
       const isFlora = this.swordId === "flora";
       const isHellfire = this.swordId === "hellfire";
+      const isWindy = this.swordId === "windy";
 
       let shadowCol = "rgba(56, 189, 248, 0.4)";
       if (isDevP17) shadowCol = "rgba(250, 204, 21, 0.8)";
@@ -657,6 +658,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isFlora) shadowCol = "rgba(34, 197, 94, 0.4)";
       else if (isMetallic) shadowCol = "rgba(148, 163, 184, 0.4)";
       else if (isSoil) shadowCol = "rgba(180, 83, 9, 0.4)";
+      else if (isWindy) shadowCol = "rgba(34, 211, 238, 0.45)";
 
       ctx.shadowColor = shadowCol;
       ctx.shadowBlur = (isDevP17 || isOdP7 || isAqP13 || isSoilP10 || isMetP10 || isFloraP10 || isHellP10) ? 24 : 10;
@@ -673,6 +675,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isHellfire) playerFill = "#18181b";
       else if (isFlora) playerFill = "#1c1917";
       else if (isMetallic) playerFill = "#0f172a";
+      else if (isWindy) playerFill = "#0f172a";
 
       ctx.fillStyle = playerFill;
       ctx.fill();
@@ -691,6 +694,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isFlora) playerStroke = "#22c55e";
       else if (isMetallic) playerStroke = "#94a3b8";
       else if (isSoil) playerStroke = "#b45309";
+      else if (isWindy) playerStroke = "#22d3ee";
 
       ctx.strokeStyle = playerStroke;
       ctx.stroke();
@@ -716,6 +720,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isFlora) eyeColor = "#15803d";
       else if (isMetallic) eyeColor = "#64748b";
       else if (isSoil) eyeColor = "#92400e";
+      else if (isWindy) eyeColor = "#06b6d4";
 
       ctx.fillStyle = eyeColor;
       ctx.beginPath();

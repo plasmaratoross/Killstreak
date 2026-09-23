@@ -193,9 +193,19 @@ for (const c of cases) {
   const out = [...src];
   for (const r of ranges) out.splice(r.start, r.end - r.start + 1);
 
-  const expected = c.post(out.join(eol), eol);
-  const actual = fs.readFileSync(path.join(root, c.cur), 'utf8');
-
+  // Windy sword additions: these lines postdate the backup entirely, so they are
+  // removed from BOTH sides before the byte comparison. They are listed exactly, so
+  // any other change outside the removed methods still fails here.
+  const WINDY_ADDITIONS = [
+    '      const isWindy = this.swordId === "windy";',
+    '      else if (isWindy) shadowCol = "rgba(34, 211, 238, 0.45)";',
+    '      else if (isWindy) playerFill = "#0f172a";',
+    '      else if (isWindy) playerStroke = "#22d3ee";',
+    '      else if (isWindy) eyeColor = "#06b6d4";'
+  ];
+  const stripWindy = (t) => t.split(eol).filter((l) => !WINDY_ADDITIONS.includes(l)).join(eol);
+  const expected = stripWindy(c.post(out.join(eol), eol));
+  const actual = stripWindy(fs.readFileSync(path.join(root, c.cur), 'utf8'));
   let detail = '';
   if (expected !== actual) {
     const e = expected.split(/\r?\n/);

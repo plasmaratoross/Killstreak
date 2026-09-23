@@ -755,6 +755,137 @@ export const CUTSCENES = {
     }
   },
 
+  windy_unlock: {
+    type: "windy_unlock",
+
+    shake: [8, 0.5],
+
+    achieve: null,
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy") : "WINDY",
+          text: I18n ? I18n.t("cutscene.windy_unlock_1") : "A faint current slips past your shoulder. It does not push. It waits."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy") : "WINDY",
+          text: I18n ? I18n.t("cutscene.windy_unlock_2") : "Twenty-four thousand kills, and not one of them left a mark on the air."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy") : "WINDY",
+          text: I18n ? I18n.t("cutscene.windy_unlock_3") : "Can you feel that? Something is moving."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy") : "WINDY",
+          text: I18n ? I18n.t("cutscene.windy_unlock_4") : "It follows you now. Tell it where to strike."
+        }
+      ];
+    },
+
+    onFinish(game) {
+    // Re-resolve bindings that were file-scope in js/game.js.
+    const Storage = window.Killstreak.Storage;
+    const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+    game.saveData.windyUnlockCutsceneSeen = true;
+    Storage.save(game.saveData);
+
+    game.camera.shake(12, 0.55);
+    for (let i = 0; i < 55; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 110 + Math.random() * 230;
+      const color = i % 2 === 0 ? "#22d3ee" : "#e0f2fe";
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+      );
+    }
+
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    game.floatingTexts.push(
+      new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.windy_unlocked", { defaultValue: "WINDY UNLOCKED!" }) : "WINDY UNLOCKED!", "#22d3ee", 20)
+    );
+
+    if (game.callbacks.onCutsceneEnd) {
+      game.callbacks.onCutsceneEnd();
+    }
+    if (game.callbacks.onToast) {
+      const tTitle = I18n ? I18n.t("toasts.windy_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+      const tDesc = I18n ? I18n.t("toasts.windy_unlock_desc", { defaultValue: "Windy — The Aerial is now available!" }) : "Windy — The Aerial is now available!";
+      game.callbacks.onToast(tTitle, tDesc, "🌬️");
+    }
+    return;
+    }
+  },
+
+  windy_p13: {
+    type: "windy_p13",
+
+    shake: [12, 0.5],
+
+    achieve: "windy_ascended",
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy_p13") : "WINDY — PHASE 13: ULTIMATE TEMPEST",
+          text: I18n ? I18n.t("cutscene.windy_p13_1") : "[The wind stops. Completely. Not a leaf moves. The silence is louder than the storm ever was.]"
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy_p13") : "WINDY — PHASE 13: ULTIMATE TEMPEST",
+          text: I18n ? I18n.t("cutscene.windy_p13_2") : "There is no breeze."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy_p13") : "WINDY — PHASE 13: ULTIMATE TEMPEST",
+          text: I18n ? I18n.t("cutscene.windy_p13_3") : "There is no gale."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy_p13") : "WINDY — PHASE 13: ULTIMATE TEMPEST",
+          text: I18n ? I18n.t("cutscene.windy_p13_4") : "[The horizon folds inward. Every rotating layer of sky answers at once.]\n\nThere is only the storm."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_windy_p13") : "WINDY — PHASE 13: ULTIMATE TEMPEST",
+          text: I18n ? I18n.t("cutscene.windy_p13_5") : "Become the tempest."
+        }
+      ];
+    },
+
+    onFinish(game) {
+    const Storage = window.Killstreak.Storage;
+    const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+    game.saveData.windyPhase13CutsceneSeen = true;
+    Storage.save(game.saveData);
+
+    game.camera.shake(18, 0.6);
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 130 + Math.random() * 260;
+      const color = i % 3 === 0 ? "#67e8f9" : (i % 3 === 1 ? "#22d3ee" : "#e0f2fe");
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5, 0.65)
+      );
+    }
+
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    game.floatingTexts.push(
+      new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.windy_p13", { defaultValue: "BECOME THE TEMPEST!" }) : "BECOME THE TEMPEST!", "#67e8f9", 22)
+    );
+
+    if (game.callbacks.onCutsceneEnd) {
+      game.callbacks.onCutsceneEnd();
+    }
+    if (game.callbacks.onToast) {
+      const tTitle = I18n ? I18n.t("toasts.windy_p13_title", { defaultValue: "ULTIMATE TEMPEST" }) : "ULTIMATE TEMPEST";
+      const tDesc = I18n ? I18n.t("toasts.windy_p13_desc", { defaultValue: "Phase 13: Ultimate Tempest — Windy becomes the storm." }) : "Phase 13: Ultimate Tempest — Windy becomes the storm.";
+      game.callbacks.onToast(tTitle, tDesc, "🌬️");
+    }
+    return;
+    }
+  },
+
   devourer_p17: {
     type: "devourer_p17",
 

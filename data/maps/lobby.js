@@ -91,6 +91,17 @@
         title: "WEAPON PEDESTAL",
         subtitle: "HELLFIRE",
         unlockKills: 18125
+      },
+      {
+        id: "windy_stand",
+        swordId: "windy",
+        x: 822.5,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "WINDY",
+        unlockKills: 24000
       }
     ],
     // Backwards-compatible single reference

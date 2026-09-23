@@ -173,25 +173,40 @@ for (const regPath of ['src/swords/SwordRegistry.js', 'src/npcs/NpcRegistry.js']
 // -------------------------------------------------------------- i18n parity
 console.log('\n--- i18n ---');
 // NOTE: reads the retired copy — see the header of scratch/verify_i18n.mjs.
-const legacyText = fs.readFileSync(path.join(root, 'scratch/backup/obsolete/js-i18n.js'), 'utf8');
+// CRLF-tolerant — see the matching note in verify_i18n.mjs.
+const legacyText = fs.readFileSync(path.join(root, 'scratch/backup/obsolete/js-i18n.js'), 'utf8').replace(/\r\n/g, '\n');
 const startIdx = legacyText.indexOf('const translations = {');
 const END = '\n  };\n';
 const legacyTranslations = new Function(
   `${legacyText.slice(startIdx, legacyText.indexOf(END, startIdx) + END.length)}\nreturn translations;`
 )();
-// Three deliberate dictionary changes were made after extraction, each scoped and
+// Four deliberate dictionary changes were made after extraction, each scoped and
 // asserted to be the only kind of difference. See the matching note in
 // verify_i18n.mjs for the full reasoning — the two allowlists must be kept in step.
 //   1. cutscene resync (both languages) — the flora/metallic/hellfire dialogue
 //   2. phase name translation (vi only) — vi's phase names were still English
 //   3. main-menu "Return to Lobby" button removal (both languages) — the key's only
 //      consumer was the deleted button
+//   4. windy sword addition (both languages) — a new sword's cutscene keys postdate
+//      the retained legacy copy, so they have nothing to match
 const CUTSCENE_RESYNC = /^cutscene\.(?:speaker_(grove|anvil|abyss)|(?:speaker_)?(metallic_unlock|metallic_p10|flora_unlock|flora_p10|hellfire_unlock|hellfire_p10)(?:_\d+)?)$/;
 const PHASE_NAME_TRANSLATION = /^phases\.[a-z]+\.\d+\.(shortName|name)$/;
 const MAIN_MENU_BUTTON_REMOVAL = /^menu\.return_lobby$/;
+const WINDY_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_windy(?:_p13)?|windy_(?:unlock|p13)_\\d+)'
+  + '|swords\\.windy\\.(?:name|tag|description)'
+  + '|phases\\.windy\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.cyclone_(?:label|title)'
+  + '|floating\\.windy_(?:unlocked|p13)'
+  + '|toasts\\.windy_[a-z0-9_]+'
+  + '|achievements\\.items\\.windy_ascended\\.(?:title|description)'
+  + ')$'
+);
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
+  || WINDY_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 const flattenLeaves = (obj, prefix = '') =>

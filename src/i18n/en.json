@@ -47,6 +47,8 @@
     "worldroot_title": "Worldroot [Z] — Entangle foes in briar thorns for 2.9s & heal 23% max HP over 4s (Phase 4+, 19s CD)",
     "cataclysm_label": "[ Z — CATACLYSM ]",
     "cataclysm_title": "Cataclysm [Z] — Slams blade releasing explosive magma eruptions dealing 5.75x DMG (Phase 4+, 15.3s CD)",
+    "cyclone_label": "[ Z — CYCLONE ]",
+    "cyclone_title": "Cyclone [Z] — Spinning vortex striking everything within 3x your swing radius for 5.5x DMG (Phase 4+, 35s CD)",
     "locked_p4": "LOCKED (P4)",
     "locked_p9": "LOCKED (P9)",
     "locked_p10": "LOCKED (P10)",
@@ -65,6 +67,8 @@
     "flora_p10": "THE EVERGROWTH!",
     "hellfire_unlocked": "HELLFIRE UNLOCKED!",
     "hellfire_p10": "THE INFERNAL!",
+    "windy_unlocked": "WINDY UNLOCKED!",
+    "windy_p13": "BECOME THE TEMPEST!",
     "all_devourer": "THE ALL DEVOURER ASCENDS!",
     "fortitude": "FORTITUDE!",
     "tsunami": "TSUNAMI!",
@@ -171,6 +175,10 @@
       "hellfire_ascended": {
         "title": "The Infernal",
         "description": "Unlock when reaching the final phase of Hellfire (264,375 killstreak)."
+      },
+      "windy_ascended": {
+        "title": "The Aerial",
+        "description": "Unlock when reaching the final phase of Windy (266,000 killstreak)."
       }
     }
   },
@@ -243,6 +251,8 @@
     "speaker_flora_p10": "FLORA — PHASE 10: THE EVERGROWTH",
     "speaker_hellfire": "HELLFIRE",
     "speaker_hellfire_p10": "HELLFIRE — PHASE 10: THE INFERNAL",
+    "speaker_windy": "WINDY",
+    "speaker_windy_p13": "WINDY — PHASE 13: ULTIMATE TEMPEST",
     "speaker_grove": "ELDER GROVE",
     "speaker_anvil": "ANVIL OF WILL",
     "speaker_abyss": "INFERNAL ABYSS",
@@ -313,6 +323,15 @@
     "hellfire_p10_9": "[Violent tremors shake the entire screen. The fire roars with terrifying intensity.]\n\nBURN!",
     "hellfire_p10_10": "I am The Infernal.",
     "hellfire_p10_11": "And everything ends in ash.",
+    "windy_unlock_1": "A faint current slips past your shoulder. It does not push. It waits.",
+    "windy_unlock_2": "Twenty-four thousand kills, and not one of them left a mark on the air.",
+    "windy_unlock_3": "Can you feel that? Something is moving.",
+    "windy_unlock_4": "It follows you now. Tell it where to strike.",
+    "windy_p13_1": "[The wind stops. Completely. Not a leaf moves. The silence is louder than the storm ever was.]",
+    "windy_p13_2": "There is no breeze.",
+    "windy_p13_3": "There is no gale.",
+    "windy_p13_4": "[The horizon folds inward. Every rotating layer of sky answers at once.]\n\nThere is only the storm.",
+    "windy_p13_5": "Become the tempest.",
     "hint": "[SPACE] or Click to Continue",
     "btn_skip": "SKIP [ESC]"
   },
@@ -359,6 +378,12 @@
     "flora_up_desc": "Reached {name}",
     "hellfire_up_title": "INFERNAL BLAZE",
     "hellfire_up_desc": "Reached {name}",
+    "windy_unlock_title": "WEAPON UNLOCKED",
+    "windy_unlock_desc": "Windy — The Aerial is now available!",
+    "windy_p13_title": "ULTIMATE TEMPEST",
+    "windy_p13_desc": "Phase 13: Ultimate Tempest — Windy becomes the storm.",
+    "windy_up_title": "THE STORM RISES",
+    "windy_up_desc": "Reached {name}",
     "devourer_up_title": "DEVOURER AWAKENED",
     "devourer_up_desc": "PHASE: {name}",
     "achievement_unlocked_title": "Achievement Unlocked!",
@@ -588,6 +613,11 @@
       "name": "Hellfire",
       "tag": "THE INFERNAL",
       "description": "An infernal weapon that feeds on destruction and grows increasingly difficult to contain. Features Cataclysm [Z]."
+    },
+    "windy": {
+      "name": "Windy",
+      "tag": "AERIAL",
+      "description": "An aerial weapon that grows through movement and atmospheric pressure rather than weight. Features Cyclone [Z]."
     }
   },
   "phases": {
@@ -1048,6 +1078,86 @@
         "shortName": "The Infernal",
         "effects": "FINAL TRANSFORMATION: THE INFERNAL. Uncontainable world-ending inferno. Base 16,800 DMG, 320,000 HP, and 145 SPD.",
         "notification": "Run."
+      }
+    },
+    "windy": {
+      "1": {
+        "name": "Phase 1: Breeze",
+        "shortName": "Breeze",
+        "effects": "A faint current of air wrapped around a simple blade. Base 15 DMG and 40 HP.",
+        "notification": "Can you feel that?"
+      },
+      "2": {
+        "name": "Phase 2: Draft",
+        "shortName": "Draft",
+        "effects": "The wind has begun following the wielder. Small particles drift around the blade. Base 25 DMG and 120 HP.",
+        "notification": "It follows you now."
+      },
+      "3": {
+        "name": "Phase 3: Gust",
+        "shortName": "Gust",
+        "effects": "The breeze becomes capable of force. Noticeable wind trails and a small circular airflow. Base 50 DMG and 300 HP.",
+        "notification": "A breeze can become a force."
+      },
+      "4": {
+        "name": "Phase 4: Airflow",
+        "shortName": "Airflow",
+        "effects": "The air begins behaving almost intelligently. Unlocks Cyclone [Z] (Spinning vortex dealing 5.5x DMG across 3x the normal swing radius). Base 100 DMG and 650 HP.",
+        "notification": "The air listens."
+      },
+      "5": {
+        "name": "Phase 5: Gale",
+        "shortName": "Gale",
+        "effects": "The sword no longer carries the wind; the wind begins to carry the sword. Base 220 DMG and 1,500 HP.",
+        "notification": "The wind grows louder."
+      },
+      "6": {
+        "name": "Phase 6: Squall",
+        "shortName": "Squall",
+        "effects": "The wind becomes violent and unpredictable, distorting the air around the wielder. Base 500 DMG and 3,000 HP.",
+        "notification": "It is no longer a breeze."
+      },
+      "7": {
+        "name": "Phase 7: Tempest",
+        "shortName": "Tempest",
+        "effects": "The first true storm. A large wind aura, dense particles and floating debris. Base 4,500 DMG and 12,500 HP.",
+        "notification": "You called the storm."
+      },
+      "8": {
+        "name": "Phase 8: Calm",
+        "shortName": "Calm",
+        "effects": "DELIBERATE COLLAPSE. The storm goes silent and the blade falls back to its barest form. Base 250 DMG and 500 HP. Survive the quiet to be reforged.",
+        "notification": "It's gone. No. It's waiting."
+      },
+      "9": {
+        "name": "Phase 9: Awakening",
+        "shortName": "Awakening",
+        "effects": "The wind returns, and it is no longer the same wind. Aura reforming around strengthening vortexes. Base 3,500 DMG and 8,000 HP.",
+        "notification": "The silence was never the end."
+      },
+      "10": {
+        "name": "Phase 10: Cyclone",
+        "shortName": "Cyclone",
+        "effects": "The wind forms organized destructive patterns. Large circular trails and rotating particles. Base 9,000 DMG and 20,000 HP.",
+        "notification": "Nothing escapes the center."
+      },
+      "11": {
+        "name": "Phase 11: Typhoon",
+        "shortName": "Typhoon",
+        "effects": "The storm becomes enormous, swallowing the horizon in rotating layers of wind. Base 17,500 DMG and 38,000 HP.",
+        "notification": "The horizon disappears."
+      },
+      "12": {
+        "name": "Phase 12: Supercell",
+        "shortName": "Supercell",
+        "effects": "The sword has become a catastrophic atmospheric phenomenon with constant movement. Base 35,000 DMG and 67,000 HP.",
+        "notification": "The sky has become your weapon."
+      },
+      "13": {
+        "name": "Phase 13: Ultimate Tempest",
+        "shortName": "Ultimate Tempest",
+        "effects": "FINAL TRANSFORMATION: ULTIMATE TEMPEST. Windy is no longer controlling the wind — Windy has become the storm. Base 70,000 DMG, 145,000 HP, and 220 SPD. Become the tempest.",
+        "notification": "There is only the storm."
       }
     }
   },

@@ -51,6 +51,8 @@ const PHASE7_REWRITTEN = new Set([
 // cleaned up in the same change.
 const POST_EXTRACTION_BODY_EDITS = new Map([
   ['openScreen', 'main-menu "Return to Lobby" button was deleted'],
+  ['updateSkillsUI', 'windy sword: added the Cyclone (Z) cooldown branch'],
+  ['updateSwordStandUI', 'windy sword: added its pedestal phase list branch'],
 ]);
 (function walk(dir) {
   for (const e of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) {
