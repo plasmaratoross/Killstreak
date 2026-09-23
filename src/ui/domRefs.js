@@ -31,7 +31,6 @@ export const menuPlayBtn = document.getElementById("menu-play-btn");
 export const menuLibraryBtn = document.getElementById("menu-library-btn");
 export const menuAchievementsBtn = document.getElementById("menu-achievements-btn");
 export const menuSettingsBtn = document.getElementById("menu-settings-btn");
-export const menuLobbyBtn = document.getElementById("menu-lobby-btn");
 export const hudHpText = document.getElementById("hud-hp-text");
 export const hudHpBar = document.getElementById("hud-hp-bar");
 export const hudShieldBar = document.getElementById("hud-shield-bar");

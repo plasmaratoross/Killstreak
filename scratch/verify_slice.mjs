@@ -39,6 +39,19 @@ const PHASE7_REWRITTEN = new Set([
   'renderBadges', 'renderDebugBadges', 'renderLibrary', 'renderLibraryNpcs',
   'renderLibrarySwords'
 ]);
+
+// Functions whose bodies were legitimately edited AFTER extraction, so the Phase 6
+// body-verbatim gate no longer applies to them. Like PHASE7_REWRITTEN this is a
+// targeted, visible exemption — every other function keeps the gate.
+//
+// openScreen: Phase 6 moved the main menu into this module, and its MENU case
+// toggled the main menu's own "Return to Lobby" button. That button was deleted
+// from the game (with its domRef and its listener), and the show/hide block went
+// with it. js/main.js's onAreaChange callback carried the same toggle and was
+// cleaned up in the same change.
+const POST_EXTRACTION_BODY_EDITS = new Map([
+  ['openScreen', 'main-menu "Return to Lobby" button was deleted'],
+]);
 (function walk(dir) {
   for (const e of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) {
     const rel = `${dir}/${e.name}`;
@@ -165,6 +178,11 @@ for (const mf of manifests) {
     // before and after the rewrite are byte-identical.
     if (PHASE7_REWRITTEN.has(f.name)) {
       console.log(`SKIP  ${f.name}: body-verbatim — Phase 7 rewrote this body`);
+      continue;
+    }
+    const postEdit = POST_EXTRACTION_BODY_EDITS.get(f.name);
+    if (postEdit) {
+      console.log(`SKIP  ${f.name}: body-verbatim — ${postEdit}`);
       continue;
     }
     const before = bodyIn(backup, f.name, 2);

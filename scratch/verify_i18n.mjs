@@ -40,7 +40,7 @@ const check = (label, ok, detail = '') => {
 
 // -------------------------------------- INTENTIONAL DIVERGENCE: dialogue resync
 // ============ INTENTIONAL DIVERGENCES FROM THE LEGACY DICTIONARY ==============
-// Two deliberate, scoped changes were made after extraction. Each is asserted to be
+// Three deliberate, scoped changes were made after extraction. Each is asserted to be
 // the ONLY kind of difference, so any genuine drift anywhere else still fails.
 //
 // 1. CUTSCENE RESYNC (both languages). The flora/metallic/hellfire unlock + p10
@@ -58,8 +58,19 @@ const check = (label, ok, detail = '') => {
 //    Guarded by scratch/verify_phase_names_translated.mjs.
 const CUTSCENE_RESYNC = /^cutscene\.(?:speaker_(grove|anvil|abyss)|(?:speaker_)?(metallic_unlock|metallic_p10|flora_unlock|flora_p10|hellfire_unlock|hellfire_p10)(?:_\d+)?)$/;
 const PHASE_NAME_TRANSLATION = /^phases\.[a-z]+\.\d+\.(shortName|name)$/;
+
+// 3. MAIN-MENU BUTTON REMOVAL (both languages). The main menu's "Return to Lobby"
+//    button was deleted from the game, so `menu.return_lobby` lost its only
+//    consumer (that button's data-i18n attribute) and is dropped from both
+//    dictionaries. The same removal is recorded in verify_domrefs.mjs
+//    (REMOVED_AFTER_HOIST) and verify_slice.mjs (POST_EXTRACTION_BODY_EDITS).
+//    The pattern is anchored to this one exact key, so any OTHER removal still fails.
+const MAIN_MENU_BUTTON_REMOVAL = /^menu\.return_lobby$/;
+
 const allowedToDiffer = (key, lang) =>
-  CUTSCENE_RESYNC.test(key) || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
+  CUTSCENE_RESYNC.test(key)
+  || MAIN_MENU_BUTTON_REMOVAL.test(key)
+  || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 /** Flatten to { 'a.b.c': value } so differences can be located precisely. */
 const flattenLeaves = (obj, prefix = '') =>

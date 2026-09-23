@@ -17,7 +17,6 @@ import {
   interactionPrompt,
   interactionText,
   minimapWidget,
-  menuLobbyBtn,
   hudKillstreakVal,
   hudAreaLabel,
   hudLibraryBtn,
@@ -161,10 +160,8 @@ import { setNumContent } from '../src/utils/dom.js';
       // Return to Lobby button is visible when in COMBAT
       if (areaId === "COMBAT") {
         if (hudLobbyBtn) hudLobbyBtn.classList.remove("hidden");
-        if (menuLobbyBtn) menuLobbyBtn.classList.remove("hidden");
       } else {
         if (hudLobbyBtn) hudLobbyBtn.classList.add("hidden");
-        if (menuLobbyBtn) menuLobbyBtn.classList.add("hidden");
       }
     },
 

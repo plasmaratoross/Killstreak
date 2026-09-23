@@ -5,7 +5,6 @@
     "library": "LIBRARY",
     "achievements": "ACHIEVEMENTS",
     "settings": "SETTINGS",
-    "return_lobby": "RETURN TO LOBBY",
     "controls_footer": "Move: WASD / Arrows • Aim: Mouse • Attack: Left Click / Space"
   },
   "hud": {

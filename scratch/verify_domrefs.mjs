@@ -42,11 +42,25 @@ for (const m of read('src/ui/domRefs.js')
   afterFull.set(m[1], m[3]);
 }
 
+// ------------------------------------------------------------ intentional drop
+// The main menu's "Return to Lobby" button (#menu-lobby-btn) was deleted from the
+// game, so its ref left domRefs.js with it. That is the ONLY deliberate removal
+// after the Phase 6 hoist, so it is listed here rather than by relaxing the counts
+// — every other ref still has to survive the move and be imported somewhere. The
+// `staleRemoved` check below fails if one of these names comes back, so this
+// allowance cannot quietly mask a genuine regression.
+const REMOVED_AFTER_HOIST = new Map([['menuLobbyBtn', 'menu-lobby-btn']]);
+
 console.log('--- fidelity ---');
 check(`original main.js declared ${beforeFull.size} refs`, beforeFull.size === 122, `found ${beforeFull.size}`);
-check(`src/ui/domRefs.js exports ${afterFull.size} refs`, afterFull.size === 122, `found ${afterFull.size}`);
+check(`src/ui/domRefs.js exports ${afterFull.size} refs (${REMOVED_AFTER_HOIST.size} intentionally removed)`,
+  afterFull.size === 122 - REMOVED_AFTER_HOIST.size, `found ${afterFull.size}`);
 
-const missing = [...beforeFull.keys()].filter((k) => !afterFull.has(k));
+const staleRemoved = [...REMOVED_AFTER_HOIST.keys()].filter((k) => afterFull.has(k));
+check('refs listed as removed are really gone', staleRemoved.length === 0,
+  `${staleRemoved.join(', ')} is back in domRefs.js — drop it from REMOVED_AFTER_HOIST`);
+
+const missing = [...beforeFull.keys()].filter((k) => !afterFull.has(k) && !REMOVED_AFTER_HOIST.has(k));
 const extra = [...afterFull.keys()].filter((k) => !beforeFull.has(k));
 check('no ref lost in the move', missing.length === 0, missing.join(', '));
 check('no ref invented', extra.length === 0, extra.join(', '));
@@ -84,9 +98,9 @@ const consumers = [['js/main.js', main]];
 })('src');
 
 const union = new Set(consumers.flatMap(([, text]) => collectImports(text)));
-const notImported = [...beforeFull.keys()].filter((n) => !union.has(n));
+const notImported = [...beforeFull.keys()].filter((n) => !union.has(n) && !REMOVED_AFTER_HOIST.has(n));
 const unknown = [...union].filter((n) => !beforeFull.has(n));
-check(`every one of the ${beforeFull.size} hoisted refs is imported somewhere`, notImported.length === 0, notImported.join(', '));
+check(`every live hoisted ref is imported somewhere (${beforeFull.size - REMOVED_AFTER_HOIST.size})`, notImported.length === 0, notImported.join(', '));
 check('no unknown name imported anywhere', unknown.length === 0, unknown.join(', '));
 check('no ref imported twice by one module',
   consumers.every(([, text]) => { const n = collectImports(text); return new Set(n).size === n.length; }),

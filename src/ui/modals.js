@@ -26,7 +26,6 @@ import {
   mapModal,
   gameOverScreen,
   minimapWidget,
-  menuLobbyBtn,
   hudLibraryBtn,
   hudLobbyBtn,
   badgesList,
@@ -94,13 +93,6 @@ export function openScreen(game, screenName, origin = "MENU") {
       gameplayHud.classList.add("hidden");
       if (minimapWidget) minimapWidget.classList.add("hidden");
       game.state = "MENU";
-      if (menuLobbyBtn) {
-        if (game && game.currentArea === "COMBAT") {
-          menuLobbyBtn.classList.remove("hidden");
-        } else {
-          menuLobbyBtn.classList.add("hidden");
-        }
-      }
       break;
 
     case "GAME":
@@ -200,7 +192,7 @@ export function promptReturnToLobby(game) {
 /**
  * Registers every screen-navigation and modal-close control.
  *
- * Phase 6 wiring relocation (the option-2 rule). These 17 listeners moved out of
+ * Phase 6 wiring relocation (the option-2 rule). These 16 listeners moved out of
  * js/main.js: the eight close buttons plus the menu/HUD navigation buttons. They
  * are pure routing, so the router owns them — and main.js no longer has to know
  * which button closes which panel.
@@ -229,10 +221,6 @@ export function initModalWiring(game) {
 
   if (hudLobbyBtn) {
     hudLobbyBtn.addEventListener("click", () => promptReturnToLobby(game));
-  }
-
-  if (menuLobbyBtn) {
-    menuLobbyBtn.addEventListener("click", () => promptReturnToLobby(game));
   }
 
   if (menuLibraryBtn) {

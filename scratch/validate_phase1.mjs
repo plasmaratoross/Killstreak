@@ -179,15 +179,20 @@ const END = '\n  };\n';
 const legacyTranslations = new Function(
   `${legacyText.slice(startIdx, legacyText.indexOf(END, startIdx) + END.length)}\nreturn translations;`
 )();
-// Two deliberate dictionary changes were made after extraction, each scoped and
+// Three deliberate dictionary changes were made after extraction, each scoped and
 // asserted to be the only kind of difference. See the matching note in
-// verify_i18n.mjs for the full reasoning.
+// verify_i18n.mjs for the full reasoning — the two allowlists must be kept in step.
 //   1. cutscene resync (both languages) — the flora/metallic/hellfire dialogue
 //   2. phase name translation (vi only) — vi's phase names were still English
+//   3. main-menu "Return to Lobby" button removal (both languages) — the key's only
+//      consumer was the deleted button
 const CUTSCENE_RESYNC = /^cutscene\.(?:speaker_(grove|anvil|abyss)|(?:speaker_)?(metallic_unlock|metallic_p10|flora_unlock|flora_p10|hellfire_unlock|hellfire_p10)(?:_\d+)?)$/;
 const PHASE_NAME_TRANSLATION = /^phases\.[a-z]+\.\d+\.(shortName|name)$/;
+const MAIN_MENU_BUTTON_REMOVAL = /^menu\.return_lobby$/;
 const allowedToDiffer = (key, lang) =>
-  CUTSCENE_RESYNC.test(key) || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
+  CUTSCENE_RESYNC.test(key)
+  || MAIN_MENU_BUTTON_REMOVAL.test(key)
+  || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 const flattenLeaves = (obj, prefix = '') =>
   Object.entries(obj).flatMap(([k, v]) =>
