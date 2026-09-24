@@ -57,6 +57,9 @@ const ADDED_AFTER_HOIST = new Map([
   ['libTabWindy', 'lib-tab-windy'],
   ['libTabFrostbite', 'lib-tab-frostbite'],
   ['libTabVoltstrike', 'lib-tab-voltstrike'],
+  ['libTabLumen', 'lib-tab-lumen'],
+  ['libTabUmbra', 'lib-tab-umbra'],
+  ['libTabSanguine', 'lib-tab-sanguine'],
 ]);
 
 console.log('--- fidelity ---');

@@ -21,6 +21,9 @@
   const WINDY_PHASES = (SWORDS.windy && SWORDS.windy.phases) || [];
   const FROSTBITE_PHASES = (SWORDS.frostbite && SWORDS.frostbite.phases) || [];
   const VOLTSTRIKE_PHASES = (SWORDS.voltstrike && SWORDS.voltstrike.phases) || [];
+  const LUMEN_PHASES = (SWORDS.lumen && SWORDS.lumen.phases) || [];
+  const UMBRA_PHASES = (SWORDS.umbra && SWORDS.umbra.phases) || [];
+  const SANGUINE_PHASES = (SWORDS.sanguine && SWORDS.sanguine.phases) || [];
 
   // Structured NPC Formation Offsets (Relative to Zone Center)
   const NPC_FORMATION_10_SLOTS = [
@@ -198,6 +201,30 @@
       icon: "⚡",
       description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",
       killsRequired: 699999
+    },
+    {
+      id: "lumen_ascended",
+      title: "The Radiant",
+      badge: "lumen_ascended",
+      icon: "✨",
+      description: "Unlock when reaching the final phase of Lumen (950,000 killstreak).",
+      killsRequired: 950000
+    },
+    {
+      id: "umbra_ascended",
+      title: "The Void",
+      badge: "umbra_ascended",
+      icon: "🕳️",
+      description: "Unlock when reaching the final phase of Umbra (1,400,000 killstreak).",
+      killsRequired: 1400000
+    },
+    {
+      id: "sanguine_ascended",
+      title: "The Blood",
+      badge: "sanguine_ascended",
+      icon: "🩸",
+      description: "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak).",
+      killsRequired: 1850000
     }
   ];
 
@@ -363,6 +390,9 @@
     WINDY_PHASES,
     FROSTBITE_PHASES,
     VOLTSTRIKE_PHASES,
+    LUMEN_PHASES,
+    UMBRA_PHASES,
+    SANGUINE_PHASES,
     SWORDS,
     KILLSTREAK_SCALING,
     DEVOURER_SCALING,

@@ -13,7 +13,11 @@ export function updateBloodmoon(game, dt) {
   const Config = window.Killstreak.Config;
 
   const bm = game.bloodmoon;
-  const isInCombat = game.currentArea === "COMBAT" && !game.isGameOver;
+  const isInCombat = (game.currentArea === "COMBAT" || game.currentArea === "ATLANTIS") && !game.isGameOver;
+
+  if (game.currentArea === "ATLANTIS") {
+    updateBloodmoonTintStyle(game);
+  }
 
   if (bm.isActive) {
     // --- BLOODMOON IS ACTIVE ---
@@ -88,14 +92,17 @@ export function startBloodmoon(game) {
   bm.checkTimer = 0;
   bm.npcStatsApplied = false;
 
-  // Immediately apply NPC boosts if in combat
-  if (game.currentArea === "COMBAT") {
+  // Immediately apply NPC boosts if in combat or Atlantis
+  if (game.currentArea === "COMBAT" || game.currentArea === "ATLANTIS") {
     applyBloodmoonNpcBoosts(game);
   }
 
   // Show screen tint
   const tint = document.getElementById("bloodmoon-tint");
   if (tint) tint.classList.remove("hidden");
+  if (game.currentArea === "ATLANTIS") {
+    updateBloodmoonTintStyle(game);
+  }
 
   // Show notification banner
   showBloodmoonBanner(game);
@@ -112,15 +119,18 @@ export function endBloodmoon(game) {
   // Restore NPC stats
   restoreBloodmoonNpcStats(game);
 
-  // Hide screen tint
+  // Hide screen tint and reset themes
   const tint = document.getElementById("bloodmoon-tint");
   if (tint) tint.classList.add("hidden");
+  updateBloodmoonTintStyle(game);
 
   // Hide banner immediately
   const banner = document.getElementById("bloodmoon-banner");
   if (banner) {
     banner.classList.add("hidden");
-    banner.classList.remove("bloodmoon-banner-entering", "bloodmoon-banner-visible", "bloodmoon-banner-exiting");
+    const toRemove = ["bloodmoon-banner-entering", "bloodmoon-banner-visible", "bloodmoon-banner-exiting"];
+    if (banner.classList.contains("atlantis-corrupted-banner")) toRemove.push("atlantis-corrupted-banner");
+    banner.classList.remove(...toRemove);
   }
 }
 
@@ -147,6 +157,30 @@ export function summonEvent(game, name = "bloodmoon") {
 }
 
 /** @param {object} game */
+export function updateBloodmoonTintStyle(game) {
+  const tint = document.getElementById("bloodmoon-tint");
+  const banner = document.getElementById("bloodmoon-banner");
+  if (!tint) return;
+
+  const isBmActive = Boolean(game && game.bloodmoon && game.bloodmoon.isActive);
+  if (isBmActive && game.currentArea === "ATLANTIS") {
+    if (!tint.classList.contains("atlantis-corrupted-tint")) {
+      tint.classList.add("atlantis-corrupted-tint");
+    }
+    if (banner && !banner.classList.contains("atlantis-corrupted-banner")) {
+      banner.classList.add("atlantis-corrupted-banner");
+    }
+  } else {
+    if (tint.classList.contains("atlantis-corrupted-tint")) {
+      tint.classList.remove("atlantis-corrupted-tint");
+    }
+    if (banner && banner.classList.contains("atlantis-corrupted-banner")) {
+      banner.classList.remove("atlantis-corrupted-banner");
+    }
+  }
+}
+
+/** @param {object} game */
 export function showBloodmoonBanner(game) {
   const bm = game.bloodmoon;
   const banner = document.getElementById("bloodmoon-banner");
@@ -158,9 +192,13 @@ export function showBloodmoonBanner(game) {
   const subEl = document.getElementById("bloodmoon-sublabel-text");
   if (I18n) {
     if (labelEl) labelEl.textContent = I18n.t("bloodmoon.title") || "BLOODMOON";
-    if (subEl) subEl.textContent = I18n.t("bloodmoon.subtitle") || "The crimson moon rises — darkness descends upon the grassland!";
+    const subKey = game.currentArea === "ATLANTIS" ? "bloodmoon.atlantis_subtitle" : "bloodmoon.subtitle";
+    if (subEl) subEl.textContent = I18n.t(subKey) || (game.currentArea === "ATLANTIS" ? "Corrupted abyss descends upon Atlantis!" : "The crimson moon rises — darkness descends upon the grassland!");
   }
 
+  if (game.currentArea === "ATLANTIS") {
+    updateBloodmoonTintStyle(game);
+  }
   banner.classList.remove("hidden", "bloodmoon-banner-visible", "bloodmoon-banner-exiting");
   banner.classList.add("bloodmoon-banner-entering");
   bm.bannerPhase = "entering";
@@ -208,4 +246,4 @@ export function restoreBloodmoonNpcStats(game) {
   }
 }
 
-export default { updateBloodmoon, startBloodmoon, endBloodmoon, summonEvent, showBloodmoonBanner, applyBloodmoonNpcBoosts, restoreBloodmoonNpcStats };
+export default { updateBloodmoon, startBloodmoon, endBloodmoon, summonEvent, showBloodmoonBanner, applyBloodmoonNpcBoosts, restoreBloodmoonNpcStats, updateBloodmoonTintStyle };

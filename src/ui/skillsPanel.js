@@ -31,8 +31,8 @@ export function updateSkillsUI(game, skillsData) {
 
   const swordId = (skillsData && skillsData.swordId) || (game && game.player && game.player.swordId) || "devourer";
 
-  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy, Frostbite or Voltstrike is equipped
-  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite" && swordId !== "voltstrike")) {
+  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy, Frostbite, Voltstrike, Lumen, Umbra or Sanguine is equipped
+  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite" && swordId !== "voltstrike" && swordId !== "lumen" && swordId !== "umbra" && swordId !== "sanguine")) {
     if (hudSkillsBar) hudSkillsBar.classList.add("hidden");
     skillGluttonyBtn.disabled = true;
     skillEngulfBtn.disabled = true;
@@ -298,6 +298,159 @@ export function updateSkillsUI(game, skillsData) {
       skillGluttonyBtn.className = "skill-btn skill-ready";
       skillGluttonyBtn.disabled = false;
       skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // LUMEN SKILLS: Flash (Z) + Radiance (X)
+  if (swordId === "lumen") {
+    skillGluttonyBtn.classList.remove("hidden");
+    skillEngulfBtn.classList.remove("hidden");
+
+    const zLabel = skillGluttonyBtn.querySelector(".skill-btn-label");
+    const xLabel = skillEngulfBtn.querySelector(".skill-btn-label");
+    if (zLabel) zLabel.textContent = I18n ? I18n.t("skills.flash_label") : "[ Z — FLASH ]";
+    if (xLabel) xLabel.textContent = I18n ? I18n.t("skills.radiance_label") : "[ X — RADIANCE ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.flash_title") : "Flash [Z] — Blinds and staggers everything within your swing range for 1.4s and deals 220% damage (Phase 7+, 26s CD)";
+    skillEngulfBtn.title = I18n ? I18n.t("skills.radiance_title") : "Radiance [X] — A 4s light field around you: burns enemies for 45% damage per second and heals you for 10% of max HP per second (Phase 12+, 50s CD)";
+
+    const flCd = (skillsData && typeof skillsData.flashCooldown === "number")
+      ? skillsData.flashCooldown
+      : (game && typeof game.flashCooldown === "number" ? game.flashCooldown : 0);
+    const rdCd = (skillsData && typeof skillsData.radianceCooldown === "number")
+      ? skillsData.radianceCooldown
+      : (game && typeof game.radianceCooldown === "number" ? game.radianceCooldown : 0);
+
+    // Z — Flash unlocks at the first deliberate collapse (phase 7).
+    if (phase < 7) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p7") : "LOCKED (P7)";
+    } else if (flCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${flCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+
+    // X — Radiance unlocks at the second collapse (phase 12).
+    if (phase < 12) {
+      skillEngulfBtn.className = "skill-btn skill-locked";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.locked_p12") : "LOCKED (P12)";
+    } else if (rdCd > 0) {
+      skillEngulfBtn.className = "skill-btn skill-cooldown";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = `${rdCd.toFixed(1)}s`;
+    } else {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // UMBRA SKILLS: Gravity Well (Z) + Erasure (X)
+  if (swordId === "umbra") {
+    skillGluttonyBtn.classList.remove("hidden");
+    skillEngulfBtn.classList.remove("hidden");
+
+    const zLabel = skillGluttonyBtn.querySelector(".skill-btn-label");
+    const xLabel = skillEngulfBtn.querySelector(".skill-btn-label");
+    if (zLabel) zLabel.textContent = I18n ? I18n.t("skills.gravity_well_label") : "[ Z — GRAVITY WELL ]";
+    if (xLabel) xLabel.textContent = I18n ? I18n.t("skills.erasure_label") : "[ X — ERASURE ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.gravity_well_title") : "Gravity Well [Z] — Rips every enemy within 3x your swing range toward you and deals 180% damage (Phase 7+, 30s CD)";
+    skillEngulfBtn.title = I18n ? I18n.t("skills.erasure_title") : "Erasure [X] — Instantly erases every enemy below 25% HP within 3x your swing range; everything above takes 200% damage (Phase 12+, 70s CD)";
+
+    const gwCd = (skillsData && typeof skillsData.gravityWellCooldown === "number")
+      ? skillsData.gravityWellCooldown
+      : (game && typeof game.gravityWellCooldown === "number" ? game.gravityWellCooldown : 0);
+    const erCd = (skillsData && typeof skillsData.erasureCooldown === "number")
+      ? skillsData.erasureCooldown
+      : (game && typeof game.erasureCooldown === "number" ? game.erasureCooldown : 0);
+
+    // Z — Gravity Well unlocks at the first deliberate collapse (phase 7).
+    if (phase < 7) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p7") : "LOCKED (P7)";
+    } else if (gwCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${gwCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+
+    // X — Erasure unlocks at the second collapse (phase 12).
+    if (phase < 12) {
+      skillEngulfBtn.className = "skill-btn skill-locked";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.locked_p12") : "LOCKED (P12)";
+    } else if (erCd > 0) {
+      skillEngulfBtn.className = "skill-btn skill-cooldown";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = `${erCd.toFixed(1)}s`;
+    } else {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // SANGUINE SKILLS: Bloodletting (Z) + Exsanguinate (X)
+  if (swordId === "sanguine") {
+    skillGluttonyBtn.classList.remove("hidden");
+    skillEngulfBtn.classList.remove("hidden");
+
+    const zLabel = skillGluttonyBtn.querySelector(".skill-btn-label");
+    const xLabel = skillEngulfBtn.querySelector(".skill-btn-label");
+    if (zLabel) zLabel.textContent = I18n ? I18n.t("skills.bloodletting_label") : "[ Z — BLOODLETTING ]";
+    if (xLabel) xLabel.textContent = I18n ? I18n.t("skills.exsanguinate_label") : "[ X — EXSANGUINATE ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.bloodletting_title") : "Bloodletting [Z] — Pay 15% of your current HP to deal 400% damage to everything within your swing range and heal for 30% of it (Phase 7+, 26s CD)";
+    skillEngulfBtn.title = I18n ? I18n.t("skills.exsanguinate_title") : "Exsanguinate [X] — A 5s bleed field: 45% damage per second to everything inside while you heal for 10% of it (Phase 12+, 60s CD)";
+
+    const blCd = (skillsData && typeof skillsData.bloodlettingCooldown === "number")
+      ? skillsData.bloodlettingCooldown
+      : (game && typeof game.bloodlettingCooldown === "number" ? game.bloodlettingCooldown : 0);
+    const exCd = (skillsData && typeof skillsData.exsanguinateCooldown === "number")
+      ? skillsData.exsanguinateCooldown
+      : (game && typeof game.exsanguinateCooldown === "number" ? game.exsanguinateCooldown : 0);
+
+    // Z — Bloodletting unlocks at the first deliberate collapse (phase 7).
+    if (phase < 7) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p7") : "LOCKED (P7)";
+    } else if (blCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${blCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+
+    // X — Exsanguinate unlocks at the second collapse (phase 12).
+    if (phase < 12) {
+      skillEngulfBtn.className = "skill-btn skill-locked";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.locked_p12") : "LOCKED (P12)";
+    } else if (exCd > 0) {
+      skillEngulfBtn.className = "skill-btn skill-cooldown";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = `${exCd.toFixed(1)}s`;
+    } else {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
     }
     return;
   }

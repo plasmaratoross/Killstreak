@@ -227,12 +227,61 @@ const VOLTSTRIKE_ADDITION = new RegExp(
   + '|achievements\\.items\\.voltstrike_ascended\\.(?:title|description)'
   + ')$'
 );
+// 7-9. lumen / umbra / sanguine sword additions (both languages) — same reasoning
+// as windy. The `locked_p*` skill labels are shared across swords (the dictionary
+// holds one `skills.locked_p12`, not one per sword), so the same two lock keys are
+// listed in each group; that is deliberate, since the allowlist is OR'd.
+const LUMEN_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_lumen(?:_p14)?|lumen_(?:unlock|p14)_\\d+)'
+  + '|swords\\.lumen\\.(?:name|tag|description)'
+  + '|phases\\.lumen\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.(?:flash_(?:label|title)|radiance_(?:label|title)|locked_p(?:7|12))'
+  + '|floating\\.lumen_(?:unlocked|p14)'
+  + '|toasts\\.lumen_[a-z0-9_]+'
+  + '|achievements\\.items\\.lumen_ascended\\.(?:title|description)'
+  + ')$'
+);
+const UMBRA_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_umbra(?:_p15)?|umbra_(?:unlock|p15)_\\d+)'
+  + '|swords\\.umbra\\.(?:name|tag|description)'
+  + '|phases\\.umbra\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.(?:gravity_well_(?:label|title)|erasure_(?:label|title)|locked_p(?:7|12))'
+  + '|floating\\.umbra_(?:unlocked|p15)'
+  + '|toasts\\.umbra_[a-z0-9_]+'
+  + '|achievements\\.items\\.umbra_ascended\\.(?:title|description)'
+  + ')$'
+);
+const SANGUINE_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_sanguine(?:_p16)?|sanguine_(?:unlock|p16)_\\d+)'
+  + '|swords\\.sanguine\\.(?:name|tag|description)'
+  + '|phases\\.sanguine\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.(?:bloodletting_(?:label|title)|exsanguinate_(?:label|title)|locked_p(?:7|12))'
+  + '|floating\\.sanguine_(?:unlocked|p16)'
+  + '|toasts\\.sanguine_[a-z0-9_]+'
+  + '|achievements\\.items\\.sanguine_ascended\\.(?:title|description)'
+  + ')$'
+);
+const ATLANTIS_ADDITION = new RegExp(
+  '^(?:'
+  + 'maps\\.(?:ATLANTIS|portal_atlantis|portal_grassland)'
+  + '|prompts\\.(?:enter_atlantis|enter_atlantis_locked|return_to_grassland)'
+  + '|toasts\\.(?:entered_atlantis_title|entered_atlantis_desc|returned_grassland_title|returned_grassland_desc|atlantis_locked_title|atlantis_locked_desc)'
+  + '|bloodmoon\\.atlantis_subtitle'
+  + ')$'
+);
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
   || WINDY_ADDITION.test(key)
   || FROSTBITE_ADDITION.test(key)
   || VOLTSTRIKE_ADDITION.test(key)
+  || LUMEN_ADDITION.test(key)
+  || UMBRA_ADDITION.test(key)
+  || SANGUINE_ADDITION.test(key)
+  || ATLANTIS_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 const flattenLeaves = (obj, prefix = '') =>

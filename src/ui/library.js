@@ -33,6 +33,9 @@ import {
   libTabWindy,
   libTabFrostbite,
   libTabVoltstrike,
+  libTabLumen,
+  libTabUmbra,
+  libTabSanguine,
   libSwordTag,
   libSwordName,
   libSwordDesc
@@ -350,6 +353,21 @@ export function renderLibrarySwords(game) {
     if (sId === "voltstrike") libTabVoltstrike.classList.add("active");
     else libTabVoltstrike.classList.remove("active");
   }
+  if (libTabLumen) {
+    libTabLumen.textContent = I18n ? I18n.getSwordInfo("lumen").name.toUpperCase() : "LUMEN";
+    if (sId === "lumen") libTabLumen.classList.add("active");
+    else libTabLumen.classList.remove("active");
+  }
+  if (libTabUmbra) {
+    libTabUmbra.textContent = I18n ? I18n.getSwordInfo("umbra").name.toUpperCase() : "UMBRA";
+    if (sId === "umbra") libTabUmbra.classList.add("active");
+    else libTabUmbra.classList.remove("active");
+  }
+  if (libTabSanguine) {
+    libTabSanguine.textContent = I18n ? I18n.getSwordInfo("sanguine").name.toUpperCase() : "SANGUINE";
+    if (sId === "sanguine") libTabSanguine.classList.add("active");
+    else libTabSanguine.classList.remove("active");
+  }
 
   const phases = swordDef.phases;
   libraryPhasesContainer.innerHTML = "";
@@ -369,14 +387,23 @@ export function renderLibrarySwords(game) {
     const isWeakFb = sId === "frostbite" && (p.phase === 7 || p.phase === 11);
     // Voltstrike's single deliberate collapse, plus the 250-KS gap to Surge.
     const isWeakVs = sId === "voltstrike" && p.phase === 5;
+    // Lumen and Umbra each carry the same pair Frostbite does: one collapse at phase 7
+    // (which unlocks their Z) and a second at phase 12 (which unlocks X). Both are
+    // still dips — p12 damage and HP sit below p11 in both swords.
+    // Sanguine is the exception: its p12 was lifted out of collapse territory so the
+    // sword can actually fight Duskhorn/Mirewalker/Thunderhoof-tier enemies, so p12 is
+    // now the top of its curve and must NOT carry the collapse badge. Its p7 still does.
+    const isWeakLm = sId === "lumen" && (p.phase === 7 || p.phase === 12);
+    const isWeakUm = sId === "umbra" && (p.phase === 7 || p.phase === 12);
+    const isWeakSg = sId === "sanguine" && p.phase === 7;
     // metallic p8, flora p7 and hellfire p7 were flagged here too, so they carried a
     // DELIBERATE COLLAPSE badge. They are not weak phases: their stats rise normally
     // (e.g. hellfire p7 9,072 DMG -> p8 18,144 DMG) and none of their render modules
     // has a collapse variant, unlike aquatic p8 and soil p9 whose data carries
     // weaponType "collapse" plus a cracked/weakened visual. A weak badge on them was
     // simply wrong, so they were dropped rather than relabelled TRANSITIONAL HURDLE.
-    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs;
-    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs;
+    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg;
+    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg;
 
     let scaledRow = null;
     if (isCurrent && game.player.isSwordEquipped) {
@@ -578,6 +605,27 @@ export function initLibraryWiring(game) {
   if (libTabVoltstrike) {
     libTabVoltstrike.addEventListener("click", () => {
       setSelectedLibrarySword("voltstrike");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabLumen) {
+    libTabLumen.addEventListener("click", () => {
+      setSelectedLibrarySword("lumen");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabUmbra) {
+    libTabUmbra.addEventListener("click", () => {
+      setSelectedLibrarySword("umbra");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabSanguine) {
+    libTabSanguine.addEventListener("click", () => {
+      setSelectedLibrarySword("sanguine");
       renderLibrarySwords(game);
     });
   }

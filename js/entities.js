@@ -286,6 +286,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         ...(map.decorations || []),
         ...(map.trees || []),
         ...(map.rocks || []),
+        ...(map.corals || []),
         ...(map.barrels || []),
         ...(map.well ? [map.well] : []),
         ...(map.plants || []),
@@ -647,6 +648,9 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isWindy = this.swordId === "windy";
       const isFrostbite = this.swordId === "frostbite";
       const isVoltstrike = this.swordId === "voltstrike";
+      const isLumen = this.swordId === "lumen";
+      const isUmbra = this.swordId === "umbra";
+      const isSanguine = this.swordId === "sanguine";
 
       let shadowCol = "rgba(56, 189, 248, 0.4)";
       if (isDevP17) shadowCol = "rgba(250, 204, 21, 0.8)";
@@ -663,6 +667,9 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isWindy) shadowCol = "rgba(34, 211, 238, 0.45)";
       else if (isFrostbite) shadowCol = "rgba(165, 243, 252, 0.45)";
       else if (isVoltstrike) shadowCol = "rgba(253, 224, 71, 0.45)";
+      else if (isLumen) shadowCol = "rgba(255, 255, 255, 0.5)";
+      else if (isUmbra) shadowCol = "rgba(167, 139, 250, 0.5)";
+      else if (isSanguine) shadowCol = "rgba(239, 68, 68, 0.5)";
 
       ctx.shadowColor = shadowCol;
       ctx.shadowBlur = (isDevP17 || isOdP7 || isAqP13 || isSoilP10 || isMetP10 || isFloraP10 || isHellP10) ? 24 : 10;
@@ -682,6 +689,9 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isWindy) playerFill = "#0f172a";
       else if (isFrostbite) playerFill = "#082f49";
       else if (isVoltstrike) playerFill = "#1c1917";
+      else if (isLumen) playerFill = "#292524";
+      else if (isUmbra) playerFill = "#0c0a09";
+      else if (isSanguine) playerFill = "#450a0a";
 
       ctx.fillStyle = playerFill;
       ctx.fill();
@@ -703,6 +713,9 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isWindy) playerStroke = "#22d3ee";
       else if (isFrostbite) playerStroke = "#7dd3fc";
       else if (isVoltstrike) playerStroke = "#fde047";
+      else if (isLumen) playerStroke = "#fef08a";
+      else if (isUmbra) playerStroke = "#a78bfa";
+      else if (isSanguine) playerStroke = "#ef4444";
 
       ctx.strokeStyle = playerStroke;
       ctx.stroke();
@@ -731,6 +744,9 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isWindy) eyeColor = "#06b6d4";
       else if (isFrostbite) eyeColor = "#22d3ee";
       else if (isVoltstrike) eyeColor = "#facc15";
+      else if (isLumen) eyeColor = "#fbbf24";
+      else if (isUmbra) eyeColor = "#7c3aed";
+      else if (isSanguine) eyeColor = "#b91c1c";
 
       ctx.fillStyle = eyeColor;
       ctx.beginPath();
@@ -1014,6 +1030,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const circleObstacles = [
         ...(map.trees || []),
         ...(map.rocks || []),
+        ...(map.corals || []),
         ...(map.barrels || []),
         ...(map.well ? [map.well] : []),
         ...(map.obstacles || [])
@@ -2533,18 +2550,21 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isWindy = this.swordId === "windy";
       const isFrostbite = this.swordId === "frostbite";
       const isVoltstrike = this.swordId === "voltstrike";
+      const isLumen = this.swordId === "lumen";
+      const isUmbra = this.swordId === "umbra";
+      const isSanguine = this.swordId === "sanguine";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
             ? activePhase.color
-            : (isVoltstrike ? "#fde047" : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))))));
+            : (isSanguine ? "#f43f5e" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))))));
       const I18n = window.Killstreak && window.Killstreak.I18n;
 
       // 1. Radiant Ground Floor Aura (sized for compact row spacing)
       const auraGrad = ctx.createRadialGradient(this.x, this.y, 4, this.x, this.y, this.radius + 12);
       const auraColor = isLocked
         ? "rgba(71, 85, 105, 0.28)"
-        : (isVoltstrike ? "rgba(253, 224, 71, 0.30)" : (isFrostbite ? "rgba(165, 243, 252, 0.34)" : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)"))))))));
+        : (isSanguine ? "rgba(239, 68, 68, 0.32)" : isUmbra ? "rgba(167, 139, 250, 0.32)" : isLumen ? "rgba(255, 255, 255, 0.30)" : isVoltstrike ? "rgba(253, 224, 71, 0.30)" : (isFrostbite ? "rgba(165, 243, 252, 0.34)" : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)"))))))));
       auraGrad.addColorStop(0, auraColor);
       auraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = auraGrad;
@@ -2560,7 +2580,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       ctx.lineDashOffset = -this.hoverTime * 8;
       ctx.strokeStyle = isLocked
         ? "rgba(100, 116, 139, 0.45)"
-        : (isVoltstrike ? "rgba(253, 224, 71, 0.8)" : (isFrostbite ? "rgba(125, 211, 252, 0.8)" : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)"))))))));
+        : (isSanguine ? "rgba(239, 68, 68, 0.85)" : isUmbra ? "rgba(167, 139, 250, 0.8)" : isLumen ? "rgba(255, 255, 255, 0.8)" : isVoltstrike ? "rgba(253, 224, 71, 0.8)" : (isFrostbite ? "rgba(125, 211, 252, 0.8)" : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)"))))))));
       ctx.stroke();
       ctx.setLineDash([]);
 
@@ -2781,7 +2801,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         let compactTitle = "";
         let compactSub = "";
         if (isLocked) {
-          headerColor = isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
+          headerColor = isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
           subColor = "#94a3b8";
           const unlockReq = this.unlockKills || (window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Swords && window.Killstreak.Data.Swords[this.swordId] && window.Killstreak.Data.Swords[this.swordId].unlockKills) || 0;
           const formattedK = unlockReq >= 1000 ? `${parseFloat((unlockReq / 1000).toFixed(2))}K` : `${unlockReq}`;
@@ -2802,6 +2822,18 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         } else if (isVoltstrike) {
           compactTitle = "VOLTSTRIKE";
           subColor = "#fde047";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isLumen) {
+          compactTitle = "LUMEN";
+          subColor = "#fef08a";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isUmbra) {
+          compactTitle = "UMBRA";
+          subColor = "#a78bfa";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isSanguine) {
+          compactTitle = "SANGUINE";
+          subColor = "#ef4444";
           compactSub = `PHASE ${pNum}`;
         } else if (isFlora) {
           compactTitle = "FLORA";
@@ -2858,11 +2890,14 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isWindy = this.swordId === "windy";
       const isFrostbite = this.swordId === "frostbite";
       const isVoltstrike = this.swordId === "voltstrike";
+      const isLumen = this.swordId === "lumen";
+      const isUmbra = this.swordId === "umbra";
+      const isSanguine = this.swordId === "sanguine";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
             ? activePhase.color
-            : (isVoltstrike ? "#fde047" : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))))));
+            : (isSanguine ? "#f43f5e" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))))));
       const I18n = window.Killstreak && window.Killstreak.I18n;
 
       let fullTitle = "";
@@ -2871,7 +2906,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       let subColor = phaseColor;
 
       if (isLocked) {
-        headerColor = isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
+        headerColor = isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
         const sName = (I18n ? (I18n.getSwordInfo(this.swordId) || {}).name || this.swordId : this.swordId).toUpperCase();
         fullTitle = `🔒 ${sName} (${I18n && I18n.currentLang === "vi" ? "ĐÃ KHÓA" : "LOCKED"})`;
         subColor = "#94a3b8";
@@ -2899,6 +2934,21 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         subColor = "#fde047";
         const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("voltstrike", activePhase.phase) : activePhase;
         fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: SPARK";
+      } else if (isLumen) {
+        fullTitle = "✨ LUMEN";
+        subColor = "#fef08a";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("lumen", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: GLIMMER";
+      } else if (isUmbra) {
+        fullTitle = "🕳️ UMBRA";
+        subColor = "#a78bfa";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("umbra", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: NULL";
+      } else if (isSanguine) {
+        fullTitle = "🩸 SANGUINE";
+        subColor = "#ef4444";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("sanguine", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: DROPLET";
       } else if (isFlora) {
         fullTitle = "🌿 FLORA";
         subColor = "#4ade80";

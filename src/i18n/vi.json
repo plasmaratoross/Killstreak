@@ -56,6 +56,19 @@
     "locked_p11": "KHÓA (GĐ11)",
     "zap_label": "[ Z — TIA CHỚP ]",
     "zap_title": "Tia Chớp [Z] — Đánh trúng kẻ địch gần nhất trong tầm chém, gây 125% sát thương và làm choáng 1.75 giây (GĐ 5+, 30s hồi chiêu)",
+    "flash_label": "[ Z — LÓE SÁNG ]",
+    "flash_title": "Lóe Sáng [Z] — Làm chói và khựng mọi kẻ địch trong tầm chém 1.4 giây, gây 220% sát thương (GĐ 7+, 26s hồi chiêu)",
+    "radiance_label": "[ X — RẠNG RỠ ]",
+    "radiance_title": "Rạng Rỡ [X] — Trường sáng 4 giây quanh ngươi: thiêu kẻ địch 45% sát thương mỗi giây và hồi cho ngươi 10% máu tối đa mỗi giây (GĐ 12+, 50s hồi chiêu)",
+    "gravity_well_label": "[ Z — GIẾNG TRỌNG LỰC ]",
+    "gravity_well_title": "Giếng Trọng Lực [Z] — Kéo mọi kẻ địch trong bán kính gấp 3 lần tầm chém về phía ngươi và gây 180% sát thương (GĐ 7+, 30s hồi chiêu)",
+    "erasure_label": "[ X — XÓA SỔ ]",
+    "erasure_title": "Xóa Sổ [X] — Xóa sổ ngay mọi kẻ địch dưới 25% máu trong bán kính gấp 3 lần tầm chém; những kẻ trên mức đó nhận 200% sát thương (GĐ 12+, 70s hồi chiêu)",
+    "bloodletting_label": "[ Z — TRÍCH MÁU ]",
+    "bloodletting_title": "Trích Máu [Z] — Trả 15% máu hiện tại để gây 400% sát thương cho mọi thứ trong tầm chém và hồi lại 30% lượng đó (GĐ 7+, 26s hồi chiêu)",
+    "exsanguinate_label": "[ X — RÚT MÁU ]",
+    "exsanguinate_title": "Rút Máu [X] — Trường chảy máu 5 giây: 45% sát thương mỗi giây cho mọi thứ bên trong trong khi ngươi hồi 10% lượng đó (GĐ 12+, 60s hồi chiêu)",
+    "locked_p12": "KHÓA (P12)",
     "locked_p5": "KHÓA (GĐ5)",
     "cyclone_title": "Lốc Xoáy [Z] — Xoáy kiếm cuốn phăng mọi kẻ địch trong bán kính gấp 3 lần tầm chém, gây sát thương gấp 5.5 lần (GĐ 4+, 35s hồi chiêu)",
     "locked_p4": "KHÓA (GĐ4)",
@@ -82,6 +95,12 @@
     "frostbite_p12": "ĐỘ KHÔNG TUYỆT ĐỐI!",
     "voltstrike_unlocked": "ĐÃ MỞ KHÓA VOLTSTRIKE!",
     "voltstrike_p14": "SÉT ĐỘC!",
+    "lumen_unlocked": "ĐÃ MỞ KHÓA LUMEN!",
+    "lumen_p14": "CHÍNH NGỌ VĨNH CỬU!",
+    "umbra_unlocked": "ĐÃ MỞ KHÓA UMBRA!",
+    "umbra_p15": "HƯ KHÔNG TUYỆT ĐỐI!",
+    "sanguine_unlocked": "ĐÃ MỞ KHÓA SANGUINE!",
+    "sanguine_p16": "KẺ CHẬN TIM!",
     "all_devourer": "THE ALL DEVOURER THĂNG HOA!",
     "fortitude": "KIÊN CƯỜNG!",
     "tsunami": "SÓNG THẦN!",
@@ -95,7 +114,10 @@
     "inspect": "Khảo sát {sword} [E]",
     "enter_grassland": "Vào Thảo Nguyên [E]",
     "return_to_lobby": "Trở về Sảnh [E]",
-    "confirm_return_lobby": "Quay về Sảnh Thánh Địa? Chuỗi hạ gục hiện tại ({streak}) sẽ được đặt lại về 0."
+    "confirm_return_lobby": "Quay về Sảnh Thánh Địa? Chuỗi hạ gục hiện tại ({streak}) sẽ được đặt lại về 0.",
+    "enter_atlantis": "Vào Atlantis [E]",
+    "enter_atlantis_locked": "Cổng Atlantis [Khóa - Yêu cầu 150.000 Kills ({current}/{req})]",
+    "return_to_grassland": "Trở về Thảo Nguyên [E]"
   },
   "pedestal": {
     "tag": "BỆ VŨ KHÍ",
@@ -200,6 +222,18 @@
       "voltstrike_ascended": {
         "title": "Kẻ Sấm Sét",
         "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Voltstrike (699,999 chuỗi hạ gục)."
+      },
+      "lumen_ascended": {
+        "title": "Kẻ Rạng Rỡ",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Lumen (950,000 chuỗi hạ gục)."
+      },
+      "umbra_ascended": {
+        "title": "Hư Không",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Umbra (1,400,000 chuỗi hạ gục)."
+      },
+      "sanguine_ascended": {
+        "title": "Huyết",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Sanguine (1,850,000 chuỗi hạ gục)."
       }
     }
   },
@@ -278,6 +312,12 @@
     "speaker_frostbite_p12": "FROSTBITE — GIAI ĐOẠN 12: ĐỘ KHÔNG TUYỆT ĐỐI",
     "speaker_voltstrike": "VOLTSTRIKE",
     "speaker_voltstrike_p14": "VOLTSTRIKE — GIAI ĐOẠN 14: SÉT ĐỘC",
+    "speaker_lumen": "LUMEN",
+    "speaker_lumen_p14": "LUMEN — GIAI ĐOẠN 14: CHÍNH NGỌ VĨNH CỬU",
+    "speaker_umbra": "UMBRA",
+    "speaker_umbra_p15": "UMBRA — GIAI ĐOẠN 15: HƯ KHÔNG TUYỆT ĐỐI",
+    "speaker_sanguine": "SANGUINE",
+    "speaker_sanguine_p16": "SANGUINE — GIAI ĐOẠN 16: KẺ CHẬN TIM",
     "speaker_grove": "RỪNG CỔ THỤ",
     "speaker_anvil": "ĐE SẮT Ý CHÍ",
     "speaker_abyss": "VỰC THẲM HỎA NGỤC",
@@ -375,12 +415,45 @@
     "voltstrike_p14_3": "Ngươi gọi nó là sấm.",
     "voltstrike_p14_4": "Ngươi đã sai.\n\n[Thanh kiếm bắt đầu phóng điện dữ dội.] Đây là thứ còn tệ hơn.",
     "voltstrike_p14_5": "ĐÁNH.",
+    "lumen_unlock_1": "Năm mươi nghìn. Ngươi đã không nhận ra ánh sáng đang đổi cho đến khi nó đã đổi xong.",
+    "lumen_unlock_2": "Ta không ấm. Đừng nhầm ta là ấm.",
+    "lumen_unlock_3": "Ta là thứ còn lại khi ánh sáng thôi xin phép.",
+    "lumen_unlock_4": "Giơ ta lên. Rồi nhìn đi chỗ khác, nếu ngươi còn làm được.",
+    "lumen_p14_1": "[Cái bóng dưới chân ngươi mỏng đi, rồi biến mất. Không gì đứng đây còn đổ bóng nữa.]",
+    "lumen_p14_2": "Ngươi cứ gọi ta là một thanh kiếm.",
+    "lumen_p14_3": "Một thanh kiếm kết thúc ở đâu đó. Ta thì không.",
+    "lumen_p14_4": "[Mọi lớp sáng ngừng chuyển động cùng lúc và chỉ đơn giản là hiện hữu.]\n\nKhông còn mép nào của ta để tìm nữa.",
+    "lumen_p14_5": "Tỏa sáng.",
+    "umbra_unlock_1": "Bảy mươi nghìn. Đếm lại đi. Ngươi sẽ thấy con số nhỏ hơn ngươi nhớ.",
+    "umbra_unlock_2": "Có thứ gì đó đã lấy chúng. Chưa bao giờ là ngươi.",
+    "umbra_unlock_3": "Ta không phải bóng tối. Bóng tối là một thứ. Ta là khoảng trống mà một thứ để lại.",
+    "umbra_unlock_4": "Chỉ ta vào thứ gì đó. Rồi xem còn lại bao ít.",
+    "umbra_p15_1": "[Mọi âm thanh đến muộn, như thể phải đi vòng qua một thứ không hề tồn tại.]",
+    "umbra_p15_2": "Ngươi gọi ta là một vũ khí.",
+    "umbra_p15_3": "Vũ khí mang theo một sự vắng mặt quanh chúng.",
+    "umbra_p15_4": "Ta thì không mang. [Không khí nơi lưỡi kiếm đáng lẽ ở đó thôi cư xử như không khí.]\n\nTa chính là sự vắng mặt đó.",
+    "umbra_p15_5": "Chấm dứt.",
+    "sanguine_unlock_1": "Một trăm nghìn. Tay ngươi chưa ngừng run kể từ lúc chín mươi nghìn.",
+    "sanguine_unlock_2": "Tốt. Đó không phải sợ hãi. Đó là ta, đang đến.",
+    "sanguine_unlock_3": "Ta nhỏ. Ta mỏng hơn mọi thứ ngươi từng mang.",
+    "sanguine_unlock_4": "Nhưng ta đã ở trong ngươi. Cho ta một nơi để đi.",
+    "sanguine_p16_1": "[Nhịp đập vang lên một lần. Mọi thứ đang đứng trong phòng đều lỡ mất một nhịp của chính nó.]",
+    "sanguine_p16_2": "Ngươi tưởng ta đang lấy máu của chúng.",
+    "sanguine_p16_3": "Ta chưa bao giờ lấy nó.",
+    "sanguine_p16_4": "[Lưỡi kiếm nóng trắng và nhịp đập lại vang lên, mạnh gấp đôi.]\n\nTa đang giữ nó.",
+    "sanguine_p16_5": "Dừng lại.",
     "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
     "btn_skip": "BỎ QUA [ESC]"
   },
   "toasts": {
     "entered_combat_title": "Đã Vào Thảo Nguyên Rộng Lớn",
     "entered_combat_desc": "Tấn công lính canh tại các bãi săn mồi!",
+    "entered_atlantis_title": "Đã Vào Atlantis",
+    "entered_atlantis_desc": "Vương quốc cổ đại sâu thẳm dưới đáy biển.",
+    "returned_grassland_title": "Đã Trở Về Thảo Nguyên",
+    "returned_grassland_desc": "Trở lên từ vực sâu thẳm của Atlantis.",
+    "atlantis_locked_title": "ATLANTIS ĐANG KHÓA",
+    "atlantis_locked_desc": "Yêu cầu 150.000 Kills để mở khóa Atlantis! (Hiện tại: {kills})",
     "weapon_locked_title": "VŨ KHÍ ĐANG KHÓA",
     "weapon_locked_desc": "Cần 1,250 Mạng Tích Lũy để trang bị Overdrive!",
     "weapon_locked_req_desc": "Cần {req} Mạng tích lũy để trang bị {name}!",
@@ -443,6 +516,36 @@
     "voltstrike_p14_desc": "Giai đoạn 14: Sét Độc - Voltstrike trở thành chính cú đánh.",
     "voltstrike_up_title": "ÁP LỰC DÂNG CAO",
     "voltstrike_up_desc": "Đã đạt {name}",
+    "lumen_unlock_title": "ĐÃ MỞ KHÓA VŨ KHÍ",
+    "lumen_unlock_desc": "Lumen - Kẻ Rạng Rỡ đã sẵn sàng!",
+    "lumen_p14_title": "CHÍNH NGỌ VĨNH CỬU",
+    "lumen_p14_desc": "Giai đoạn 14: Chính Ngọ Vĩnh Cửu - Lumen trở thành nguồn sáng thay vì vũ khí chứa nó.",
+    "lumen_up_title": "ÁNH SÁNG TRỖI DẬY",
+    "lumen_up_desc": "Đã đạt {name}",
+    "lumen_flash_title": "LÓE SÁNG",
+    "lumen_flash_desc": "{count} kẻ địch bị chói trong 1.4 giây - 220% sát thương",
+    "lumen_radiance_title": "RẠNG RỠ",
+    "lumen_radiance_desc": "Hào quang thiêu đốt hoạt động 4 giây - hồi 10% máu tối đa mỗi giây",
+    "umbra_unlock_title": "ĐÃ MỞ KHÓA VŨ KHÍ",
+    "umbra_unlock_desc": "Umbra - Hư Không đã sẵn sàng!",
+    "umbra_p15_title": "HƯ KHÔNG TUYỆT ĐỐI",
+    "umbra_p15_desc": "Giai đoạn 15: Hư Không Tuyệt Đối - Umbra thôi chứa sự vắng mặt và bắt đầu chính là nó.",
+    "umbra_up_title": "HƯ KHÔNG SÂU HƠN",
+    "umbra_up_desc": "Đã đạt {name}",
+    "umbra_gravity_title": "GIẾNG TRỌNG LỰC",
+    "umbra_gravity_desc": "{count} kẻ địch bị kéo vào - 180% sát thương",
+    "umbra_erasure_title": "XÓA SỔ",
+    "umbra_erasure_desc": "{erased} bị xóa sổ, {damaged} nhận 200% sát thương",
+    "sanguine_unlock_title": "ĐÃ MỞ KHÓA VŨ KHÍ",
+    "sanguine_unlock_desc": "Sanguine - Huyết đã sẵn sàng!",
+    "sanguine_p16_title": "KẺ CHẬN TIM",
+    "sanguine_p16_desc": "Giai đoạn 16: Kẻ Chặn Tim - Sanguine thôi lấy máu và bắt đầu quyết định máu thuộc về ai.",
+    "sanguine_up_title": "HUYẾT TRỖI DẬY",
+    "sanguine_up_desc": "Đã đạt {name}",
+    "sanguine_bloodletting_title": "TRÍCH MÁU",
+    "sanguine_bloodletting_desc": "Gây {dealt} sát thương - hồi {healed} Máu",
+    "sanguine_exsanguinate_title": "RÚT MÁU",
+    "sanguine_exsanguinate_desc": "Trường chảy máu 5 giây - 45% sát thương mỗi giây, hồi cho ngươi 10%",
     "devourer_up_title": "DEVOURER THỨC TỈNH",
     "devourer_up_desc": "GIAI ĐOẠN: {name}",
     "achievement_unlocked_title": "Mở Khóa Thành Tựu!",
@@ -474,8 +577,11 @@
   "maps": {
     "LOBBY": "Sảnh Thánh Địa",
     "COMBAT": "Thảo Nguyên Rộng Lớn",
+    "ATLANTIS": "Atlantis",
     "portal_combat": "VÀO THẢO NGUYÊN",
     "portal_lobby": "TRỞ VỀ SẢNH",
+    "portal_atlantis": "VÀO ATLANTIS",
+    "portal_grassland": "TRỞ VỀ THẢO NGUYÊN",
     "pedestal_overdrive_locked": "OVERDRIVE (ĐANG KHÓA)",
     "pedestal_overdrive_req": "[ CẦN 1,250 MẠNG TÍCH LŨY ]",
     "pedestal_aquatic_locked": "AQUATIC (ĐANG KHÓA)",
@@ -687,6 +793,21 @@
       "name": "Voltstrike",
       "tag": "SẤM SÉT",
       "description": "Vũ khí sấm sét được chế tạo cho một mục tiêu duy nhất: những cú đánh chính xác và sát thương điện cực lớn thay vì kiểm soát diện rộng. Sở hữu kỹ năng Zap [Z]."
+    },
+    "lumen": {
+      "name": "Lumen",
+      "tag": "RỰC SÁNG",
+      "description": "Một vũ khí rạng rỡ mạnh gần như ngay lập tức rồi lớn chậm dần: ánh sáng nó mang đến cùng một lúc, và mọi thứ sau đó chỉ là tinh luyện. Sở hữu Flash [Z] và Radiance [X]."
+    },
+    "umbra": {
+      "name": "Umbra",
+      "tag": "HƯ KHÔNG",
+      "description": "Một vũ khí hư không đã mạnh ngay khi ngươi cầm nó rồi leo lên theo một đường thẳng không gãy — không đột biến, không sụp đổ sức mạnh, chỉ là một sự vắng mặt sâu dần đều. Sở hữu Gravity Well [Z] và Erasure [X]."
+    },
+    "sanguine": {
+      "name": "Sanguine",
+      "tag": "HUYẾT",
+      "description": "Một vũ khí máu khởi đầu là thứ yếu nhất trong game và kết thúc là thứ mạnh nhất: suốt sáu giai đoạn nó gần như không giữ nổi mình, rồi nó thôi giữ lại. Sở hữu Bloodletting [Z] và Exsanguinate [X]."
     }
   },
   "phases": {
@@ -1388,10 +1509,287 @@
         "effects": "BIẾN ĐỔI TỐI HẬU: SÉT ĐỘC. Voltstrike không còn tạo ra tia chớp — nó đã trở thành một tia sét độc ác mang hình hài, gần như không kìm nổi năng lượng bên trong. Cơ bản 1,333,333 Sát thương, 3,666,666 Máu và 160 Tốc độ. ĐÁNH.",
         "notification": "Ngươi gọi nó là tia chớp. Ngươi gọi nó là sấm. Ngươi đã sai. Đây là thứ còn tệ hơn."
       }
+    },
+    "lumen": {
+      "1": {
+        "name": "Giai đoạn 1: Lấp Lánh",
+        "shortName": "Lấp Lánh",
+        "effects": "Một mảnh sáng nhợt nhạt nằm trong một lưỡi kiếm tầm thường. Mờ, đều, và sáng hơn mức nó đáng được. Cơ bản 120 Sát thương và 400 Máu.",
+        "notification": "Ánh sáng. Nhỏ, nhưng nó không tắt."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Phát Sáng",
+        "shortName": "Phát Sáng",
+        "effects": "Lưỡi kiếm ấm lên và bắt đầu mang ánh sáng của chính nó, để lại những vệt sáng ngắn sau mỗi nhát chém. Cơ bản 480 Sát thương và 1,600 Máu.",
+        "notification": "Nó không phản chiếu gì cả. Nó tự tạo ra."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Óng Ánh",
+        "shortName": "Óng Ánh",
+        "effects": "Ánh sáng rắn chạy dọc mép lưỡi thành một đường liên tục, và những tia sáng nhỏ rơi khỏi lưỡi khi ngươi di chuyển. Cơ bản 1,900 Sát thương và 6,500 Máu.",
+        "notification": "Sáng đến mức nhìn vào là đau mắt."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Chùm Sáng",
+        "shortName": "Chùm Sáng",
+        "effects": "Lưỡi kiếm không còn trông như một lưỡi kiếm nữa mà như một chùm sáng được giữ lại, với quầng sáng rõ và ánh sáng tràn khỏi cả hai mép. Cơ bản 7,200 Sát thương và 25,000 Máu.",
+        "notification": "Nó không còn là một hình dạng. Nó là một hướng."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Rạng Rỡ",
+        "shortName": "Rạng Rỡ",
+        "effects": "Ánh sáng tuôn khỏi lưỡi như một trường chứ không phải một đường: một vòng sáng quanh người cầm và những tia bắn ra theo từng nhát chém. Cơ bản 26,000 Sát thương và 95,000 Máu.",
+        "notification": "Ánh sáng đã không còn ở lại trong lưỡi nữa."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Thái Dương",
+        "shortName": "Thái Dương",
+        "effects": "Một mặt trời nhỏ bị nhốt trong thép: ánh sáng xếp lớp, không khí biến dạng vì nhiệt và những quầng sáng còn đọng lại sau khi nhát chém kết thúc. Cơ bản 88,000 Sát thương và 300,000 Máu.",
+        "notification": "Mọi thứ ngươi từng chém vào vẫn còn đang sáng."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Nhật Thực",
+        "shortName": "Nhật Thực",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Ánh sáng bị chặn lại, không phải mất đi: một lưỡi xám xỉn chỉ còn lại một viền sáng mỏng. Mở khóa Flash [Z] — một luồng sáng gây 220% sát thương và làm choáng mọi kẻ địch trong tầm chém trong 1.4 giây. Cơ bản 9 Sát thương và 60 Máu.",
+        "notification": "...Nó đi đâu rồi? Có gì đó đang đứng chắn trước nó."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Bình Minh",
+        "shortName": "Bình Minh",
+        "effects": "Vật chắn được dỡ bỏ và ánh sáng ùa về cùng một lúc, sáng hơn cả trước nhật thực: những tia dài, quầng sáng mạnh và ánh sáng đọng thành vũng trên mặt đất. Cơ bản 200,000 Sát thương và 680,000 Máu.",
+        "notification": "Nó đã trở lại. Nó trở lại trong cơn giận."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Thiên Đỉnh",
+        "shortName": "Thiên Đỉnh",
+        "effects": "Ánh sáng lên đến điểm cao nhất và đứng yên ở đó: đều đặn, không lay chuyển, đổ những cái bóng dài về mọi hướng. Cơ bản 370,000 Sát thương và 1,250,000 Máu.",
+        "notification": "Chính ngọ. Đúng chính ngọ. Nó sẽ không nhúc nhích."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Nhật Miện",
+        "shortName": "Nhật Miện",
+        "effects": "Một vòng sáng xếp lớp hình thành vĩnh viễn quanh lưỡi, những quầng sáng không ngừng bong ra và sức nóng bẻ cong không khí phía sau ngươi. Cơ bản 620,000 Sát thương và 2,100,000 Máu.",
+        "notification": "Ánh sáng đã có cấu trúc. Từng lớp. Nó đang đội một chiếc vương miện."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Hào Quang",
+        "shortName": "Hào Quang",
+        "effects": "Ánh sáng rạng rỡ chuyển thành quỹ đạo: những hào quang xoay quanh người cầm, ánh sáng gấp lại vào chính nó và một thứ chói lòa không bao giờ phai hẳn. Cơ bản 960,000 Sát thương và 3,200,000 Máu.",
+        "notification": "Nó không còn chiếu vào ngươi nữa. Nó đang chiếu quanh ngươi."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Che Khuất",
+        "shortName": "Che Khuất",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Ánh sáng lại bị giấu đi — một lưỡi xám như đá với một đường sáng duy nhất còn sót lại, nhưng lưỡi kiếm bên dưới không còn vô hại nữa. Mở khóa Radiance [X] — một hào quang 4 giây hồi 10% máu tối đa mỗi giây và thiêu mọi kẻ địch bên trong 45% sát thương mỗi giây. Cơ bản 210,000 Sát thương và 470,000 Máu.",
+        "notification": "Bị giấu. Không phải mất. Những thứ bị giấu vẫn cháy."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Siêu Tân Tinh",
+        "shortName": "Siêu Tân Tinh",
+        "effects": "Lưỡi kiếm là một vụ nổ bị giam lại: lõi chói mắt, những lớp vỏ sáng đang giãn ra và những tia sáng tiếp tục bay đi sau khi nhát chém dừng lại. Cơ bản 1,500,000 Sát thương và 4,600,000 Máu.",
+        "notification": "Nó không lớn thêm nữa. Nó sắp buông ra."
+      },
+      "14": {
+        "name": "Giai đoạn 14: Chính Ngọ Vĩnh Cửu",
+        "shortName": "Chính Ngọ Vĩnh Cửu",
+        "effects": "BIẾN ĐỔI TỐI HẬU: CHÍNH NGỌ VĨNH CỬU. Lumen không còn phát ra ánh sáng nữa — nó chính là nguồn, và ánh sáng đơn giản là không bao giờ ngừng đến. Không còn bóng tối nào quanh ngươi nữa. Cơ bản 2,000,000 Sát thương, 6,000,000 Máu và 118 Tốc độ. Tỏa sáng.",
+        "notification": "Mặt trời không còn ở trên trời nữa. Nó ở trong tay ngươi, và nó sẽ không lặn."
+      }
+    },
+    "umbra": {
+      "1": {
+        "name": "Giai đoạn 1: Hư Vô",
+        "shortName": "Hư Vô",
+        "effects": "Lưỡi kiếm nhận ánh sáng nhưng không trả lại gì — một lõi tối dưới một viền nhợt nhạt mỏng. Nặng so với kích thước. Cơ bản 900 Sát thương và 12,000 Máu.",
+        "notification": "...Có gì đó đang thiếu ở đây."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Chạng Vạng",
+        "shortName": "Chạng Vạng",
+        "effects": "Viền dày lên và bóng tối bên trong lưỡi sâu hơn, kéo ánh sáng ra khỏi không khí quanh nó. Cơ bản 2,100 Sát thương và 30,000 Máu.",
+        "notification": "Ánh sáng không còn ở lại quanh ngươi nữa."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Bóng Râm",
+        "shortName": "Bóng Râm",
+        "effects": "Sự biến dạng tụ lại dọc theo mép lưỡi: một trường mờ nhạt hút màu sắc khỏi mọi thứ đứng gần nó. Cơ bản 4,800 Sát thương và 70,000 Máu.",
+        "notification": "Ngươi thấy nó đang hoạt động. Mọi thứ trông xỉn hơn."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Màn Che",
+        "shortName": "Màn Che",
+        "effects": "Một màn hư không kéo theo lưỡi kiếm, làm mờ mọi thứ nó đi qua và để lại một vệt tối sau mỗi nhát chém. Cơ bản 11,000 Sát thương và 160,000 Máu.",
+        "notification": "Nó không chém xuyên qua không khí. Nó chém xuyên qua thứ mà không khí từng là."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Rỗng Không",
+        "shortName": "Rỗng Không",
+        "effects": "Lưỡi kiếm thực sự rỗng bên trong — một lớp vỏ hư không không có gì, và vật chất rời rạc trôi về phía mép lưỡi rồi không quay lại. Cơ bản 25,000 Sát thương và 360,000 Máu.",
+        "notification": "Nó rỗng. Nó vẫn cắt. Không có gì về điều đó là hợp lý."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Vồ Lấy",
+        "shortName": "Vồ Lấy",
+        "effects": "Sự trống rỗng giờ đã có sức hút: mảnh vụn, bụi và ánh sáng đều nghiêng về phía lưỡi và biến mất ở mép. Cơ bản 56,000 Sát thương và 800,000 Máu.",
+        "notification": "Nó đang vươn tới mọi thứ. Nó không cần ngươi nhắm."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Tan Rã",
+        "shortName": "Tan Rã",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Lực hút quay vào trong và ăn mòn chính mép của nó: một lưỡi xám cùn chỉ còn một sợi tím mảnh dọc sống lưỡi. Mở khóa Gravity Well [Z] — kéo mọi kẻ địch trong bán kính gấp 3 lần tầm chém về phía ngươi và gây 180% sát thương. Cơ bản 15 Sát thương và 150 Máu.",
+        "notification": "...Nó tự tháo rời chính mình. ...Và giờ nó muốn tháo rời thứ khác."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Vực Thẳm",
+        "shortName": "Vực Thẳm",
+        "effects": "Lưỡi kiếm tái tạo quanh lực hút và sâu hơn trước: một lõi đen viền tím, với vật chất cong rõ rệt vào trong nó. Cơ bản 126,000 Sát thương và 1,750,000 Máu.",
+        "notification": "Nó tự lắp lại chính mình với thêm một thứ gì đó."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Lãng Quên",
+        "shortName": "Lãng Quên",
+        "effects": "Một vết rách thẳng đứng trong thế giới: lõi hư không là vĩnh viễn và viền tím cháy sáng hơn khi nó nuốt càng nhiều. Cơ bản 285,000 Sát thương và 3,800,000 Máu.",
+        "notification": "Nó không phải một vũ khí có hư không bên trong. Nó là một hư không có tay cầm."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Chân Trời Sự Kiện",
+        "shortName": "Chân Trời Sự Kiện",
+        "effects": "Lực hút giờ đã có ranh giới: một vòng cứng mà không gì vượt qua được, vẽ bằng ánh tím cong quanh lưỡi. Cơ bản 640,000 Sát thương và 8,200,000 Máu.",
+        "notification": "Có một đường bao quanh nó. Đừng ở sai phía."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Kỳ Dị Điểm",
+        "shortName": "Kỳ Dị Điểm",
+        "effects": "Mọi thứ sụp về một điểm duy nhất: một nút tím nóng trắng với cả lưỡi kiếm cong quanh nó và ánh sáng xoáy vào trong. Cơ bản 1,440,000 Sát thương và 17,500,000 Máu.",
+        "notification": "Nó đã thôi là một cái lỗ. Nó là một điểm, và nó rất nặng."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Bung Rã",
+        "shortName": "Bung Rã",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Kỳ dị điểm tách ra theo chính các đường nối của nó: một lưỡi đen đầy sẹo với ánh tím rò qua các vết nứt, và phía sau các vết nứt còn nhiều hơn trước. Mở khóa Erasure [X] — xóa sổ ngay lập tức mọi kẻ địch dưới 25% máu trong bán kính gấp 3 lần tầm chém, và gây 200% sát thương cho những kẻ trên mức đó. Cơ bản 330,000 Sát thương và 690,000 Máu.",
+        "notification": "...Bị tháo rời. Lại nữa. ...Được thôi. Vậy để nó tháo rời kẻ khác."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Vết Hư Không",
+        "shortName": "Vết Hư Không",
+        "effects": "Lưỡi kiếm kéo theo một vệt không gian vắng mặt, và bất cứ thứ gì lọt vào vệt đó vẫn tiếp tục rơi vào nó sau khi nhát chém đã qua. Cơ bản 1,950,000 Sát thương và 24,000,000 Máu.",
+        "notification": "Nó để lại những cái lỗ và chúng không khép lại."
+      },
+      "14": {
+        "name": "Giai đoạn 14: Hắc Ám Nguyên Thủy",
+        "shortName": "Hắc Ám Nguyên Thủy",
+        "effects": "Bóng tối nguyên thủy được trao một lưỡi: lưỡi kiếm không còn cần hư không bên trong nữa vì mọi thứ quanh nó đã đang trở thành hư không. Cơ bản 2,600,000 Sát thương và 32,000,000 Máu.",
+        "notification": "Thứ này già hơn bóng tối mà ngươi quen."
+      },
+      "15": {
+        "name": "Giai đoạn 15: Hư Không Tuyệt Đối",
+        "shortName": "Hư Không Tuyệt Đối",
+        "effects": "BIẾN ĐỔI TỐI HẬU: HƯ KHÔNG TUYỆT ĐỐI. Umbra đã thôi chứa một sự vắng mặt và bắt đầu chính là nó — đơn giản là không còn phiên bản nào của thế giới mà lưỡi kiếm này không ở đây. Cơ bản 3,400,000 Sát thương, 42,000,000 Máu và 92 Tốc độ. Chấm dứt.",
+        "notification": "Không có gì bị lấy đi. Không có gì bị phá hủy. Chỉ là chưa từng có gì ở đó."
+      }
+    },
+    "sanguine": {
+      "1": {
+        "name": "Giai đoạn 1: Giọt Máu",
+        "shortName": "Giọt Máu",
+        "effects": "Một giọt máu, bị kéo căng đến mức gần giống hình dạng của một lưỡi kiếm. Nó hầu như không cắt và hầu như không giữ được. Cơ bản 3 Sát thương và 12 Máu.",
+        "notification": "Đó không phải là một thanh kiếm. Đó là một giọt máu đang giả làm kiếm."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Vết Cắt",
+        "shortName": "Vết Cắt",
+        "effects": "Giọt máu mỏng đi thành một lưỡi thật sự. Mỏng, ướt và đáng thất vọng — nhưng nó có mở được mọi thứ. Cơ bản 8 Sát thương và 30 Máu.",
+        "notification": "Khá hơn. Vẫn tệ."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Rỉ Máu",
+        "shortName": "Rỉ Máu",
+        "effects": "Máu chảy liên tục khỏi mép lưỡi, để lại một vệt đỏ ướt trong không khí sau mỗi nhát chém. Cơ bản 22 Sát thương và 75 Máu.",
+        "notification": "Nó đang rỉ. Nó có vẻ không quan tâm."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Vết Thương",
+        "shortName": "Vết Thương",
+        "effects": "Lưỡi kiếm là một vết thương hở được thuyết phục giữ hình dạng: thô, đỏ, và khép rồi mở lại rõ rệt khi ngươi di chuyển. Cơ bản 60 Sát thương và 190 Máu.",
+        "notification": "Nó đang lành. Nó lành sai cách."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Xuất Huyết",
+        "shortName": "Xuất Huyết",
+        "effects": "Máu phun thành vòng cung khỏi lưỡi, và vệt ướt nó để lại đọng quá lâu. Cơ bản 150 Sát thương và 480 Máu.",
+        "notification": "Đây không phải nhỏ giọt. Đây là thoát ra."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Mất Máu",
+        "shortName": "Mất Máu",
+        "effects": "Lưỡi kiếm mất nhiều hơn nó có thể bù: một hình dạng tối, ướt, run rẩy liên tục, và một vũng máu đang hình thành dưới chân người cầm. Cơ bản 380 Sát thương và 1,200 Máu.",
+        "notification": "Nó đang mất máu. Mọi thứ gần nó cũng vậy."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Đường Phẳng",
+        "shortName": "Đường Phẳng",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Máu ngừng chảy và lưỡi kiếm trở nên bất động và xám — không mạch đập, không vệt, không gì cả. Mở khóa Bloodletting [Z] — trả 15% máu hiện tại để gây 400% sát thương cho mọi thứ trong tầm chém và hồi lại 30% lượng đó. Cơ bản 4 Sát thương và 25 Máu.",
+        "notification": "...Không gì cả. Không mạch đập. ...Vậy nó còn làm gì trong tay ta?"
+      },
+      "8": {
+        "name": "Giai đoạn 8: Bật Lại",
+        "shortName": "Bật Lại",
+        "effects": "Mạch đập ập trở lại cùng một lúc, và lưỡi kiếm đột nhiên nặng hơn và sống động hơn hẳn giai đoạn trước. Cơ bản 1,200 Sát thương và 4,200 Máu.",
+        "notification": "Đó rồi. Đó là một nhịp tim."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Mạch Đập",
+        "shortName": "Mạch Đập",
+        "effects": "Cả lưỡi kiếm đập cùng nhịp với người cầm, và mỗi nhịp lại ném ra một vòng máu. Cơ bản 4,200 Sát thương và 16,000 Máu.",
+        "notification": "Nó đang giữ nhịp. Nhịp của ngươi."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Nhói Đập",
+        "shortName": "Nhói Đập",
+        "effects": "Nhịp đập thất thường và mạnh quá mức — lưỡi kiếm phồng lên rồi co lại, và vòng máu ném ra mỗi nhịp dày đến mức che mắt. Cơ bản 15,000 Sát thương và 60,000 Máu.",
+        "notification": "Đó không phải nhịp lành mạnh. Không quan tâm."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Đỏ Thẫm",
+        "shortName": "Đỏ Thẫm",
+        "effects": "Máu đã thôi là chất lỏng đỏ và bắt đầu là ánh sáng đỏ: một trường đỏ thẫm bão hòa với các đường gân chạy qua và máu phun vĩnh viễn khỏi cả hai mép. Cơ bản 52,000 Sát thương và 220,000 Máu.",
+        "notification": "Nó thôi trông ướt. Nó bắt đầu trông đói."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Mưng Mủ",
+        "shortName": "Mưng Mủ",
+        "effects": "Sự mục rữa chạm tới lõi và lưỡi kiếm thôi yếu ớt — đây là nơi nửa mong manh của đường cong kết thúc. Mở khóa Exsanguinate [X] — mọi kẻ địch trong bán kính gấp 3 lần tầm chém chảy máu 5 giây, nhận 45% sát thương mỗi giây trong khi ngươi hồi 10% lượng máu đó. Cơ bản 510,000 Sát thương và 1,020,000 Máu.",
+        "notification": "...Nó mục rữa. ...Nó vẫn đang lan. Kệ nó."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Tàn Sát",
+        "shortName": "Tàn Sát",
+        "effects": "Thanh kiếm thôi là một vũ khí và bắt đầu là một bãi chiến: máu ở khắp nơi, ở mọi quy mô, tất cả đều ra khỏi lưỡi và không có gì quay lại. Cơ bản 620,000 Sát thương và 1,200,000 Máu.",
+        "notification": "Nó không chém. Nó tràn."
+      },
+      "14": {
+        "name": "Giai đoạn 14: Khát Máu",
+        "shortName": "Khát Máu",
+        "effects": "Lưỡi kiếm kéo theo một vệt đỏ tự vươn tới những kẻ còn sống, và càng lấy được nhiều người cầm càng di chuyển nhanh. Cơ bản 850,000 Sát thương và 4,200,000 Máu.",
+        "notification": "Nó muốn nhiều hơn những gì ngươi cho. Vậy cho nó nhiều hơn."
+      },
+      "15": {
+        "name": "Giai đoạn 15: Thủy Triều Đỏ",
+        "shortName": "Thủy Triều Đỏ",
+        "effects": "Một thủy triều máu đi theo lưỡi kiếm khắp mặt đất và không rút đi, dâng lên quanh mọi thứ còn đang đứng. Cơ bản 2,200,000 Sát thương và 9,000,000 Máu.",
+        "notification": "Nó không còn nhắm vào thứ gì nữa. Nó chỉ đang dâng."
+      },
+      "16": {
+        "name": "Giai đoạn 16: Kẻ Chặn Tim",
+        "shortName": "Kẻ Chặn Tim",
+        "effects": "BIẾN ĐỔI TỐI HẬU: KẺ CHẶN TIM. Sanguine đã thôi lấy máu và bắt đầu quyết định máu thuộc về ai — mỗi nhịp của lưỡi kiếm thay vào đó chặn đứng một thứ khác. Cơ bản 5,200,000 Sát thương, 15,000,000 Máu và 168 Tốc độ. Dừng lại.",
+        "notification": "Mọi thứ từng đập đều phải lấy nó từ đâu đó. Đây là nơi nó quay về."
+      }
     }
   },
   "bloodmoon": {
     "title": "TRĂNG MÁU",
-    "subtitle": "Vầng trăng đỏ thẫm mọc lên — bóng tối bao phủ cả thảo nguyên!"
+    "subtitle": "Vầng trăng đỏ thẫm mọc lên — bóng tối bao phủ cả thảo nguyên!",
+    "atlantis_subtitle": "Vực sâu hắc ám giáng xuống Atlantis!"
   }
 }

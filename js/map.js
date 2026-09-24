@@ -320,7 +320,14 @@
 
       // 1. Background Fill
       ctx.clearRect(0, 0, cw, ch);
-      ctx.fillStyle = activeMap.id === "LOBBY" ? "#0f172a" : "#0d1b13";
+      const isBloodmoon = !!(this.game.bloodmoon && this.game.bloodmoon.active);
+      let miniBg = "#0d1b13";
+      if (activeMap.id === "LOBBY") {
+        miniBg = "#0f172a";
+      } else if (activeMap.id === "ATLANTIS") {
+        miniBg = isBloodmoon ? "#0a0314" : "#021626";
+      }
+      ctx.fillStyle = miniBg;
       ctx.fillRect(0, 0, cw, ch);
 
       // Subtle grid
@@ -339,7 +346,7 @@
         ctx.stroke();
       }
 
-      // 2. Map Landmarks (Lake, Village in Grassland)
+      // 2. Map Landmarks (Lake, Village in Grassland, Shelf in Atlantis)
       if (activeMap.lake) {
         const lx = activeMap.lake.x * scaleX;
         const ly = activeMap.lake.y * scaleY;
@@ -357,6 +364,33 @@
         ctx.fillRect(8350 * scaleX, 4200 * scaleY, 1500 * scaleX, 1450 * scaleY);
       }
 
+      if (activeMap.id === "ATLANTIS") {
+        if (activeMap.playableBounds) {
+          const pb = activeMap.playableBounds;
+          ctx.fillStyle = isBloodmoon ? "rgba(35, 12, 55, 0.45)" : "rgba(8, 47, 73, 0.45)";
+          ctx.fillRect(pb.minX * scaleX, pb.minY * scaleY, (pb.maxX - pb.minX) * scaleX, (pb.maxY - pb.minY) * scaleY);
+          ctx.strokeStyle = isBloodmoon ? "rgba(147, 51, 234, 0.35)" : "rgba(56, 189, 248, 0.35)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(pb.minX * scaleX, pb.minY * scaleY, (pb.maxX - pb.minX) * scaleX, (pb.maxY - pb.minY) * scaleY);
+        }
+        if (activeMap.rocks) {
+          ctx.fillStyle = isBloodmoon ? "#27272a" : "#1e3a5f";
+          for (let r of activeMap.rocks) {
+            ctx.beginPath();
+            ctx.arc(r.x * scaleX, r.y * scaleY, Math.max(1, (r.radius || 30) * scaleX * 0.7), 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        if (activeMap.corals) {
+          ctx.fillStyle = isBloodmoon ? "#7e22ce" : "#38bdf8";
+          for (let c of activeMap.corals) {
+            ctx.beginPath();
+            ctx.arc(c.x * scaleX, c.y * scaleY, Math.max(1.2, (c.radius || 25) * scaleX * 0.8), 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
       // 3. Portals
       if (activeMap.portalToCombat) {
         const pt = activeMap.portalToCombat;
@@ -367,6 +401,22 @@
         const pt = activeMap.portalToLobby;
         ctx.fillStyle = "#38bdf8";
         ctx.fillRect(pt.x * scaleX - 2, pt.y * scaleY - 2, 5, 5);
+      }
+      if (activeMap.portalToAtlantis) {
+        const pt = activeMap.portalToAtlantis;
+        ctx.fillStyle = "#06b6d4";
+        ctx.fillRect(pt.x * scaleX - 2.5, pt.y * scaleY - 2.5, 6, 6);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pt.x * scaleX - 2.5, pt.y * scaleY - 2.5, 6, 6);
+      }
+      if (activeMap.portalToGrassland) {
+        const pt = activeMap.portalToGrassland;
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(pt.x * scaleX - 2.5, pt.y * scaleY - 2.5, 6, 6);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pt.x * scaleX - 2.5, pt.y * scaleY - 2.5, 6, 6);
       }
 
       // 4. NPC Zones
@@ -470,7 +520,14 @@
       ctx.scale(this.zoom, this.zoom);
 
       // 1. World Map Base Floor
-      ctx.fillStyle = activeMap.id === "LOBBY" ? "#111827" : "#0d1f14";
+      const isBloodmoon = !!(this.game.bloodmoon && this.game.bloodmoon.active);
+      let floorColor = "#0d1f14";
+      if (activeMap.id === "LOBBY") {
+        floorColor = "#111827";
+      } else if (activeMap.id === "ATLANTIS") {
+        floorColor = isBloodmoon ? "#06010d" : "#021220";
+      }
+      ctx.fillStyle = floorColor;
       ctx.fillRect(0, 0, mw, mh);
 
       // Grid Lines (every 500 world units)
@@ -520,6 +577,51 @@
         ctx.fillText("SANCTUARY HAMLET", 8350 + 750, 4200 + 725);
       }
 
+      if (activeMap.id === "ATLANTIS") {
+        // Shelf / Playable bounds
+        if (activeMap.playableBounds) {
+          const pb = activeMap.playableBounds;
+          const pw = pb.maxX - pb.minX;
+          const ph = pb.maxY - pb.minY;
+          ctx.fillStyle = isBloodmoon ? "rgba(35, 12, 55, 0.4)" : "rgba(8, 47, 73, 0.35)";
+          ctx.strokeStyle = isBloodmoon ? "rgba(168, 85, 247, 0.5)" : "rgba(56, 189, 248, 0.5)";
+          ctx.lineWidth = 6;
+          ctx.strokeRect(pb.minX, pb.minY, pw, ph);
+          ctx.fillRect(pb.minX, pb.minY, pw, ph);
+
+          ctx.font = "bold 34px -apple-system, sans-serif";
+          ctx.fillStyle = isBloodmoon ? "rgba(233, 213, 255, 0.85)" : "rgba(186, 230, 253, 0.85)";
+          ctx.textAlign = "center";
+          ctx.fillText(isBloodmoon ? "CORRUPTED ATLANTIS SEABED" : "ANCIENT ATLANTIS SEABED", pb.minX + pw / 2, pb.minY + 220);
+        }
+
+        // Draw underwater rock formations
+        if (activeMap.rocks) {
+          ctx.fillStyle = isBloodmoon ? "#27272a" : "#1e293b";
+          ctx.strokeStyle = isBloodmoon ? "#3f3f46" : "#334155";
+          ctx.lineWidth = 3;
+          for (let r of activeMap.rocks) {
+            ctx.beginPath();
+            ctx.arc(r.x, r.y, r.radius || 35, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
+
+        // Draw coral formations
+        if (activeMap.corals) {
+          for (let c of activeMap.corals) {
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.radius || 25, 0, Math.PI * 2);
+            ctx.fillStyle = isBloodmoon ? "#581c87" : (c.color || "#06b6d4");
+            ctx.fill();
+            ctx.strokeStyle = isBloodmoon ? "#3b0764" : "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+        }
+      }
+
       // 3. Portals
       if (activeMap.portalToCombat) {
         const pt = activeMap.portalToCombat;
@@ -539,6 +641,42 @@
         ctx.fillStyle = "#93c5fd";
         ctx.textAlign = "center";
         ctx.fillText("PORTAL TO LOBBY", pt.x + 18, pt.y - 14);
+      }
+
+      if (activeMap.portalToAtlantis) {
+        const pt = activeMap.portalToAtlantis;
+        ctx.fillStyle = "#06b6d4";
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        ctx.font = "bold 20px -apple-system, sans-serif";
+        ctx.fillStyle = "#38bdf8";
+        ctx.textAlign = "center";
+        ctx.fillText("PORTAL TO ATLANTIS", pt.x, pt.y - 36);
+
+        ctx.font = "bold 14px -apple-system, sans-serif";
+        ctx.fillStyle = "#bae6fd";
+        ctx.fillText("(150,000 KILLS)", pt.x, pt.y - 18);
+      }
+
+      if (activeMap.portalToGrassland) {
+        const pt = activeMap.portalToGrassland;
+        ctx.fillStyle = "#10b981";
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        ctx.font = "bold 20px -apple-system, sans-serif";
+        ctx.fillStyle = "#6ee7b7";
+        ctx.textAlign = "center";
+        ctx.fillText("PORTAL TO GRASSLAND", pt.x, pt.y - 36);
       }
 
       // 4. All NPC Zones
@@ -640,7 +778,7 @@
       ctx.fillText(`YOU (X: ${Math.round(px)} | Y: ${Math.round(py)})`, px, py - 32);
 
       // Outer map boundary stroke
-      ctx.strokeStyle = "#22c55e";
+      ctx.strokeStyle = activeMap.id === "ATLANTIS" ? (isBloodmoon ? "#7e22ce" : "#0284c7") : "#22c55e";
       ctx.lineWidth = 6;
       ctx.strokeRect(0, 0, mw, mh);
 

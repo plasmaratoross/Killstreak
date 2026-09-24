@@ -97,13 +97,15 @@ js/                          Legacy IIFEs — STILL LIVE, not dead code (§8):
 ## 3. The sword Strategy Pattern
 
 The point of the pattern is that **`Player` and `Game` contain no per-sword
-`if`/`switch` chains.** All variation lives in three files per sword:
+`if`/`switch` chains.** All variation lives in two or three files per sword — a
+fourth is added when the sword also has a secondary (X) ability:
 
 | File | Exports | Responsibility |
 |---|---|---|
 | `<id>.data.json` | (JSON) | Phase table: damage, HP, speed, blade geometry, colours, i18n keys |
 | `<id>.render.js` | `default { drawBlade(ctx, geom, player), drawAura(ctx, player), … }` | How the blade and aura are drawn |
 | `<id>.ability.js` | `default { activate(game) }` | The Z skill: cost, cooldown, damage, effects |
+| `<id>.<x>.ability.js` | `default { activate(game) }` | *Optional.* The X skill, for swords that have one (devourer, frostbite, lumen, umbra, sanguine) |
 
 A sword's data file drives the Library, the sword stand, and `player.phase`:
 
@@ -157,7 +159,10 @@ that plan omits, and skipping it means the sword has no working Z ability.**
 3. **`src/swords/<id>/<id>.ability.js`** — export `default { activate(game) }`.
    Return `false` early when the sword is not the equipped one, the game is not in
    `COMBAT`, or the cooldown is running — follow the guards in an existing ability
-   module rather than inventing new ones.
+   module rather than inventing new ones. If the sword also has an X ability, add
+   `src/swords/<id>/<id>.<x>.ability.js` and wire it in `activateSecondary`
+   (step 5b). The names are free-form — `<x>` is the ability's own name, e.g.
+   `frostbite.blizzard.ability.js`, `umbra.erasure.ability.js`.
 
 4. **Register in `src/swords/SwordRegistry.js`** — add two imports and one entry.
    (No ability module here — the registry holds `{ data, render }` only.)
@@ -178,6 +183,15 @@ that plan omits, and skipping it means the sword has no working Z ability.**
    Without this the sword silently falls through to Devourer's Gluttony, which
    then rejects it because `swordId !== "devourer"` — so Z does nothing at all.
 
+   **5b. Secondary (X) abilities** take the same shape in `activateSecondary`:
+   ```js
+   import umbraErasureAbility from '../swords/umbra/umbra.erasure.ability.js';
+   // ...
+   if (swordId === "umbra") return umbraErasureAbility.activate(game);
+   ```
+   A sword with no branch here falls through to Engulf, which rejects it — the
+   pre-existing behaviour for every sword without its own X.
+
 6. **Add the sword's name/tag/phase strings to `src/i18n/en.json` and
    `src/i18n/vi.json`**, and its unlock entry wherever sword unlocks are listed.
    Missing keys do not throw: `I18n.t()` falls back to the **key itself** unless a
@@ -192,8 +206,24 @@ npm run build
 # and the suite — see §7
 ```
 
-The Library, the sword stand and the phase HUD are all data-driven, so they pick
-the new sword up with no further edits.
+The Library, the sword stand and the phase HUD read the sword's data file, but
+**they are not self-registering.** The data is data-driven; the *sword ids* are
+not. A new sword also needs, or it is silently invisible or blank in that surface:
+
+| Surface | What needs the id |
+|---|---|
+| Library subtab | `index.html` button `id="lib-tab-<id>"`, a `libTab<Id>` export in `src/ui/domRefs.js`, the label + active-class block **and the click handler** in `src/ui/library.js`, plus a `.subtab-btn.active#lib-tab-<id>` rule in `style.css` |
+| Pedestal panel | the phase-list chain in `src/ui/swordStand.js` `updateSwordStandUI()` |
+| Pedestal rendering | the two `pList` / `pNum` chains in `js/game.js` `render()`, and both chains in `js/entities.js` `SwordStand.draw()` / `drawBadge()` |
+| Skills HUD | the visibility allow-list and a Z/X branch in `src/ui/skillsPanel.js` |
+| Save + equip | `DEFAULT_SAVE`, `load()`, `VALID_SWORDS` in `js/storage.js` **and** `src/core/SaveManager.js`; the equip-time lock/disable/cutscene blocks and `syncSwordPhase` in `js/game.js` |
+| Lobby row | `src/maps/lobby.data.js` **and** `data/maps/lobby.js` |
+| Legacy data mirror | `data/swords/<id>/<id>.js`, imported by `src/main.js` — this feeds `Config.SWORDS` / `Config.<ID>_PHASES`. The pre-frostbite mirrors duplicate the JSON by hand and must stay deep-equal; **lumen, umbra and sanguine instead `import` the JSON**, which cannot drift. Either is acceptable; the import form is preferred. |
+| Verifiers | see §7 — `verify_i18n.mjs`, `validate_phase1.mjs`, `verify_splice.mjs`, `verify_domrefs.mjs`, `verify_splice_cutscenes.mjs` all pin per-sword details and will fail by design |
+
+Missing one of these does not throw. It produces a blank pedestal, a subtab that
+does not switch, or an ability that does nothing — so check each surface in a
+running browser, not in the diff.
 
 ---
 

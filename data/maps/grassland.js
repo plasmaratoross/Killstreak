@@ -21,6 +21,15 @@
       label: "RETURN TO LOBBY",
       interactRadius: 85
     },
+    portalToAtlantis: {
+      x: 9650,
+      y: 2675,
+      width: 60,
+      height: 60,
+      label: "ENTER ATLANTIS",
+      interactRadius: 100,
+      unlockKills: 150000
+    },
     npcZones: [
       // --- TIER 1: WEAKEST ---
       {

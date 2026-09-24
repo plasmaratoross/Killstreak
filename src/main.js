@@ -33,6 +33,9 @@ import '../data/swords/hellfire/hellfire.js';
 import '../data/swords/windy/windy.js';
 import '../data/swords/frostbite/frostbite.js';
 import '../data/swords/voltstrike/voltstrike.js';
+import '../data/swords/lumen/lumen.js';
+import '../data/swords/umbra/umbra.js';
+import '../data/swords/sanguine/sanguine.js';
 
 // 3. NPC Data Modules
 import '../data/npcs/normal/normal.js';
@@ -61,6 +64,7 @@ import '../data/npcs/crimsonhide/crimsonhide.js';
 // 4. Map Data Modules
 import '../data/maps/lobby.js';
 import '../data/maps/grassland.js';
+import '../data/maps/atlantis.js';
 
 // 5. Core Systems (in dependency order)
 import '../js/config.js';

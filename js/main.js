@@ -157,8 +157,8 @@ import { setNumContent } from '../src/utils/dom.js';
       // In-Game Library button is ALWAYS accessible in both Lobby and Combat
       if (hudLibraryBtn) hudLibraryBtn.classList.remove("hidden");
 
-      // Return to Lobby button is visible when in COMBAT
-      if (areaId === "COMBAT") {
+      // Return to Lobby button is visible when in COMBAT or ATLANTIS
+      if (areaId === "COMBAT" || areaId === "ATLANTIS") {
         if (hudLobbyBtn) hudLobbyBtn.classList.remove("hidden");
       } else {
         if (hudLobbyBtn) hudLobbyBtn.classList.add("hidden");
@@ -239,6 +239,12 @@ import { setNumContent } from '../src/utils/dom.js';
           iconEl.textContent = "🧊";
         } else if (step.speaker.includes("VOLTSTRIKE") || step.speaker.includes("THUNDERBOLT") || step.speaker.includes("LIGHTNING")) {
           iconEl.textContent = "⚡";
+        } else if (step.speaker.includes("LUMEN")) {
+          iconEl.textContent = "✨";
+        } else if (step.speaker.includes("UMBRA")) {
+          iconEl.textContent = "🕳️";
+        } else if (step.speaker.includes("SANGUINE")) {
+          iconEl.textContent = "🩸";
         } else {
           iconEl.textContent = "👑";
         }

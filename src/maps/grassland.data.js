@@ -10,6 +10,7 @@ const GRASSLAND_MAP = {
   height: 7920,
   spawn: { x: 600, y: 3960 },
   portalToLobby: { x: 180, y: 3960, width: 36, height: 200, label: "RETURN TO LOBBY", interactRadius: 85 },
+  portalToAtlantis: { x: 9650, y: 2675, width: 60, height: 60, label: "ENTER ATLANTIS", interactRadius: 100, unlockKills: 150000 },
   npcZones: [
     // --- TIER 1: WEAKEST ---
     { id: "zone_north",      index: 0,  label: "NORTH FEEDING GROUND",    npcType: "normal",      x: 1500,  y: 2400, width: 440, height: 340, maxNpcs: 10, respawnDelay: 6.0, accentColor: "rgba(239, 68, 68, 0.45)",    tagColor: "rgba(248, 113, 113, 0.9)" },

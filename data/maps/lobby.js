@@ -124,6 +124,39 @@
         title: "WEAPON PEDESTAL",
         subtitle: "VOLTSTRIKE",
         unlockKills: 45000
+      },
+      {
+        id: "lumen_stand",
+        swordId: "lumen",
+        x: 995,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "LUMEN",
+        unlockKills: 50000
+      },
+      {
+        id: "umbra_stand",
+        swordId: "umbra",
+        x: 1052.5,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "UMBRA",
+        unlockKills: 70000
+      },
+      {
+        id: "sanguine_stand",
+        swordId: "sanguine",
+        x: 1110,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "SANGUINE",
+        unlockKills: 100000
       }
     ],
     // Backwards-compatible single reference

@@ -214,7 +214,26 @@ for (const c of cases) {
     '      else if (isVoltstrike) shadowCol = "rgba(253, 224, 71, 0.45)";',
     '      else if (isVoltstrike) playerFill = "#1c1917";',
     '      else if (isVoltstrike) playerStroke = "#fde047";',
-    '      else if (isVoltstrike) eyeColor = "#facc15";'
+    '      else if (isVoltstrike) eyeColor = "#facc15";',
+    // Lumen / Umbra / Sanguine. The three `const isX` lines are one contiguous
+    // three-line insertion, so they are listed individually — each entry is still an
+    // exact whole line, and nothing else in Player.draw matches any of them.
+    '      const isLumen = this.swordId === "lumen";',
+    '      const isUmbra = this.swordId === "umbra";',
+    '      const isSanguine = this.swordId === "sanguine";',
+    '      else if (isLumen) shadowCol = "rgba(255, 255, 255, 0.5)";',
+    '      else if (isUmbra) shadowCol = "rgba(167, 139, 250, 0.5)";',
+    '      else if (isSanguine) shadowCol = "rgba(239, 68, 68, 0.5)";',
+    '      else if (isLumen) playerFill = "#292524";',
+    '      else if (isUmbra) playerFill = "#0c0a09";',
+    '      else if (isSanguine) playerFill = "#450a0a";',
+    '      else if (isLumen) playerStroke = "#fef08a";',
+    '      else if (isUmbra) playerStroke = "#a78bfa";',
+    '      else if (isSanguine) playerStroke = "#ef4444";',
+    '      else if (isLumen) eyeColor = "#fbbf24";',
+    '      else if (isUmbra) eyeColor = "#7c3aed";',
+    '      else if (isSanguine) eyeColor = "#b91c1c";',
+    '        ...(map.corals || []),'
   ];
   const stripAdditions = (t) => t.split(eol).filter((l) => !ADDITIONS.includes(l)).join(eol);
 
@@ -298,6 +317,37 @@ for (const c of cases) {
      '        } else if (isFrostbite) {\n          compactTitle = "FROSTBITE";\n          subColor = "#7dd3fc";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isVoltstrike) {\n          compactTitle = "VOLTSTRIKE";\n          subColor = "#fde047";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {'],
     ['        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: ICE CUBE";\n      } else if (isFlora) {',
      '        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: ICE CUBE";\n      } else if (isVoltstrike) {\n        fullTitle = "⚡ VOLTSTRIKE";\n        subColor = "#fde047";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("voltstrike", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: SPARK";\n      } else if (isFlora) {']
+    ,
+
+    // ------------------------------------------- Lumen / Umbra / Sanguine
+    // These entries are APPENDED AFTER the voltstrike block on purpose: each one's
+    // `from` text is produced by an earlier entry (the voltstrike phaseColor /
+    // headerColor / compactSub / fullSubtitle transforms all rewrite the same lines),
+    // so TRANSFORMS' reduce order is load-bearing. Moving these above the voltstrike
+    // entries silently stops them from matching.
+    //
+    // SwordStand.draw and drawBadge share the `const isX` flag block and the
+    // phaseColor fallback verbatim, so one entry covers both.
+    ['      const isVoltstrike = this.swordId === "voltstrike";\n      const phaseColor = isLocked',
+     '      const isVoltstrike = this.swordId === "voltstrike";\n      const isLumen = this.swordId === "lumen";\n      const isUmbra = this.swordId === "umbra";\n      const isSanguine = this.swordId === "sanguine";\n      const phaseColor = isLocked'],
+    // Paren-neutral prefixes: the three new levels sit inside the existing `(` that
+    // already opened before isVoltstrike, so no closing paren is added.
+    ['            : (isVoltstrike ? "#fde047" : (',
+     '            : (isSanguine ? "#f43f5e" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : ('],
+    ['        : (isVoltstrike ? "rgba(253, 224, 71, 0.30)" : (',
+     '        : (isSanguine ? "rgba(239, 68, 68, 0.32)" : isUmbra ? "rgba(167, 139, 250, 0.32)" : isLumen ? "rgba(255, 255, 255, 0.30)" : isVoltstrike ? "rgba(253, 224, 71, 0.30)" : ('],
+    ['        : (isVoltstrike ? "rgba(253, 224, 71, 0.8)" : (',
+     '        : (isSanguine ? "rgba(239, 68, 68, 0.85)" : isUmbra ? "rgba(167, 139, 250, 0.8)" : isLumen ? "rgba(255, 255, 255, 0.8)" : isVoltstrike ? "rgba(253, 224, 71, 0.8)" : ('],
+    // draw() headerColor (10 spaces) BEFORE drawBadge()'s (8 spaces) — the 8-space
+    // form is a text substring of the 10-space line until the 10-space one is applied.
+    ['          headerColor = isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (',
+     '          headerColor = isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : ('],
+    ['        headerColor = isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (',
+     '        headerColor = isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : ('],
+    ['        } else if (isVoltstrike) {\n          compactTitle = "VOLTSTRIKE";\n          subColor = "#fde047";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {',
+     '        } else if (isVoltstrike) {\n          compactTitle = "VOLTSTRIKE";\n          subColor = "#fde047";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isLumen) {\n          compactTitle = "LUMEN";\n          subColor = "#fef08a";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isUmbra) {\n          compactTitle = "UMBRA";\n          subColor = "#a78bfa";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isSanguine) {\n          compactTitle = "SANGUINE";\n          subColor = "#ef4444";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {'],
+    ['        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: SPARK";\n      } else if (isFlora) {',
+     '        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: SPARK";\n      } else if (isLumen) {\n        fullTitle = "✨ LUMEN";\n        subColor = "#fef08a";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("lumen", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: GLIMMER";\n      } else if (isUmbra) {\n        fullTitle = "🕳️ UMBRA";\n        subColor = "#a78bfa";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("umbra", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: NULL";\n      } else if (isSanguine) {\n        fullTitle = "🩸 SANGUINE";\n        subColor = "#ef4444";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("sanguine", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: DROPLET";\n      } else if (isFlora) {']
   ];
   const applyTransforms = (t) => TRANSFORMS.reduce(
     (acc, [from, to]) => acc.split(from.split('\n').join(eol)).join(to.split('\n').join(eol)), t);

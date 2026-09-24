@@ -60,5 +60,8 @@ export const ACHIEVEMENTS = [
   { id: "hellfire_ascended",  badge: "hellfire_ascended",  icon: "🔥",  title: "The Infernal",         description: "Unlock when reaching the final phase of Hellfire (264,375 killstreak).",             killsRequired: 264375 },
   { id: "windy_ascended",     badge: "windy_ascended",     icon: "🌬️", title: "The Aerial",           description: "Unlock when reaching the final phase of Windy (266,000 killstreak).",                killsRequired: 266000 },
   { id: "frostbite_ascended", badge: "frostbite_ascended", icon: "🧊",  title: "The Frozen",           description: "Unlock when reaching the final phase of Frostbite (366,000 killstreak).",            killsRequired: 366000 },
-  { id: "voltstrike_ascended", badge: "voltstrike_ascended", icon: "⚡",  title: "The Lightning",        description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",           killsRequired: 699999 }
+  { id: "voltstrike_ascended", badge: "voltstrike_ascended", icon: "⚡",  title: "The Lightning",        description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",           killsRequired: 699999 },
+  { id: "lumen_ascended",     badge: "lumen_ascended",     icon: "✨", title: "The Radiant",          description: "Unlock when reaching the final phase of Lumen (950,000 killstreak).",                killsRequired: 950000 },
+  { id: "umbra_ascended",     badge: "umbra_ascended",     icon: "🕳️", title: "The Void",            description: "Unlock when reaching the final phase of Umbra (1,400,000 killstreak).",              killsRequired: 1400000 },
+  { id: "sanguine_ascended",  badge: "sanguine_ascended",  icon: "🩸", title: "The Blood",           description: "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak).",           killsRequired: 1850000 }
 ];

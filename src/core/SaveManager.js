@@ -21,6 +21,9 @@ const DEFAULT_SAVE = {
   windyPhase: 1,
   frostbitePhase: 1,
   voltstrikePhase: 1,
+  lumenPhase: 1,
+  umbraPhase: 1,
+  sanguinePhase: 1,
   equippedSword: "devourer",
   isSwordEquipped: true,
   phase17CutsceneSeen: false,
@@ -40,6 +43,12 @@ const DEFAULT_SAVE = {
   frostbitePhase12CutsceneSeen: false,
   voltstrikeUnlockCutsceneSeen: false,
   voltstrikePhase14CutsceneSeen: false,
+  lumenUnlockCutsceneSeen: false,
+  lumenPhase14CutsceneSeen: false,
+  umbraUnlockCutsceneSeen: false,
+  umbraPhase15CutsceneSeen: false,
+  sanguineUnlockCutsceneSeen: false,
+  sanguinePhase16CutsceneSeen: false,
   achievements: [],
   badges: [],
   settings: {
@@ -50,7 +59,7 @@ const DEFAULT_SAVE = {
   }
 };
 
-const VALID_SWORDS = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite", "voltstrike"];
+const VALID_SWORDS = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite", "voltstrike", "lumen", "umbra", "sanguine"];
 
 const SaveManager = {
   load() {
@@ -82,6 +91,9 @@ const SaveManager = {
         windyPhase: typeof parsed.windyPhase === "number" ? parsed.windyPhase : 1,
         frostbitePhase: typeof parsed.frostbitePhase === "number" ? parsed.frostbitePhase : 1,
         voltstrikePhase: typeof parsed.voltstrikePhase === "number" ? parsed.voltstrikePhase : 1,
+        lumenPhase: typeof parsed.lumenPhase === "number" ? parsed.lumenPhase : 1,
+        umbraPhase: typeof parsed.umbraPhase === "number" ? parsed.umbraPhase : 1,
+        sanguinePhase: typeof parsed.sanguinePhase === "number" ? parsed.sanguinePhase : 1,
         equippedSword: eqSword,
         isSwordEquipped: typeof parsed.isSwordEquipped === "boolean" ? parsed.isSwordEquipped : true,
         phase17CutsceneSeen: Boolean(parsed.phase17CutsceneSeen),
@@ -101,6 +113,12 @@ const SaveManager = {
         frostbitePhase12CutsceneSeen: Boolean(parsed.frostbitePhase12CutsceneSeen),
         voltstrikeUnlockCutsceneSeen: Boolean(parsed.voltstrikeUnlockCutsceneSeen),
         voltstrikePhase14CutsceneSeen: Boolean(parsed.voltstrikePhase14CutsceneSeen),
+        lumenUnlockCutsceneSeen: Boolean(parsed.lumenUnlockCutsceneSeen),
+        lumenPhase14CutsceneSeen: Boolean(parsed.lumenPhase14CutsceneSeen),
+        umbraUnlockCutsceneSeen: Boolean(parsed.umbraUnlockCutsceneSeen),
+        umbraPhase15CutsceneSeen: Boolean(parsed.umbraPhase15CutsceneSeen),
+        sanguineUnlockCutsceneSeen: Boolean(parsed.sanguineUnlockCutsceneSeen),
+        sanguinePhase16CutsceneSeen: Boolean(parsed.sanguinePhase16CutsceneSeen),
         achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
         badges: Array.isArray(parsed.badges) ? parsed.badges : [],
         settings: {
