@@ -420,6 +420,23 @@ body {
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
 }
 
+.hud-right {
+  gap: 10px;
+}
+
+#hud-settings-btn {
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+}
+
+#hud-settings-btn:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: rgba(56, 189, 248, 0.55);
+  color: #e0f2fe;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+}
+
 /* Skill Cooldown Bar */
 .hud-skills-bar {
   position: absolute;

@@ -2257,6 +2257,8 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         ctx.fill();
         ctx.restore();
 
+      } else if (window.Killstreak && window.Killstreak.AtlantisNpcRenderer && window.Killstreak.AtlantisNpcRenderer.draw(ctx, this, isHit)) {
+        // Handled by Atlantis NPC renderer
       } else {
         // --- NORMAL SENTRY RENDERING ---
         ctx.beginPath();

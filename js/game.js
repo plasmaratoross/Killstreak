@@ -351,6 +351,11 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
 
       const npc = new NPC(x, y, zoneIndex, type, slotIndex);
       npc.game = this;
+      if (npc.configObj) {
+        if (npc.configObj.color) npc.color = npc.configObj.color;
+        if (npc.configObj.neutralColor) npc.neutralColor = npc.configObj.neutralColor;
+        if (npc.configObj.glowColor) npc.glowColor = npc.configObj.glowColor;
+      }
       this.npcs.push(npc);
     }
 
@@ -1484,7 +1489,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const activeMap = Config.MAPS[this.currentArea];
       const worldMouse = this.camera.screenToWorld(this.input.screenMouseX, this.input.screenMouseY);
 
-      this.player.update(dt, this.input, activeMap, worldMouse, this.currentArea === "COMBAT" ? this.npcs : []);
+      const isCombatArea = this.currentArea === "COMBAT" || this.currentArea === "ATLANTIS";
+      this.player.update(dt, this.input, activeMap, worldMouse, isCombatArea ? this.npcs : []);
       this.camera.follow(this.player.x, this.player.y, activeMap.width, activeMap.height, dt);
 
       let prompt = null;
@@ -1510,7 +1516,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
             prompt = I18n ? I18n.t("prompts.return_to_grassland") : "Return to Grassland [E]";
           }
         }
-      } else {
+      } else if (this.currentArea === "COMBAT") {
         this.combatPortal.update(dt);
         if (this.atlantisPortal) this.atlantisPortal.update(dt);
 
@@ -1528,7 +1534,9 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           const I18n = window.Killstreak && window.Killstreak.I18n;
           prompt = I18n ? I18n.t("prompts.return_to_lobby") : "Return to Lobby [E]";
         }
+      }
 
+      if (isCombatArea) {
         // Engulf Active AoE Tick Processing
         if (this.isEngulfActive) {
           this.engulfTimer -= dt;

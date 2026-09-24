@@ -92,6 +92,7 @@ import '../data/maps/grassland.js';
 import '../data/maps/atlantis.js';
 
 // 5. Core Systems (in dependency order)
+import './render/AtlantisNpcRenderer.js';
 import '../js/config.js';
 import '../js/storage.js';
 import '../js/entities.js';

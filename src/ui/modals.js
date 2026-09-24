@@ -128,6 +128,7 @@ export function openScreen(game, screenName, origin = "MENU") {
       break;
 
     case "SETTINGS":
+      if (game && origin === "GAME") game.setPaused(true);
       mainMenu.classList.add("hidden");
       if (debugKillstreakHud) debugKillstreakHud.classList.add("hidden");
       if (isDebugUnlocked) {
@@ -232,6 +233,13 @@ export function initModalWiring(game) {
   hudMenuBtn.addEventListener("click", () => {
     openScreen(game, "MENU");
   });
+
+  const hudSettingsBtn = document.getElementById("hud-settings-btn");
+  if (hudSettingsBtn) {
+    hudSettingsBtn.addEventListener("click", () => {
+      openScreen(game, "SETTINGS", "GAME");
+    });
+  }
 
   hudLibraryBtn.addEventListener("click", () => {
     openScreen(game, "LIBRARY", "GAME");
