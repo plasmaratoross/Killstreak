@@ -165,6 +165,13 @@ const ATLANTIS_ADDITION = new RegExp(
   + ')$'
 );
 
+const ATLANTIS_ZONES_ADDITION = new RegExp(
+  '^(?:'
+  + 'zones\\.(?:zone_|unit_)(?:reefmaw|coralback|tidescale|seafang|abyssfin|deepclaw|reefstalker|dreadscale|tideborn|leviathan|abysswalker|trenchmaw|depthclaw|gloomray|abyssal|sirenborn|stormscale|dreadtide|trenchborn|deepwarden|abysslord|tidebreaker|depthforged|oceanbane|abyssforged)'
+  + '|npcs\\.(?:reefmaw|coralback|tidescale|seafang|abyssfin|deepclaw|reefstalker|dreadscale|tideborn|leviathan|abysswalker|trenchmaw|depthclaw|gloomray|abyssal|sirenborn|stormscale|dreadtide|trenchborn|deepwarden|abysslord|tidebreaker|depthforged|oceanbane|abyssforged)\\.(?:name|desc)'
+  + ')$'
+);
+
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
@@ -175,6 +182,7 @@ const allowedToDiffer = (key, lang) =>
   || UMBRA_ADDITION.test(key)
   || SANGUINE_ADDITION.test(key)
   || ATLANTIS_ADDITION.test(key)
+  || ATLANTIS_ZONES_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 /** Flatten to { 'a.b.c': value } so differences can be located precisely. */

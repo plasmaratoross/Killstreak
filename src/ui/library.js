@@ -120,7 +120,32 @@ export function renderLibraryNpcs() {
     gloomscale: "🐉",
     wildtusk: "🐗",
     moonmane: "🌙",
-    crimsonhide: "👑"
+    crimsonhide: "👑",
+    reefmaw: "🦈",
+    coralback: "🦀",
+    tidescale: "🐍",
+    seafang: "🦑",
+    abyssfin: "🐟",
+    deepclaw: "🦞",
+    reefstalker: "🐊",
+    dreadscale: "🐉",
+    tideborn: "🌊",
+    leviathan: "🐋",
+    abysswalker: "👤",
+    trenchmaw: "🐡",
+    depthclaw: "🦂",
+    gloomray: "🪼",
+    abyssal: "👁️",
+    sirenborn: "🧜",
+    stormscale: "⛈️",
+    dreadtide: "🌀",
+    trenchborn: "🌋",
+    deepwarden: "🔱",
+    abysslord: "👑",
+    tidebreaker: "🌊",
+    depthforged: "⚙️",
+    oceanbane: "☠️",
+    abyssforged: "🔮"
   };
 
   const NPC_ZONES = {
@@ -149,10 +174,10 @@ export function renderLibraryNpcs() {
   };
 
   function getTierBadge(rank) {
-    if (rank <= 4) return { cls: "tier-novice", label: I18n ? I18n.t("library.tier_1") : "TIER I • NOVICE", border: "#64748b" };
-    if (rank <= 8) return { cls: "tier-adept", label: I18n ? I18n.t("library.tier_2") : "TIER II • ADEPT", border: "#10b981" };
-    if (rank <= 12) return { cls: "tier-elite", label: I18n ? I18n.t("library.tier_3") : "TIER III • ELITE", border: "#0284c7" };
-    if (rank <= 17) return { cls: "tier-dread", label: I18n ? I18n.t("library.tier_4") : "TIER IV • DREAD", border: "#f59e0b" };
+    if (rank <= 9) return { cls: "tier-novice", label: I18n ? I18n.t("library.tier_1") : "TIER I • NOVICE", border: "#64748b" };
+    if (rank <= 18) return { cls: "tier-adept", label: I18n ? I18n.t("library.tier_2") : "TIER II • ADEPT", border: "#10b981" };
+    if (rank <= 27) return { cls: "tier-elite", label: I18n ? I18n.t("library.tier_3") : "TIER III • ELITE", border: "#0284c7" };
+    if (rank <= 37) return { cls: "tier-dread", label: I18n ? I18n.t("library.tier_4") : "TIER IV • DREAD", border: "#f59e0b" };
     return { cls: "tier-apex", label: I18n ? I18n.t("library.tier_5") : "TIER V • APEX", border: "#ef4444" };
   }
 

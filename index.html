@@ -83,7 +83,7 @@
       <!-- In-Game Debug Killstreak Widget (Only visible when Debug Mode is unlocked) -->
       <div id="debug-killstreak-hud" class="debug-killstreak-hud hidden">
         <span class="debug-killstreak-label" data-i18n="hud.debug_streak_label">Debug Killstreak:</span>
-        <input type="number" id="debug-hud-streak-input" class="debug-hud-streak-input" data-i18n-placeholder="hud.debug_streak_placeholder" placeholder="amount" min="0" max="100000" />
+        <input type="text" id="debug-hud-streak-input" class="debug-hud-streak-input" data-i18n-placeholder="hud.debug_streak_placeholder" placeholder="amount" autocomplete="off" />
         <button type="button" id="debug-hud-streak-apply" class="btn-debug-apply" data-i18n="hud.debug_apply_btn">APPLY</button>
         <button type="button" id="debug-hud-event-btn" class="btn-debug-apply btn-debug-event" title="Summon Game Event (Bloodmoon)">🌑 SUMMON EVENT</button>
       </div>
@@ -332,7 +332,7 @@
                 <button type="button" class="btn btn-debug-quick" data-debug-kills="10000">+10,000 Kills</button>
               </div>
               <div class="debug-input-row">
-                <input type="number" id="debug-custom-kills-input" class="debug-text-input" data-i18n-placeholder="debug.custom_placeholder" placeholder="Custom amount" min="0" max="1000000" />
+                <input type="text" id="debug-custom-kills-input" class="debug-text-input" data-i18n-placeholder="debug.custom_placeholder" placeholder="Custom amount" autocomplete="off" />
                 <button type="button" id="debug-add-custom-kills-btn" class="btn btn-secondary debug-btn-action" data-i18n="debug.add_kills_btn">Add Kills</button>
                 <button type="button" id="debug-set-custom-kills-btn" class="btn btn-secondary debug-btn-action" data-i18n="debug.set_total_btn">Set Total</button>
               </div>

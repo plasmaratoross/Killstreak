@@ -1,0 +1,21 @@
+{
+  "id": "deepwarden",
+  "name": "Deepwarden",
+  "description": "Solemn primordial guardian guarding the sunken secrets of Atlantis.",
+  "radius": 42,
+  "speed": 160,
+  "maxHp": 150000000000,
+  "damage": 570000000,
+  "attackRate": 0.4,
+  "attackRange": 44,
+  "killsAwarded": 45,
+  "killstreakAwarded": 1850000,
+  "respawnDelay": 9.5,
+  "color": "#059669",
+  "neutralColor": "#022c22",
+  "glowColor": "rgba(5, 150, 105, 0.70)",
+  "massScale": 0.18,
+  "shoveRatio": 0.25,
+  "barWidth": 68,
+  "barColor": "#059669"
+}

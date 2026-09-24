@@ -1024,6 +1024,41 @@ export function drawAtlantisWorld(game, map) {
     }
   }
 
+  // 7.5 Draw NPC Zones
+  if (map.npcZones) {
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    map.npcZones.forEach((zone) => {
+      // Zone Clearing Floor
+      ctx.fillStyle = bmActive ? "rgba(35, 12, 55, 0.45)" : "rgba(8, 47, 73, 0.40)";
+      ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
+
+      ctx.strokeStyle = bmActive ? "rgba(168, 85, 247, 0.6)" : (zone.accentColor || "rgba(6, 182, 212, 0.55)");
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 6]);
+      ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+      ctx.setLineDash([]);
+
+      // Zone Name Banner
+      ctx.font = "bold 12px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = bmActive ? "rgba(233, 213, 255, 0.95)" : (zone.tagColor || "rgba(103, 232, 249, 0.95)");
+      ctx.textAlign = "center";
+      const zoneBanner = I18n ? I18n.getZoneLabel(zone.id) : zone.label;
+      ctx.fillText(zoneBanner, zone.x + zone.width / 2, zone.y + 20);
+
+      // Active NPC count tag
+      const activeInZone = game.npcs.filter(n => n.zoneIndex === zone.index).length;
+      const unitKey = `zones.unit_${zone.npcType}`;
+      const unitLabel = I18n ? I18n.t(unitKey) : `${zone.label} [${zone.maxNpcs}]`;
+      const countTag = I18n
+        ? I18n.t("zones.unit_active_format", { unit: unitLabel, count: activeInZone, max: zone.maxNpcs })
+        : `Active ${unitLabel}: ${activeInZone}/${zone.maxNpcs}`;
+
+      ctx.font = "bold 10px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = bmActive ? "rgba(216, 180, 254, 0.75)" : (zone.tagColor || "rgba(255, 255, 255, 0.7)");
+      ctx.fillText(countTag, zone.x + zone.width / 2, zone.y + 36);
+    });
+  }
+
   // 8. Return Portal to Grassland
   if (map.portalToGrassland) {
     const pt = map.portalToGrassland;

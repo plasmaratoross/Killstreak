@@ -121,8 +121,12 @@ export function endBloodmoon(game) {
 
   // Hide screen tint and reset themes
   const tint = document.getElementById("bloodmoon-tint");
-  if (tint) tint.classList.add("hidden");
-  updateBloodmoonTintStyle(game);
+  if (tint) {
+    tint.classList.add("hidden");
+    if (tint.classList.contains("atlantis-corrupted-tint")) {
+      tint.classList.remove("atlantis-corrupted-tint");
+    }
+  }
 
   // Hide banner immediately
   const banner = document.getElementById("bloodmoon-banner");
@@ -162,7 +166,8 @@ export function updateBloodmoonTintStyle(game) {
   const banner = document.getElementById("bloodmoon-banner");
   if (!tint) return;
 
-  const isBmActive = Boolean(game && game.bloodmoon && game.bloodmoon.isActive);
+  const isBmActive = Boolean(game && game.bloodmoon && (game.bloodmoon.isActive || game.bloodmoon.active));
+
   if (isBmActive && game.currentArea === "ATLANTIS") {
     if (!tint.classList.contains("atlantis-corrupted-tint")) {
       tint.classList.add("atlantis-corrupted-tint");
@@ -244,6 +249,20 @@ export function restoreBloodmoonNpcStats(game) {
       delete npc._baseSpeed;
     }
   }
+}
+
+if (typeof window !== "undefined") {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.BloodmoonEventSystem = {
+    updateBloodmoon,
+    startBloodmoon,
+    endBloodmoon,
+    summonEvent,
+    showBloodmoonBanner,
+    applyBloodmoonNpcBoosts,
+    restoreBloodmoonNpcStats,
+    updateBloodmoonTintStyle
+  };
 }
 
 export default { updateBloodmoon, startBloodmoon, endBloodmoon, summonEvent, showBloodmoonBanner, applyBloodmoonNpcBoosts, restoreBloodmoonNpcStats, updateBloodmoonTintStyle };

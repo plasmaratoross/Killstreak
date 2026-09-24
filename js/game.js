@@ -238,7 +238,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
 
       this.camera.follow(this.player.x, this.player.y, mapConfig.width, mapConfig.height, 1);
 
-      if (areaId === "COMBAT") {
+      if (areaId === "COMBAT" || areaId === "ATLANTIS") {
         this.populateGrasslandZones();
       }
 
@@ -290,13 +290,16 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
     }
 
     /**
-     * Populate the 4 designated NPC zones with structured formations
-     * 2 Normal Sentry zones (max 7 each, 14 total) + 2 Fairy groves (max 7 each, 14 total)
+     * Populate designated NPC zones with structured formations
      */
     populateGrasslandZones() {
       this.npcs = [];
       this.respawnQueue = [];
-      const zones = Config.MAPS.COMBAT.npcZones;
+      const activeMap = (this.currentArea === "ATLANTIS" && ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || Config.MAPS.ATLANTIS))
+        ? ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || Config.MAPS.ATLANTIS)
+        : Config.MAPS.COMBAT;
+      const zones = activeMap && activeMap.npcZones;
+      if (!zones) return;
 
       zones.forEach((zone) => {
         for (let slot = 0; slot < zone.maxNpcs; slot++) {
@@ -306,13 +309,16 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
     }
 
     /**
-     * Spawn an individual NPC inside a structured formation slot (7-slot or 5-slot)
-     * @param {number} zoneIndex 0 to 5
+     * Spawn an individual NPC inside a structured formation slot
+     * @param {number} zoneIndex
      * @param {number} slotIndex
      * @param {string} type
      */
     spawnNpcInSlot(zoneIndex, slotIndex, type = "normal") {
-      const zone = Config.MAPS.COMBAT.npcZones[zoneIndex];
+      const activeMap = (this.currentArea === "ATLANTIS" && ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || Config.MAPS.ATLANTIS))
+        ? ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || Config.MAPS.ATLANTIS)
+        : Config.MAPS.COMBAT;
+      const zone = activeMap && activeMap.npcZones ? activeMap.npcZones[zoneIndex] : (Config.MAPS.COMBAT.npcZones && Config.MAPS.COMBAT.npcZones[zoneIndex]);
       if (!zone) return;
 
       let offsets = Config.NPC_FORMATION_10_SLOTS;
@@ -330,6 +336,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         offsets = Config.NPC_FORMATION_6_SLOTS;
       } else if (zone.maxNpcs === 5) {
         offsets = Config.NPC_FORMATION_5_SLOTS;
+      } else if (zone.maxNpcs === 4) {
+        offsets = Config.NPC_FORMATION_4_SLOTS;
       }
 
       const offset = (offsets && offsets[slotIndex]) || {
@@ -1493,10 +1501,6 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           prompt = I18n ? I18n.t("prompts.inspect", { sword: sName }) : `Inspect ${sName} [E]`;
         } else if (this.lobbyPortal.isPlayerNearby(this.player)) {
           prompt = I18n ? I18n.t("prompts.enter_grassland") : "Enter Grassland [E]";
-          if (Math.hypot(this.player.x - this.lobbyPortal.x, this.player.y - this.lobbyPortal.y) < 30) {
-            this.enterCombatZone();
-            return;
-          }
         }
       } else if (this.currentArea === "ATLANTIS") {
         if (this.atlantisReturnPortal) {
@@ -1504,10 +1508,6 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.atlantisReturnPortal.isPlayerNearby(this.player)) {
             const I18n = window.Killstreak && window.Killstreak.I18n;
             prompt = I18n ? I18n.t("prompts.return_to_grassland") : "Return to Grassland [E]";
-            if (Math.hypot(this.player.x - this.atlantisReturnPortal.x, this.player.y - this.atlantisReturnPortal.y) < 32) {
-              this.returnToGrasslandFromAtlantis();
-              return;
-            }
           }
         }
       } else {
@@ -1519,10 +1519,6 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           const totalKills = (this.saveData && this.saveData.totalKills) || 0;
           if (totalKills >= 150000) {
             prompt = I18n ? I18n.t("prompts.enter_atlantis") : "Enter Atlantis [E]";
-            if (Math.hypot(this.player.x - this.atlantisPortal.x, this.player.y - this.atlantisPortal.y) < 32) {
-              this.enterAtlantis();
-              return;
-            }
           } else {
             prompt = I18n
               ? I18n.t("prompts.enter_atlantis_locked", { current: totalKills.toLocaleString(), req: "150,000" })
@@ -1531,10 +1527,6 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         } else if (this.combatPortal.isPlayerNearby(this.player)) {
           const I18n = window.Killstreak && window.Killstreak.I18n;
           prompt = I18n ? I18n.t("prompts.return_to_lobby") : "Return to Lobby [E]";
-          if (Math.hypot(this.player.x - this.combatPortal.x, this.player.y - this.combatPortal.y) < 30) {
-            this.returnToLobby();
-            return;
-          }
         }
 
         // Engulf Active AoE Tick Processing
@@ -2066,8 +2058,11 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.npcs.splice(idx, 1);
       }
 
-      const zone = Config.MAPS.COMBAT.npcZones[npc.zoneIndex];
-      const respawnDelay = (zone && zone.respawnDelay) || Config.MAPS.COMBAT.respawnDelay || 6.0;
+      const activeMap = (this.currentArea === "ATLANTIS" && ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || Config.MAPS.ATLANTIS))
+        ? ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || Config.MAPS.ATLANTIS)
+        : Config.MAPS.COMBAT;
+      const zone = activeMap && activeMap.npcZones ? activeMap.npcZones[npc.zoneIndex] : null;
+      const respawnDelay = (zone && zone.respawnDelay) || (activeMap && activeMap.respawnDelay) || 6.0;
 
       // Queue respawn back into its exact formation slot
       this.respawnQueue.push({
@@ -2077,7 +2072,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         timer: respawnDelay
       });
 
-      let particleColor = "#ef4444";
+      let particleColor = npc.color || "#ef4444";
       let count = 16;
       if (npc.type === "fairy") { particleColor = "#38bdf8"; count = 24; }
       else if (npc.type === "guard") { particleColor = "#f8fafc"; count = 28; }
@@ -2099,7 +2094,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       let streakAwarded = typeof npc.killstreakAwarded === "number" ? npc.killstreakAwarded : (npc.killsAwarded || 1);
 
       // In Bloodmoon: NPCs yield 1.5x rounded up killstreak and +1 kill compared to normal
-      const isBloodmoonActive = Boolean(this.bloodmoon && this.bloodmoon.isActive);
+      const isBloodmoonActive = Boolean(this.bloodmoon && (this.bloodmoon.isActive || this.bloodmoon.active));
       if (isBloodmoonActive) {
         streakAwarded = Math.ceil(streakAwarded * 1.5);
         killsAwarded += 1;
@@ -2108,17 +2103,15 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.saveData.totalKills = (this.saveData.totalKills || 0) + killsAwarded;
       this.saveData.kills = this.saveData.totalKills;
 
-      // Process each awarded killstreak point individually to accurately transition phases and apply scaling
-      for (let k = 0; k < streakAwarded; k++) {
-        this.killstreak += 1;
-        const phaseChanged = this.syncSwordPhase();
-        if (!phaseChanged && this.player.isSwordEquipped) {
-          this.player.applyKillstreakScaling(this.killstreak);
-        }
+      // Direct addition avoids freeze when streakAwarded is large (e.g. 5,000,000 in Atlantis)
+      this.killstreak += streakAwarded;
+      const phaseChanged = this.syncSwordPhase();
+      if (!phaseChanged && this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
+        this.player.applyKillstreakScaling(this.killstreak);
       }
 
       if (npc.type !== "normal" || isBloodmoonActive) {
-        let ftColor = isBloodmoonActive ? "#ef4444" : "#38bdf8";
+        let ftColor = isBloodmoonActive ? "#ef4444" : (npc.color || "#38bdf8");
         if (!isBloodmoonActive) {
           if (npc.type === "guard") ftColor = "#f8fafc";
           else if (npc.type === "thug") ftColor = "#f59e0b";

@@ -911,7 +911,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       this.knockbackY *= Math.pow(0.04, dt);
 
       // Zone bounds setup (restrictive confinement to designated zone)
-      const zone = (Config.MAPS && Config.MAPS.COMBAT && Config.MAPS.COMBAT.npcZones && Config.MAPS.COMBAT.npcZones[this.zoneIndex]);
+      const zone = (map && map.npcZones && map.npcZones[this.zoneIndex]) || (Config.MAPS && Config.MAPS.COMBAT && Config.MAPS.COMBAT.npcZones && Config.MAPS.COMBAT.npcZones[this.zoneIndex]);
       const pad = this.radius + 6;
       const minX = zone ? (zone.x + pad) : (this.radius + 15);
       const maxX = zone ? (zone.x + zone.width - pad) : (map.width - this.radius - 15);

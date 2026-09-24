@@ -1,0 +1,30 @@
+/**
+ * Abyssforged NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.abyssforged = {
+    "id": "abyssforged",
+    "name": "Abyssforged",
+    "description": "Ultimate primordial entity forged in the deepest abyssal singularities.",
+    "radius": 54,
+    "speed": 180,
+    "maxHp": 1150000000000,
+    "damage": 2400000000,
+    "attackRate": 0.42,
+    "attackRange": 56,
+    "killsAwarded": 50,
+    "killstreakAwarded": 5000000,
+    "respawnDelay": 11,
+    "color": "#8b5cf6",
+    "neutralColor": "#1e0b38",
+    "glowColor": "rgba(139, 92, 246, 0.80)",
+    "massScale": 0.08,
+    "shoveRatio": 0.12,
+    "barWidth": 84,
+    "barColor": "#8b5cf6"
+};
+})(window);

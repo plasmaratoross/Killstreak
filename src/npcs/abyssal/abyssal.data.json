@@ -1,0 +1,21 @@
+{
+  "id": "abyssal",
+  "name": "Abyssal",
+  "description": "Manifestation of pure oceanic oblivion born in the deepest trench.",
+  "radius": 36,
+  "speed": 165,
+  "maxHp": 19000000000,
+  "damage": 140000000,
+  "attackRate": 0.4,
+  "attackRange": 38,
+  "killsAwarded": 35,
+  "killstreakAwarded": 670000,
+  "respawnDelay": 8.5,
+  "color": "#7c3aed",
+  "neutralColor": "#1e1b4b",
+  "glowColor": "rgba(124, 58, 237, 0.65)",
+  "massScale": 0.26,
+  "shoveRatio": 0.3,
+  "barWidth": 60,
+  "barColor": "#7c3aed"
+}

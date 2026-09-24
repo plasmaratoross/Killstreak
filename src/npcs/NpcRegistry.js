@@ -26,6 +26,31 @@ import gloomscaleData  from './gloomscale/gloomscale.data.json';
 import wildtuskData    from './wildtusk/wildtusk.data.json';
 import moonmaneData    from './moonmane/moonmane.data.json';
 import crimsonhideData from './crimsonhide/crimsonhide.data.json';
+import reefmawData     from './reefmaw/reefmaw.data.json';
+import coralbackData   from './coralback/coralback.data.json';
+import tidescaleData   from './tidescale/tidescale.data.json';
+import seafangData     from './seafang/seafang.data.json';
+import abyssfinData    from './abyssfin/abyssfin.data.json';
+import deepclawData    from './deepclaw/deepclaw.data.json';
+import reefstalkerData from './reefstalker/reefstalker.data.json';
+import dreadscaleData  from './dreadscale/dreadscale.data.json';
+import tidebornData    from './tideborn/tideborn.data.json';
+import leviathanData   from './leviathan/leviathan.data.json';
+import abysswalkerData from './abysswalker/abysswalker.data.json';
+import trenchmawData   from './trenchmaw/trenchmaw.data.json';
+import depthclawData   from './depthclaw/depthclaw.data.json';
+import gloomrayData    from './gloomray/gloomray.data.json';
+import abyssalData     from './abyssal/abyssal.data.json';
+import sirenbornData   from './sirenborn/sirenborn.data.json';
+import stormscaleData  from './stormscale/stormscale.data.json';
+import dreadtideData   from './dreadtide/dreadtide.data.json';
+import trenchbornData  from './trenchborn/trenchborn.data.json';
+import deepwardenData  from './deepwarden/deepwarden.data.json';
+import abysslordData   from './abysslord/abysslord.data.json';
+import tidebreakerData from './tidebreaker/tidebreaker.data.json';
+import depthforgedData from './depthforged/depthforged.data.json';
+import oceanbaneData   from './oceanbane/oceanbane.data.json';
+import abyssforgedData from './abyssforged/abyssforged.data.json';
 
 /** @type {Record<string, { data: object }>} */
 const NpcRegistry = {
@@ -51,6 +76,31 @@ const NpcRegistry = {
   wildtusk:    { data: wildtuskData },
   moonmane:    { data: moonmaneData },
   crimsonhide: { data: crimsonhideData },
+  reefmaw:     { data: reefmawData },
+  coralback:   { data: coralbackData },
+  tidescale:   { data: tidescaleData },
+  seafang:     { data: seafangData },
+  abyssfin:    { data: abyssfinData },
+  deepclaw:    { data: deepclawData },
+  reefstalker: { data: reefstalkerData },
+  dreadscale:  { data: dreadscaleData },
+  tideborn:    { data: tidebornData },
+  leviathan:   { data: leviathanData },
+  abysswalker: { data: abysswalkerData },
+  trenchmaw:   { data: trenchmawData },
+  depthclaw:   { data: depthclawData },
+  gloomray:    { data: gloomrayData },
+  abyssal:     { data: abyssalData },
+  sirenborn:   { data: sirenbornData },
+  stormscale:  { data: stormscaleData },
+  dreadtide:   { data: dreadtideData },
+  trenchborn:  { data: trenchbornData },
+  deepwarden:  { data: deepwardenData },
+  abysslord:   { data: abysslordData },
+  tidebreaker: { data: tidebreakerData },
+  depthforged: { data: depthforgedData },
+  oceanbane:   { data: oceanbaneData },
+  abyssforged: { data: abyssforgedData },
 };
 
 export default NpcRegistry;

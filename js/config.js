@@ -112,6 +112,13 @@
     { x: 55,  y: 38 }   // Slot 4: Row 2 Right
   ];
 
+  const NPC_FORMATION_4_SLOTS = [
+    { x: -50, y: -38 }, // Slot 0: Row 1 Left
+    { x: 50,  y: -38 }, // Slot 1: Row 1 Right
+    { x: -50, y: 38 },  // Slot 2: Row 2 Left
+    { x: 50,  y: 38 }   // Slot 3: Row 2 Right
+  ];
+
   // Achievements: Getting Started, All Devourer, Overdrive Ascended, and Aquatic Ascended
   const ACHIEVEMENTS = [
     {
@@ -404,6 +411,7 @@
     NPC_FORMATION_7_BUFF_SLOTS,
     NPC_FORMATION_6_SLOTS,
     NPC_FORMATION_5_SLOTS,
+    NPC_FORMATION_4_SLOTS,
     ACHIEVEMENTS,
     MAPS,
     GAME_CONFIG,

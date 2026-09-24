@@ -651,7 +651,57 @@
     "unit_gloomscale": "Gloomscales [4,300,000 HP • 7,000 Streak]",
     "unit_wildtusk": "Wildtusks [6,700,000 HP • 10,000 Streak]",
     "unit_moonmane": "Moonmanes [10,500,000 HP • 14,500 Streak]",
-    "unit_crimsonhide": "Crimsonhides [17,000,000 HP • 21,000 Streak]"
+    "unit_crimsonhide": "Crimsonhides [17,000,000 HP • 21,000 Streak]",
+    "zone_reefmaw": "REEFMAW SHALLOWS",
+    "unit_reefmaw": "Reefmaws [30,000,000 HP • 30,000 Streak]",
+    "zone_coralback": "CORALBACK REEF",
+    "unit_coralback": "Coralbacks [48,000,000 HP • 36,000 Streak]",
+    "zone_tidescale": "TIDESCALE GROVE",
+    "unit_tidescale": "Tidescales [78,000,000 HP • 44,000 Streak]",
+    "zone_seafang": "SEAFANG BASIN",
+    "unit_seafang": "Seafangs [125,000,000 HP • 58,000 Streak]",
+    "zone_abyssfin": "ABYSSFIN HOLLOW",
+    "unit_abyssfin": "Abyssfins [200,000,000 HP • 72,000 Streak]",
+    "zone_deepclaw": "DEEPCLAW COVE",
+    "unit_deepclaw": "Deepclaws [320,000,000 HP • 90,000 Streak]",
+    "zone_reefstalker": "REEFSTALKER TERRITORY",
+    "unit_reefstalker": "Reefstalkers [520,000,000 HP • 115,000 Streak]",
+    "zone_dreadscale": "DREADSCALE PASS",
+    "unit_dreadscale": "Dreadscales [850,000,000 HP • 145,000 Streak]",
+    "zone_tideborn": "TIDEBORN SANCTUM",
+    "unit_tideborn": "Tideborns [1,350,000,000 HP • 180,000 Streak]",
+    "zone_leviathan": "LEVIATHAN TRENCH",
+    "unit_leviathan": "Leviathans [2,100,000,000 HP • 225,000 Streak]",
+    "zone_abysswalker": "ABYSSWALKER RIDGES",
+    "unit_abysswalker": "Abysswalkers [3,300,000,000 HP • 280,000 Streak]",
+    "zone_trenchmaw": "TRENCHMAW GORGE",
+    "unit_trenchmaw": "Trenchmaws [5,200,000,000 HP • 350,000 Streak]",
+    "zone_depthclaw": "DEPTHCLAW CRAGS",
+    "unit_depthclaw": "Depthclaws [8,000,000,000 HP • 435,000 Streak]",
+    "zone_gloomray": "GLOOMRAY SHADOWS",
+    "unit_gloomray": "Gloomrays [12,500,000,000 HP • 540,000 Streak]",
+    "zone_abyssal": "ABYSSAL VOID",
+    "unit_abyssal": "Abyssals [19,000,000,000 HP • 670,000 Streak]",
+    "zone_sirenborn": "SIRENBORN GROTTO",
+    "unit_sirenborn": "Sirenborns [29,000,000,000 HP • 830,000 Streak]",
+    "zone_stormscale": "STORMSCALE EXPANSE",
+    "unit_stormscale": "Stormscales [44,000,000,000 HP • 1,020,000 Streak]",
+    "zone_dreadtide": "DREADTIDE CHANNEL",
+    "unit_dreadtide": "Dreadtides [67,000,000,000 HP • 1,250,000 Streak]",
+    "zone_trenchborn": "TRENCHBORN WASTES",
+    "unit_trenchborn": "Trenchborns [100,000,000,000 HP • 1,520,000 Streak]",
+    "zone_deepwarden": "DEEPWARDEN PILLARS",
+    "unit_deepwarden": "Deepwardens [150,000,000,000 HP • 1,850,000 Streak]",
+    "zone_abysslord": "ABYSSLORD THRONE",
+    "unit_abysslord": "Abysslords [225,000,000,000 HP • 2,250,000 Streak]",
+    "zone_tidebreaker": "TIDEBREAKER DEPTHS",
+    "unit_tidebreaker": "Tidebreakers [340,000,000,000 HP • 2,700,000 Streak]",
+    "zone_depthforged": "DEPTHFORGED CRATER",
+    "unit_depthforged": "Depthforged [510,000,000,000 HP • 3,250,000 Streak]",
+    "zone_oceanbane": "OCEANBANE CHASM",
+    "unit_oceanbane": "Oceanbanes [760,000,000,000 HP • 3,900,000 Streak]",
+    "zone_abyssforged": "ABYSSFORGED NEXUS",
+    "unit_abyssforged": "Abyssforged [1,150,000,000,000 HP • 5,000,000 Streak]"
   },
   "npcs": {
     "normal": {
@@ -741,6 +791,106 @@
     "crimsonhide": {
       "name": "Crimsonhide",
       "desc": "Apocalyptic apex behemoth encased in blood-crystalline dragon carapace."
+    },
+    "reefmaw": {
+      "name": "Reefmaw",
+      "desc": "Ferocious predatory beast roaming the shallow reefs of Atlantis."
+    },
+    "coralback": {
+      "name": "Coralback",
+      "desc": "Hard-shelled crustacean armored in hardened coral plating."
+    },
+    "tidescale": {
+      "name": "Tidescale",
+      "desc": "Swift oceanic serpent covered in shimmering hydro-scales."
+    },
+    "seafang": {
+      "name": "Seafang",
+      "desc": "Deadly aquatic carnivore equipped with razor-sharp aquatic fangs."
+    },
+    "abyssfin": {
+      "name": "Abyssfin",
+      "desc": "Abyssal stalker that glides through the deep ocean currents."
+    },
+    "deepclaw": {
+      "name": "Deepclaw",
+      "desc": "Heavily armored benthic crab with crushing pincers."
+    },
+    "reefstalker": {
+      "name": "Reefstalker",
+      "desc": "Cunning reef predator that ambushes targets from dark crevices."
+    },
+    "dreadscale": {
+      "name": "Dreadscale",
+      "desc": "Menacing serpentine monster with dread-infused iridescent scales."
+    },
+    "tideborn": {
+      "name": "Tideborn",
+      "desc": "Ancient creature born directly from pressurized tidal currents."
+    },
+    "leviathan": {
+      "name": "Leviathan",
+      "desc": "Colossal sea beast capable of sundering underwater canyons."
+    },
+    "abysswalker": {
+      "name": "Abysswalker",
+      "desc": "Shadowy entity traversing the abyssal ridges with unfazed malice."
+    },
+    "trenchmaw": {
+      "name": "Trenchmaw",
+      "desc": "Gargantuan gaping-mouthed behemoth swallowing deep sea explorers."
+    },
+    "depthclaw": {
+      "name": "Depthclaw",
+      "desc": "Monstrous crustacean adapted to pitch-black oceanic depths."
+    },
+    "gloomray": {
+      "name": "Gloomray",
+      "desc": "Gigantic shadowy manta ray discharging dark bioluminescent pulses."
+    },
+    "abyssal": {
+      "name": "Abyssal",
+      "desc": "Malevolent oceanic manifestation forged within the bottomless void."
+    },
+    "sirenborn": {
+      "name": "Sirenborn",
+      "desc": "Enchanting yet merciless aquatic sovereign armed with acoustic shockwaves."
+    },
+    "stormscale": {
+      "name": "Stormscale",
+      "desc": "Dragon-scale titan channeling whirlpool storm currents through its tail."
+    },
+    "dreadtide": {
+      "name": "Dreadtide",
+      "desc": "Unstoppable force of necrotic waves that drowns all light."
+    },
+    "trenchborn": {
+      "name": "Trenchborn",
+      "desc": "Primitive deep-sea juggernaut formed in the hydrothermal vents."
+    },
+    "deepwarden": {
+      "name": "Deepwarden",
+      "desc": "Ancient guardian maintaining perpetual vigil over Atlantis' sunken ruins."
+    },
+    "abysslord": {
+      "name": "Abysslord",
+      "desc": "Sovereign noble of the dark abyss wielding cataclysmic water pressure."
+    },
+    "tidebreaker": {
+      "name": "Tidebreaker",
+      "desc": "Colossal breaker of oceanic crests that shatters continental shelves."
+    },
+    "depthforged": {
+      "name": "Depthforged",
+      "desc": "Metallic-infused abyssal construct tempered under impossible seabed forces."
+    },
+    "oceanbane": {
+      "name": "Oceanbane",
+      "desc": "Apocalyptic harbinger of total subversion capable of evaporating entire oceans."
+    },
+    "abyssforged": {
+      "name": "Abyssforged",
+      "desc": "The absolute zenith of abyssal terror, an almighty primordial titan."
     }
   },
   "swords": {

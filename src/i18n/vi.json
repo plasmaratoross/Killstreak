@@ -651,7 +651,57 @@
     "unit_gloomscale": "Vảy Hắc Ám [4,300,000 Máu • 7,000 Chuỗi]",
     "unit_wildtusk": "Nanh Hoang [6,700,000 Máu • 10,000 Chuỗi]",
     "unit_moonmane": "Bờm Nguyệt Quang [10,500,000 Máu • 14,500 Chuỗi]",
-    "unit_crimsonhide": "Xích Bì [17,000,000 Máu • 21,000 Chuỗi]"
+    "unit_crimsonhide": "Xích Bì [17,000,000 Máu • 21,000 Chuỗi]",
+    "zone_reefmaw": "VÙNG NÔNG REEFMAW",
+    "unit_reefmaw": "Reefmaw [30,000,000 Máu • 30,000 Chuỗi]",
+    "zone_coralback": "RẠN SAN HÔ CORALBACK",
+    "unit_coralback": "Coralback [48,000,000 Máu • 36,000 Chuỗi]",
+    "zone_tidescale": "RỪNG TIDESCALE",
+    "unit_tidescale": "Tidescale [78,000,000 Máu • 44,000 Chuỗi]",
+    "zone_seafang": "LÒNG CHẢO SEAFANG",
+    "unit_seafang": "Seafang [125,000,000 Máu • 58,000 Chuỗi]",
+    "zone_abyssfin": "HỐ VỰC ABYSSFIN",
+    "unit_abyssfin": "Abyssfin [200,000,000 Máu • 72,000 Chuỗi]",
+    "zone_deepclaw": "VŨNG BIỂN DEEPCLAW",
+    "unit_deepclaw": "Deepclaw [320,000,000 Máu • 90,000 Chuỗi]",
+    "zone_reefstalker": "LÃNH ĐỊA REEFSTALKER",
+    "unit_reefstalker": "Reefstalker [520,000,000 Máu • 115,000 Chuỗi]",
+    "zone_dreadscale": "HẺM NÚI DREADSCALE",
+    "unit_dreadscale": "Dreadscale [850,000,000 Máu • 145,000 Chuỗi]",
+    "zone_tideborn": "THÁNH ĐỊA TIDEBORN",
+    "unit_tideborn": "Tideborn [1,350,000,000 Máu • 180,000 Chuỗi]",
+    "zone_leviathan": "RÃNH BIỂN LEVIATHAN",
+    "unit_leviathan": "Leviathan [2,100,000,000 Máu • 225,000 Chuỗi]",
+    "zone_abysswalker": "RẶNG ĐÁ ABYSSWALKER",
+    "unit_abysswalker": "Abysswalker [3,300,000,000 Máu • 280,000 Chuỗi]",
+    "zone_trenchmaw": "HẺM VỰC TRENCHMAW",
+    "unit_trenchmaw": "Trenchmaw [5,200,000,000 Máu • 350,000 Chuỗi]",
+    "zone_depthclaw": "MỎM ĐÁ DEPTHCLAW",
+    "unit_depthclaw": "Depthclaw [8,000,000,000 Máu • 435,000 Chuỗi]",
+    "zone_gloomray": "VÙNG BÓNG TỐI GLOOMRAY",
+    "unit_gloomray": "Gloomray [12,500,000,000 Máu • 540,000 Chuỗi]",
+    "zone_abyssal": "HƯ KHÔNG ABYSSAL",
+    "unit_abyssal": "Abyssal [19,000,000,000 Máu • 670,000 Chuỗi]",
+    "zone_sirenborn": "HANG ĐỘNG SIRENBORN",
+    "unit_sirenborn": "Sirenborn [29,000,000,000 Máu • 830,000 Chuỗi]",
+    "zone_stormscale": "VÙNG RỘNG STORMSCALE",
+    "unit_stormscale": "Stormscale [44,000,000,000 Máu • 1,020,000 Chuỗi]",
+    "zone_dreadtide": "EO BIỂN DREADTIDE",
+    "unit_dreadtide": "Dreadtide [67,000,000,000 Máu • 1,250,000 Chuỗi]",
+    "zone_trenchborn": "HOANG MẠC TRENCHBORN",
+    "unit_trenchborn": "Trenchborn [100,000,000,000 Máu • 1,520,000 Chuỗi]",
+    "zone_deepwarden": "TRỤ ĐÁ DEEPWARDEN",
+    "unit_deepwarden": "Deepwarden [150,000,000,000 Máu • 1,850,000 Chuỗi]",
+    "zone_abysslord": "NGAI VÀNG ABYSSLORD",
+    "unit_abysslord": "Abysslord [225,000,000,000 Máu • 2,250,000 Chuỗi]",
+    "zone_tidebreaker": "VỰC SÂU TIDEBREAKER",
+    "unit_tidebreaker": "Tidebreaker [340,000,000,000 Máu • 2,700,000 Chuỗi]",
+    "zone_depthforged": "MIỆNG NÚI ĐÁ DEPTHFORGED",
+    "unit_depthforged": "Depthforged [510,000,000 Máu • 3,250,000 Chuỗi]",
+    "zone_oceanbane": "VỰC SÂU THẲM OCEANBANE",
+    "unit_oceanbane": "Oceanbane [760,000,000,000 Máu • 3,900,000 Chuỗi]",
+    "zone_abyssforged": "TRỤC TRUNG TÂM ABYSSFORGED",
+    "unit_abyssforged": "Abyssforged [1,150,000,000,000 Máu • 5,000,000 Chuỗi]"
   },
   "npcs": {
     "normal": {
@@ -741,6 +791,106 @@
     "crimsonhide": {
       "name": "Xích Bì",
       "desc": "Bá chủ tận thế bọc giáp tinh thể huyết long hủy diệt."
+    },
+    "reefmaw": {
+      "name": "Reefmaw",
+      "desc": "Thú săn mồi hung dữ rình rập quanh các rạn san hô nông của Atlantis."
+    },
+    "coralback": {
+      "name": "Coralback",
+      "desc": "Giáp xác mai cứng được bọc lớp vỏ san hô kiên cố."
+    },
+    "tidescale": {
+      "name": "Tidescale",
+      "desc": "Thủy xà lướt nhanh mang lớp vảy lấp lánh phản chiếu dòng nước."
+    },
+    "seafang": {
+      "name": "Seafang",
+      "desc": "Kẻ săn mồi dưới nước nguy hiểm sở hữu hàm răng sắc như dao cạo."
+    },
+    "abyssfin": {
+      "name": "Abyssfin",
+      "desc": "Kẻ rình mò vực thẳm lướt êm qua các hải lưu sâu."
+    },
+    "deepclaw": {
+      "name": "Deepclaw",
+      "desc": "Cua đáy biển khổng lồ sở hữu cặp càng có lực nghiền nát."
+    },
+    "reefstalker": {
+      "name": "Reefstalker",
+      "desc": "Kẻ săn mồi rạn san hô tinh ranh phục kích từ những khe đá ngầm tối tăm."
+    },
+    "dreadscale": {
+      "name": "Dreadscale",
+      "desc": "Quái xà đáng sợ mang lớp vảy óng ánh chứa đầy khí tức kinh hoàng."
+    },
+    "tideborn": {
+      "name": "Tideborn",
+      "desc": "Sinh vật cổ xưa sinh ra từ dòng thủy triều áp suất cực lớn."
+    },
+    "leviathan": {
+      "name": "Leviathan",
+      "desc": "Cự thú đại dương khổng lồ có thể xé toạc các hẻm vực đáy biển."
+    },
+    "abysswalker": {
+      "name": "Abysswalker",
+      "desc": "Thực thể bóng tối sải bước qua các rặng đá ngầm vực thẳm."
+    },
+    "trenchmaw": {
+      "name": "Trenchmaw",
+      "desc": "Quái vật há miệng khổng lồ nuốt chửng mọi kẻ xâm nhập vực sâu."
+    },
+    "depthclaw": {
+      "name": "Depthclaw",
+      "desc": "Loài giáp xác khổng lồ thích nghi với bóng tối vĩnh cửu của đại dương."
+    },
+    "gloomray": {
+      "name": "Gloomray",
+      "desc": "Cá đuối khổng lồ phát ra những luồng năng lượng bóng tối phát quang."
+    },
+    "abyssal": {
+      "name": "Abyssal",
+      "desc": "Hiện thân tà ác sinh ra từ khoảng không vô tận dưới đáy biển."
+    },
+    "sirenborn": {
+      "name": "Sirenborn",
+      "desc": "Chúa tể biển quyến rũ nhưng tàn nhẫn giải phóng sóng xung kích âm thanh."
+    },
+    "stormscale": {
+      "name": "Stormscale",
+      "desc": "Hải long vảy bão điều khiển các vòng xoáy bão dữ dội từ chiếc đuôi."
+    },
+    "dreadtide": {
+      "name": "Dreadtide",
+      "desc": "Dòng thủy triều chết chóc cuồn cuộn nhấn chìm mọi tia sáng."
+    },
+    "trenchborn": {
+      "name": "Trenchborn",
+      "desc": "Cỗ xe bọc thép cổ xưa hình thành bên miệng núi lửa đáy biển."
+    },
+    "deepwarden": {
+      "name": "Deepwarden",
+      "desc": "Hộ vệ cổ xưa canh gác vĩnh hằng trên tàn tích chìm đắm của Atlantis."
+    },
+    "abysslord": {
+      "name": "Abysslord",
+      "desc": "Lãnh chúa bóng tối ngự trị vực sâu, điều khiển áp suất hủy diệt."
+    },
+    "tidebreaker": {
+      "name": "Tidebreaker",
+      "desc": "Kẻ phá vỡ triều cường khổng lồ làm rung chuyển các thềm lục địa."
+    },
+    "depthforged": {
+      "name": "Depthforged",
+      "desc": "Cỗ máy đáy biển bọc kim loại được tôi luyện dưới áp suất tột cùng."
+    },
+    "oceanbane": {
+      "name": "Oceanbane",
+      "desc": "Hiểm họa tận thế có sức mạnh khuấy đảo và làm bốc hơi toàn bộ đại dương."
+    },
+    "abyssforged": {
+      "name": "Abyssforged",
+      "desc": "Đỉnh cao tuyệt đối của nỗi kinh hoàng đáy biển, titan nguyên thủy tối thượng."
     }
   },
   "swords": {

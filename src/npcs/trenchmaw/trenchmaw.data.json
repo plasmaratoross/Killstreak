@@ -1,0 +1,21 @@
+{
+  "id": "trenchmaw",
+  "name": "Trenchmaw",
+  "description": "Nightmarish deep trench predator with an unhinging maw of void.",
+  "radius": 32,
+  "speed": 160,
+  "maxHp": 5200000000,
+  "damage": 58000000,
+  "attackRate": 0.43,
+  "attackRange": 34,
+  "killsAwarded": 29,
+  "killstreakAwarded": 350000,
+  "respawnDelay": 8,
+  "color": "#a855f7",
+  "neutralColor": "#3b0764",
+  "glowColor": "rgba(168, 85, 247, 0.60)",
+  "massScale": 0.3,
+  "shoveRatio": 0.35,
+  "barWidth": 56,
+  "barColor": "#a855f7"
+}

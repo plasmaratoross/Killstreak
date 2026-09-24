@@ -1,0 +1,21 @@
+{
+  "id": "trenchborn",
+  "name": "Trenchborn",
+  "description": "Ancient titan shaped from the primeval bedrock of the oceanic floor.",
+  "radius": 40,
+  "speed": 155,
+  "maxHp": 100000000000,
+  "damage": 430000000,
+  "attackRate": 0.48,
+  "attackRange": 42,
+  "killsAwarded": 43,
+  "killstreakAwarded": 1520000,
+  "respawnDelay": 9,
+  "color": "#9333ea",
+  "neutralColor": "#3b0764",
+  "glowColor": "rgba(147, 51, 234, 0.70)",
+  "massScale": 0.2,
+  "shoveRatio": 0.25,
+  "barWidth": 66,
+  "barColor": "#9333ea"
+}

@@ -320,8 +320,8 @@
 
       // 1. Background Fill
       ctx.clearRect(0, 0, cw, ch);
-      const isBloodmoon = !!(this.game.bloodmoon && this.game.bloodmoon.active);
-      let miniBg = "#0d1b13";
+      const isBloodmoon = !!(this.game.bloodmoon && (this.game.bloodmoon.isActive || this.game.bloodmoon.active));
+      let miniBg = isBloodmoon ? "#2a0808" : "#0d1b13";
       if (activeMap.id === "LOBBY") {
         miniBg = "#0f172a";
       } else if (activeMap.id === "ATLANTIS") {
@@ -352,7 +352,7 @@
         const ly = activeMap.lake.y * scaleY;
         const lw = activeMap.lake.width * scaleX;
         const lh = activeMap.lake.height * scaleY;
-        ctx.fillStyle = "rgba(12, 74, 110, 0.7)";
+        ctx.fillStyle = isBloodmoon ? "rgba(88, 28, 28, 0.75)" : "rgba(12, 74, 110, 0.7)";
         ctx.beginPath();
         ctx.ellipse(lx + lw / 2, ly + lh / 2, lw / 2, lh / 2, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -360,7 +360,7 @@
 
       if (activeMap.id === "COMBAT") {
         // Village Zone Indicator
-        ctx.fillStyle = "rgba(120, 53, 15, 0.4)";
+        ctx.fillStyle = isBloodmoon ? "rgba(153, 27, 27, 0.45)" : "rgba(120, 53, 15, 0.4)";
         ctx.fillRect(8350 * scaleX, 4200 * scaleY, 1500 * scaleX, 1450 * scaleY);
       }
 
@@ -520,8 +520,8 @@
       ctx.scale(this.zoom, this.zoom);
 
       // 1. World Map Base Floor
-      const isBloodmoon = !!(this.game.bloodmoon && this.game.bloodmoon.active);
-      let floorColor = "#0d1f14";
+      const isBloodmoon = !!(this.game.bloodmoon && (this.game.bloodmoon.isActive || this.game.bloodmoon.active));
+      let floorColor = isBloodmoon ? "#2b0a0a" : "#0d1f14";
       if (activeMap.id === "LOBBY") {
         floorColor = "#111827";
       } else if (activeMap.id === "ATLANTIS") {
@@ -549,8 +549,8 @@
       // 2. Landmarks
       if (activeMap.lake) {
         const lk = activeMap.lake;
-        ctx.fillStyle = "rgba(14, 116, 144, 0.65)";
-        ctx.strokeStyle = "#0891b2";
+        ctx.fillStyle = isBloodmoon ? "rgba(127, 29, 29, 0.7)" : "rgba(14, 116, 144, 0.65)";
+        ctx.strokeStyle = isBloodmoon ? "#991b1b" : "#0891b2";
         ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.ellipse(lk.x + lk.width / 2, lk.y + lk.height / 2, lk.width / 2, lk.height / 2, 0, 0, Math.PI * 2);
@@ -558,23 +558,23 @@
         ctx.stroke();
 
         ctx.font = "bold 28px -apple-system, sans-serif";
-        ctx.fillStyle = "rgba(224, 242, 254, 0.85)";
+        ctx.fillStyle = isBloodmoon ? "rgba(254, 202, 202, 0.85)" : "rgba(224, 242, 254, 0.85)";
         ctx.textAlign = "center";
-        ctx.fillText("CERULEAN LAKE", lk.x + lk.width / 2, lk.y + lk.height / 2 + 10);
+        ctx.fillText(isBloodmoon ? "CRIMSON LAKE" : "CERULEAN LAKE", lk.x + lk.width / 2, lk.y + lk.height / 2 + 10);
       }
 
       if (activeMap.id === "COMBAT") {
         // Village Bounds
-        ctx.fillStyle = "rgba(120, 53, 15, 0.3)";
-        ctx.strokeStyle = "rgba(217, 119, 6, 0.5)";
+        ctx.fillStyle = isBloodmoon ? "rgba(127, 29, 29, 0.4)" : "rgba(120, 53, 15, 0.3)";
+        ctx.strokeStyle = isBloodmoon ? "rgba(239, 68, 68, 0.6)" : "rgba(217, 119, 6, 0.5)";
         ctx.lineWidth = 4;
         ctx.strokeRect(8350, 4200, 1500, 1450);
         ctx.fillRect(8350, 4200, 1500, 1450);
 
         ctx.font = "bold 26px -apple-system, sans-serif";
-        ctx.fillStyle = "rgba(251, 191, 36, 0.85)";
+        ctx.fillStyle = isBloodmoon ? "rgba(252, 165, 165, 0.85)" : "rgba(251, 191, 36, 0.85)";
         ctx.textAlign = "center";
-        ctx.fillText("SANCTUARY HAMLET", 8350 + 750, 4200 + 725);
+        ctx.fillText(isBloodmoon ? "DESOLATE HAMLET" : "SANCTUARY HAMLET", 8350 + 750, 4200 + 725);
       }
 
       if (activeMap.id === "ATLANTIS") {

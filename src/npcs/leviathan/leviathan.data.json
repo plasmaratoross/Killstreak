@@ -1,0 +1,21 @@
+{
+  "id": "leviathan",
+  "name": "Leviathan",
+  "description": "Colossal abyssal behemoth capable of crushing submerged mountains.",
+  "radius": 32,
+  "speed": 130,
+  "maxHp": 2100000000,
+  "damage": 30000000,
+  "attackRate": 0.6,
+  "attackRange": 35,
+  "killsAwarded": 25,
+  "killstreakAwarded": 225000,
+  "respawnDelay": 7.5,
+  "color": "#1d4ed8",
+  "neutralColor": "#1e1b4b",
+  "glowColor": "rgba(29, 78, 216, 0.60)",
+  "massScale": 0.35,
+  "shoveRatio": 0.4,
+  "barWidth": 56,
+  "barColor": "#1d4ed8"
+}
