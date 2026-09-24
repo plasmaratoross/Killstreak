@@ -31,8 +31,8 @@ export function updateSkillsUI(game, skillsData) {
 
   const swordId = (skillsData && skillsData.swordId) || (game && game.player && game.player.swordId) || "devourer";
 
-  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy or Frostbite is equipped
-  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite")) {
+  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy, Frostbite or Voltstrike is equipped
+  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite" && swordId !== "voltstrike")) {
     if (hudSkillsBar) hudSkillsBar.classList.add("hidden");
     skillGluttonyBtn.disabled = true;
     skillEngulfBtn.disabled = true;
@@ -127,6 +127,35 @@ export function updateSkillsUI(game, skillsData) {
       skillGluttonyBtn.className = "skill-btn skill-cooldown";
       skillGluttonyBtn.disabled = true;
       skillGluttonyVal.textContent = `${ccCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // VOLTSTRIKE SKILL: Zap (Z) — single target only, so the X slot stays hidden
+  if (swordId === "voltstrike") {
+    skillEngulfBtn.classList.add("hidden");
+    skillGluttonyBtn.classList.remove("hidden");
+
+    const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+    if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.zap_label") : "[ Z — ZAP ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.zap_title") : "Zap [Z] — Strikes the nearest enemy inside your swing range for 125% damage and stuns it for 1.75s (Phase 5+, 30s CD)";
+
+    const zapCd = (skillsData && typeof skillsData.zapCooldown === "number")
+      ? skillsData.zapCooldown
+      : (game && typeof game.zapCooldown === "number" ? game.zapCooldown : 0);
+
+    if (phase < 5) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p5") : "LOCKED (P5)";
+    } else if (zapCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${zapCd.toFixed(1)}s`;
     } else {
       skillGluttonyBtn.className = "skill-btn skill-ready";
       skillGluttonyBtn.disabled = false;

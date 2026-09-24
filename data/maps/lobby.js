@@ -113,6 +113,17 @@
         title: "WEAPON PEDESTAL",
         subtitle: "FROSTBITE",
         unlockKills: 32500
+      },
+      {
+        id: "voltstrike_stand",
+        swordId: "voltstrike",
+        x: 937.5,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "VOLTSTRIKE",
+        unlockKills: 45000
       }
     ],
     // Backwards-compatible single reference

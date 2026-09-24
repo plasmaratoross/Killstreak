@@ -54,6 +54,9 @@
     "blizzard_title": "Bão Tuyết [X] — Cơn bão đóng băng phủ rộng gấp 4 lần tầm chém trung bình suốt 5 giây, gây 50% sát thương mỗi 0.25 giây và làm chậm kẻ địch 15% (GĐ 11+, 60s hồi chiêu)",
     "locked_p7": "KHÓA (GĐ7)",
     "locked_p11": "KHÓA (GĐ11)",
+    "zap_label": "[ Z — TIA CHỚP ]",
+    "zap_title": "Tia Chớp [Z] — Đánh trúng kẻ địch gần nhất trong tầm chém, gây 125% sát thương và làm choáng 1.75 giây (GĐ 5+, 30s hồi chiêu)",
+    "locked_p5": "KHÓA (GĐ5)",
     "cyclone_title": "Lốc Xoáy [Z] — Xoáy kiếm cuốn phăng mọi kẻ địch trong bán kính gấp 3 lần tầm chém, gây sát thương gấp 5.5 lần (GĐ 4+, 35s hồi chiêu)",
     "locked_p4": "KHÓA (GĐ4)",
     "locked_p9": "KHÓA (GĐ9)",
@@ -77,6 +80,8 @@
     "windy_p13": "HÃY TRỞ THÀNH CƠN BÃO!",
     "frostbite_unlocked": "ĐÃ MỞ KHÓA FROSTBITE!",
     "frostbite_p12": "ĐỘ KHÔNG TUYỆT ĐỐI!",
+    "voltstrike_unlocked": "ĐÃ MỞ KHÓA VOLTSTRIKE!",
+    "voltstrike_p14": "SÉT ĐỘC!",
     "all_devourer": "THE ALL DEVOURER THĂNG HOA!",
     "fortitude": "KIÊN CƯỜNG!",
     "tsunami": "SÓNG THẦN!",
@@ -191,6 +196,10 @@
       "frostbite_ascended": {
         "title": "Kẻ Băng Giá",
         "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Frostbite (366,000 chuỗi hạ gục)."
+      },
+      "voltstrike_ascended": {
+        "title": "Kẻ Sấm Sét",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Voltstrike (699,999 chuỗi hạ gục)."
       }
     }
   },
@@ -267,6 +276,8 @@
     "speaker_windy_p13": "WINDY — GIAI ĐOẠN 13: BÃO TỐ TỐI THƯỢNG",
     "speaker_frostbite": "FROSTBITE",
     "speaker_frostbite_p12": "FROSTBITE — GIAI ĐOẠN 12: ĐỘ KHÔNG TUYỆT ĐỐI",
+    "speaker_voltstrike": "VOLTSTRIKE",
+    "speaker_voltstrike_p14": "VOLTSTRIKE — GIAI ĐOẠN 14: SÉT ĐỘC",
     "speaker_grove": "RỪNG CỔ THỤ",
     "speaker_anvil": "ĐE SẮT Ý CHÍ",
     "speaker_abyss": "VỰC THẲM HỎA NGỤC",
@@ -355,6 +366,15 @@
     "frostbite_p12_3": "Thế giới đã dừng lại.",
     "frostbite_p12_4": "[Mọi tầng băng đứng yên cùng một khoảnh khắc. Không gì tan chảy. Không gì vỡ vụn.]\n\nĐây là độ không tuyệt đối.",
     "frostbite_p12_5": "Đóng băng.",
+    "voltstrike_unlock_1": "Bốn mươi lăm nghìn. Không một ai trong số đó kịp phản ứng.",
+    "voltstrike_unlock_2": "Lưỡi kiếm này vẫn chưa có điện tích. Chỉ có hình dạng của nó.",
+    "voltstrike_unlock_3": "Tia lửa đầu tiên là tia lửa duy nhất trung thực. Mọi thứ sau đó chỉ là nhiều hơn.",
+    "voltstrike_unlock_4": "Nó chỉ đánh một lần. Hãy chọn.",
+    "voltstrike_p14_1": "[Dòng phóng điện ngừng lại. Trong một khoảnh khắc lưỡi kiếm hoàn toàn im lặng - rồi không còn nữa.]",
+    "voltstrike_p14_2": "Ngươi gọi nó là tia chớp.",
+    "voltstrike_p14_3": "Ngươi gọi nó là sấm.",
+    "voltstrike_p14_4": "Ngươi đã sai.\n\n[Thanh kiếm bắt đầu phóng điện dữ dội.] Đây là thứ còn tệ hơn.",
+    "voltstrike_p14_5": "ĐÁNH.",
     "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
     "btn_skip": "BỎ QUA [ESC]"
   },
@@ -417,6 +437,12 @@
     "frostbite_freeze_desc": "{count} kẻ địch bị đóng băng 5 giây - nhận gấp đôi sát thương",
     "frostbite_blizzard_title": "BÃO TUYẾT",
     "frostbite_blizzard_desc": "Cơn bão đóng băng phủ kín mặt đất suốt 5 giây",
+    "voltstrike_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "voltstrike_unlock_desc": "Voltstrike - Kẻ Sấm Sét hiện đã sẵn sàng!",
+    "voltstrike_p14_title": "SÉT ĐỘC",
+    "voltstrike_p14_desc": "Giai đoạn 14: Sét Độc - Voltstrike trở thành chính cú đánh.",
+    "voltstrike_up_title": "ÁP LỰC DÂNG CAO",
+    "voltstrike_up_desc": "Đã đạt {name}",
     "devourer_up_title": "DEVOURER THỨC TỈNH",
     "devourer_up_desc": "GIAI ĐOẠN: {name}",
     "achievement_unlocked_title": "Mở Khóa Thành Tựu!",
@@ -656,6 +682,11 @@
       "name": "Frostbite",
       "tag": "KẺ BĂNG GIÁ",
       "description": "Vũ khí băng giá chinh phục chiến trường bằng cách tước đi chuyển động thay vì chạy nhanh hơn đối thủ. Sở hữu kỹ năng Freeze [Z] và Blizzard [X]."
+    },
+    "voltstrike": {
+      "name": "Voltstrike",
+      "tag": "SẤM SÉT",
+      "description": "Vũ khí sấm sét được chế tạo cho một mục tiêu duy nhất: những cú đánh chính xác và sát thương điện cực lớn thay vì kiểm soát diện rộng. Sở hữu kỹ năng Zap [Z]."
     }
   },
   "phases": {
@@ -1270,6 +1301,92 @@
         "shortName": "Độ Không Tuyệt Đối",
         "effects": "BIẾN ĐỔI TỐI HẬU: ĐỘ KHÔNG TUYỆT ĐỐI. Một sông băng được rèn thành vũ khí — các tầng băng trong suốt xếp lớp, tuyết không ngừng, cấu trúc tinh thể và mặt đất đóng băng. Frostbite không còn đóng băng mọi thứ; nó khiến chúng dừng lại. Cơ bản 165,000 Sát thương, 366,000 Máu và 150 Tốc độ. Đóng băng.",
         "notification": "Cái lạnh không có giới hạn. Thế giới đã dừng lại. Đây là độ không tuyệt đối."
+      }
+    },
+    "voltstrike": {
+      "1": {
+        "name": "Giai đoạn 1: Tia Lửa",
+        "shortName": "Tia Lửa",
+        "effects": "Một dấu vết năng lượng điện duy nhất bên trong một lưỡi kiếm thường. Mờ nhạt, thưa thớt, gần như chẳng có gì để nhìn. Cơ bản 333 Sát thương và 40 Máu.",
+        "notification": "Đó. Có gì đó."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Tích Điện",
+        "shortName": "Tích Điện",
+        "effects": "Những cung điện nhỏ nhảy quanh lưỡi kiếm và thỉnh thoảng một tia lửa bé xíu thoát ra. Cơ bản 666 Sát thương và 99 Máu.",
+        "notification": "Nó đang tụ lại."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Dòng Điện",
+        "shortName": "Dòng Điện",
+        "effects": "Điện chảy liên tục: những đường mảnh dọc theo lưỡi kiếm và các cung nhỏ vươn xuống mặt đất. Cơ bản 1,666 Sát thương và 333 Máu.",
+        "notification": "Nó chảy."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Điện Áp",
+        "shortName": "Điện Áp",
+        "effects": "Lưỡi kiếm tích trữ áp lực điện nguy hiểm: những cung sáng hơn, tia chớp nhỏ và hào quang mạnh hơn rõ rệt. Cơ bản 3,666 Sát thương và 666 Máu.",
+        "notification": "Áp lực dâng lên. Đừng để nó phóng ra."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Sụp Đổ",
+        "shortName": "Sụp Đổ",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Năng lượng tích trữ biến mất hoàn toàn: một lưỡi kiếm cực kỳ mờ tối, những cung điện gãy vụn, gần như không còn hào quang. Mở khóa Zap [Z] — kẻ địch gần nhất trong tầm chém nhận 125% sát thương và bị choáng 1.75 giây. Cơ bản 6 Sát thương và 66 Máu.",
+        "notification": "...Không có gì. Nó đi đâu rồi? ...Không. Nó vẫn ở đó."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Bùng Phát",
+        "shortName": "Bùng Phát",
+        "effects": "Năng lượng tích trữ bùng nổ: những cung điện mạnh, vệt sáng rực và tia lửa bao quanh người cầm kiếm. Cơ bản 16,999 Sát thương và 9,999 Máu.",
+        "notification": "TÌM THẤY RỒI. GIẢI PHÓNG."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Cung Điện",
+        "shortName": "Cung Điện",
+        "effects": "Điện trở nên tập trung thay vì hỗn loạn: những cung điện sắc bén chạy dọc lưỡi kiếm và mọi cú đánh đều để lại vệt chính xác. Cơ bản 36,666 Sát thương và 26,666 Máu.",
+        "notification": "Sức mạnh không có hướng là lãng phí."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Sấm",
+        "shortName": "Sấm",
+        "effects": "Các cú đánh bắt đầu tạo ra sức mạnh như sấm: những tia chớp lớn hơn, va chạm nặng hơn và hạt điện bám vào bất cứ thứ gì còn sống sót. Cơ bản 86,000 Sát thương và 66,666 Máu.",
+        "notification": "Ngươi nghe thấy rồi. Đó là lưỡi kiếm."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Tia Chớp",
+        "shortName": "Tia Chớp",
+        "effects": "Tia chớp thật sự, không chỉ là năng lượng điện: những tia sét trong mỗi cú đánh, hào quang rực và thanh kiếm thoáng nối xuống đất. Cơ bản 106,666 Sát thương và 133,333 Máu.",
+        "notification": "Tia chớp trả lời tức thì."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Mũi Bão",
+        "shortName": "Mũi Bão",
+        "effects": "Điện như một cơn bão tập trung: nhiều tầng tia chớp, ánh sấm và sự bóp méo quanh lưỡi kiếm. Cơ bản 166,666 Sát thương và 333,333 Máu.",
+        "notification": "Cơn bão đã tìm thấy một điểm."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Quá Tải",
+        "shortName": "Quá Tải",
+        "effects": "Nhiều điện hơn mức thanh kiếm có thể chứa: hoạt động không ngừng, năng lượng rò rỉ khỏi lưỡi kiếm và bóp méo quanh người cầm kiếm. Cơ bản 333,333 Sát thương và 777,777 Máu.",
+        "notification": "Quá nhiều sức mạnh. Không đủ lưỡi kiếm."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Sấm Đánh",
+        "shortName": "Sấm Đánh",
+        "effects": "Một cú sét được vũ khí hóa: những cột tia chớp, vệt khổng lồ và tia sét chạy theo chính đường chém. Cơ bản 633,333 Sát thương và 1,666,666 Máu.",
+        "notification": "Ngươi không thể chạy nhanh hơn tia chớp. Ngươi chỉ có thể bị đánh trúng."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Đại Họa",
+        "shortName": "Đại Họa",
+        "effects": "Mức điện thảm khốc: những cung khổng lồ, nhiều đợt phóng điện và tia sét bò khắp lưỡi kiếm. Cơ bản 799,999 Sát thương và 2,200,000 Máu.",
+        "notification": "Bầu trời đang nứt."
+      },
+      "14": {
+        "name": "Giai đoạn 14: Sét Độc",
+        "shortName": "Sét Độc",
+        "effects": "BIẾN ĐỔI TỐI HẬU: SÉT ĐỘC. Voltstrike không còn tạo ra tia chớp — nó đã trở thành một tia sét độc ác mang hình hài, gần như không kìm nổi năng lượng bên trong. Cơ bản 1,333,333 Sát thương, 3,666,666 Máu và 160 Tốc độ. ĐÁNH.",
+        "notification": "Ngươi gọi nó là tia chớp. Ngươi gọi nó là sấm. Ngươi đã sai. Đây là thứ còn tệ hơn."
       }
     }
   },

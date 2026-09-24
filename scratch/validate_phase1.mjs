@@ -215,11 +215,24 @@ const FROSTBITE_ADDITION = new RegExp(
   + '|achievements\\.items\\.frostbite_ascended\\.(?:title|description)'
   + ')$'
 );
+// 6. voltstrike sword addition (both languages) — same reasoning as windy.
+const VOLTSTRIKE_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_voltstrike(?:_p14)?|voltstrike_(?:unlock|p14)_\\d+)'
+  + '|swords\\.voltstrike\\.(?:name|tag|description)'
+  + '|phases\\.voltstrike\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.(?:zap_(?:label|title)|locked_p5)'
+  + '|floating\\.voltstrike_(?:unlocked|p14)'
+  + '|toasts\\.voltstrike_[a-z0-9_]+'
+  + '|achievements\\.items\\.voltstrike_ascended\\.(?:title|description)'
+  + ')$'
+);
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
   || WINDY_ADDITION.test(key)
   || FROSTBITE_ADDITION.test(key)
+  || VOLTSTRIKE_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 const flattenLeaves = (obj, prefix = '') =>

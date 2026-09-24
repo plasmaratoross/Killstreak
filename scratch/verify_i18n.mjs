@@ -102,11 +102,25 @@ const FROSTBITE_ADDITION = new RegExp(
   + ')$'
 );
 
+// 6. VOLTSTRIKE SWORD ADDITION (both languages). Same reasoning again.
+const VOLTSTRIKE_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_voltstrike(?:_p14)?|voltstrike_(?:unlock|p14)_\\d+)'
+  + '|swords\\.voltstrike\\.(?:name|tag|description)'
+  + '|phases\\.voltstrike\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.(?:zap_(?:label|title)|locked_p5)'
+  + '|floating\\.voltstrike_(?:unlocked|p14)'
+  + '|toasts\\.voltstrike_[a-z0-9_]+'
+  + '|achievements\\.items\\.voltstrike_ascended\\.(?:title|description)'
+  + ')$'
+);
+
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
   || WINDY_ADDITION.test(key)
   || FROSTBITE_ADDITION.test(key)
+  || VOLTSTRIKE_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 /** Flatten to { 'a.b.c': value } so differences can be located precisely. */

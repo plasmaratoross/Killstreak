@@ -31,6 +31,7 @@ import hellfireAbility from '../swords/hellfire/hellfire.ability.js';
 import windyAbility from '../swords/windy/windy.ability.js';
 import frostbiteAbility from '../swords/frostbite/frostbite.ability.js';
 import frostbiteBlizzardAbility from '../swords/frostbite/frostbite.blizzard.ability.js';
+import voltstrikeAbility from '../swords/voltstrike/voltstrike.ability.js';
 
 /**
  * Primary (Z) ability for the currently equipped sword.
@@ -49,6 +50,7 @@ export function activatePrimary(game) {
   if (swordId === "hellfire") return hellfireAbility.activate(game);
   if (swordId === "windy") return windyAbility.activate(game);
   if (swordId === "frostbite") return frostbiteAbility.activate(game);
+  if (swordId === "voltstrike") return voltstrikeAbility.activate(game);
 
   return devourerAbility.activate(game);
 }

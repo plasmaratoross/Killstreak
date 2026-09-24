@@ -237,6 +237,8 @@ import { setNumContent } from '../src/utils/dom.js';
           iconEl.textContent = "🌬️";
         } else if (step.speaker.includes("FROSTBITE") || step.speaker.includes("FROZEN")) {
           iconEl.textContent = "🧊";
+        } else if (step.speaker.includes("VOLTSTRIKE") || step.speaker.includes("THUNDERBOLT") || step.speaker.includes("LIGHTNING")) {
+          iconEl.textContent = "⚡";
         } else {
           iconEl.textContent = "👑";
         }

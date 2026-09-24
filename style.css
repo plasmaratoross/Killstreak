@@ -892,6 +892,12 @@ body {
   color: #e0f2fe;
 }
 
+.subtab-btn.active#lib-tab-voltstrike {
+  background: rgba(250, 204, 21, 0.24);
+  border-color: rgba(253, 224, 71, 0.8);
+  color: #fef08a;
+}
+
 .library-section {
   max-height: 360px;
   overflow-y: auto;

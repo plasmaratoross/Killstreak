@@ -32,6 +32,7 @@ import '../data/swords/flora/flora.js';
 import '../data/swords/hellfire/hellfire.js';
 import '../data/swords/windy/windy.js';
 import '../data/swords/frostbite/frostbite.js';
+import '../data/swords/voltstrike/voltstrike.js';
 
 // 3. NPC Data Modules
 import '../data/npcs/normal/normal.js';

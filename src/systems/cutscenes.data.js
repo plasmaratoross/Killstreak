@@ -755,6 +755,137 @@ export const CUTSCENES = {
     }
   },
 
+  voltstrike_unlock: {
+    type: "voltstrike_unlock",
+
+    shake: [8, 0.5],
+
+    achieve: null,
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike") : "VOLTSTRIKE",
+          text: I18n ? I18n.t("cutscene.voltstrike_unlock_1") : "Forty-five thousand. Not one of them was ever given time to react."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike") : "VOLTSTRIKE",
+          text: I18n ? I18n.t("cutscene.voltstrike_unlock_2") : "There is no charge in this blade yet. Only the shape of one."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike") : "VOLTSTRIKE",
+          text: I18n ? I18n.t("cutscene.voltstrike_unlock_3") : "The first spark is the only honest one. Everything after it is just more."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike") : "VOLTSTRIKE",
+          text: I18n ? I18n.t("cutscene.voltstrike_unlock_4") : "Whatever it strikes, it strikes once. Choose."
+        }
+      ];
+    },
+
+    onFinish(game) {
+    // Re-resolve bindings that were file-scope in js/game.js.
+    const Storage = window.Killstreak.Storage;
+    const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+    game.saveData.voltstrikeUnlockCutsceneSeen = true;
+    Storage.save(game.saveData);
+
+    game.camera.shake(12, 0.55);
+    for (let i = 0; i < 55; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 110 + Math.random() * 230;
+      const color = i % 2 === 0 ? "#fde047" : "#fef3c7";
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+      );
+    }
+
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    game.floatingTexts.push(
+      new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.voltstrike_unlocked", { defaultValue: "VOLTSTRIKE UNLOCKED!" }) : "VOLTSTRIKE UNLOCKED!", "#fde047", 20)
+    );
+
+    if (game.callbacks.onCutsceneEnd) {
+      game.callbacks.onCutsceneEnd();
+    }
+    if (game.callbacks.onToast) {
+      const tTitle = I18n ? I18n.t("toasts.voltstrike_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+      const tDesc = I18n ? I18n.t("toasts.voltstrike_unlock_desc", { defaultValue: "Voltstrike — The Lightning is now available!" }) : "Voltstrike — The Lightning is now available!";
+      game.callbacks.onToast(tTitle, tDesc, "⚡");
+    }
+    return;
+    }
+  },
+
+  voltstrike_p14: {
+    type: "voltstrike_p14",
+
+    shake: [12, 0.5],
+
+    achieve: "voltstrike_ascended",
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike_p14") : "VOLTSTRIKE — PHASE 14: MALICIOUS THUNDERBOLT",
+          text: I18n ? I18n.t("cutscene.voltstrike_p14_1") : "[The discharge stops. For one instant the blade is completely silent — and then it is not.]"
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike_p14") : "VOLTSTRIKE — PHASE 14: MALICIOUS THUNDERBOLT",
+          text: I18n ? I18n.t("cutscene.voltstrike_p14_2") : "You called it lightning."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike_p14") : "VOLTSTRIKE — PHASE 14: MALICIOUS THUNDERBOLT",
+          text: I18n ? I18n.t("cutscene.voltstrike_p14_3") : "You called it thunder."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike_p14") : "VOLTSTRIKE — PHASE 14: MALICIOUS THUNDERBOLT",
+          text: I18n ? I18n.t("cutscene.voltstrike_p14_4") : "You were wrong.\n\n[The sword begins violently discharging.] This is something worse."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_voltstrike_p14") : "VOLTSTRIKE — PHASE 14: MALICIOUS THUNDERBOLT",
+          text: I18n ? I18n.t("cutscene.voltstrike_p14_5") : "STRIKE."
+        }
+      ];
+    },
+
+    onFinish(game) {
+    const Storage = window.Killstreak.Storage;
+    const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+    game.saveData.voltstrikePhase14CutsceneSeen = true;
+    Storage.save(game.saveData);
+
+    game.camera.shake(18, 0.6);
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 130 + Math.random() * 260;
+      const color = i % 3 === 0 ? "#f0f9ff" : (i % 3 === 1 ? "#fde047" : "#7dd3fc");
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.0, 0.7)
+      );
+    }
+
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    game.floatingTexts.push(
+      new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.voltstrike_p14", { defaultValue: "MALICIOUS THUNDERBOLT!" }) : "MALICIOUS THUNDERBOLT!", "#f0f9ff", 20)
+    );
+
+    if (game.callbacks.onCutsceneEnd) {
+      game.callbacks.onCutsceneEnd();
+    }
+    if (game.callbacks.onToast) {
+      const tTitle = I18n ? I18n.t("toasts.voltstrike_p14_title", { defaultValue: "MALICIOUS THUNDERBOLT" }) : "MALICIOUS THUNDERBOLT";
+      const tDesc = I18n ? I18n.t("toasts.voltstrike_p14_desc", { defaultValue: "Voltstrike has reached its final form." }) : "Voltstrike has reached its final form.";
+      game.callbacks.onToast(tTitle, tDesc, "⚡");
+    }
+    return;
+    }
+  },
+
   frostbite_unlock: {
     type: "frostbite_unlock",
 

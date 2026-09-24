@@ -55,6 +55,9 @@
     "blizzard_title": "Blizzard [X] — A freezing storm covering 4x your average swing range for 5s, dealing 50% damage every 0.25s and slowing enemies by 15% (Phase 11+, 60s CD)",
     "locked_p7": "LOCKED (P7)",
     "locked_p11": "LOCKED (P11)",
+    "zap_label": "[ Z — ZAP ]",
+    "zap_title": "Zap [Z] — Strikes the nearest enemy inside your swing range for 125% damage and stuns it for 1.75s (Phase 5+, 30s CD)",
+    "locked_p5": "LOCKED (P5)",
     "locked_p4": "LOCKED (P4)",
     "locked_p9": "LOCKED (P9)",
     "locked_p10": "LOCKED (P10)",
@@ -77,6 +80,8 @@
     "windy_p13": "BECOME THE TEMPEST!",
     "frostbite_unlocked": "FROSTBITE UNLOCKED!",
     "frostbite_p12": "ABSOLUTE ZERO!",
+    "voltstrike_unlocked": "VOLTSTRIKE UNLOCKED!",
+    "voltstrike_p14": "MALICIOUS THUNDERBOLT!",
     "all_devourer": "THE ALL DEVOURER ASCENDS!",
     "fortitude": "FORTITUDE!",
     "tsunami": "TSUNAMI!",
@@ -191,6 +196,10 @@
       "frostbite_ascended": {
         "title": "The Frozen",
         "description": "Unlock when reaching the final phase of Frostbite (366,000 killstreak)."
+      },
+      "voltstrike_ascended": {
+        "title": "The Lightning",
+        "description": "Unlock when reaching the final phase of Voltstrike (699,999 killstreak)."
       }
     }
   },
@@ -267,6 +276,8 @@
     "speaker_windy_p13": "WINDY — PHASE 13: ULTIMATE TEMPEST",
     "speaker_frostbite": "FROSTBITE",
     "speaker_frostbite_p12": "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
+    "speaker_voltstrike": "VOLTSTRIKE",
+    "speaker_voltstrike_p14": "VOLTSTRIKE — PHASE 14: MALICIOUS THUNDERBOLT",
     "speaker_grove": "ELDER GROVE",
     "speaker_anvil": "ANVIL OF WILL",
     "speaker_abyss": "INFERNAL ABYSS",
@@ -355,6 +366,15 @@
     "frostbite_p12_3": "The world has stopped.",
     "frostbite_p12_4": "[Every layer of ice goes still at the same instant. Nothing melts. Nothing breaks.]\n\nThis is absolute zero.",
     "frostbite_p12_5": "Freeze.",
+    "voltstrike_unlock_1": "Forty-five thousand. Not one of them was ever given time to react.",
+    "voltstrike_unlock_2": "There is no charge in this blade yet. Only the shape of one.",
+    "voltstrike_unlock_3": "The first spark is the only honest one. Everything after it is just more.",
+    "voltstrike_unlock_4": "Whatever it strikes, it strikes once. Choose.",
+    "voltstrike_p14_1": "[The discharge stops. For one instant the blade is completely silent - and then it is not.]",
+    "voltstrike_p14_2": "You called it lightning.",
+    "voltstrike_p14_3": "You called it thunder.",
+    "voltstrike_p14_4": "You were wrong.\n\n[The sword begins violently discharging.] This is something worse.",
+    "voltstrike_p14_5": "STRIKE.",
     "hint": "[SPACE] or Click to Continue",
     "btn_skip": "SKIP [ESC]"
   },
@@ -417,6 +437,12 @@
     "frostbite_freeze_desc": "{count} enemies frozen for 5s - deal double damage",
     "frostbite_blizzard_title": "BLIZZARD",
     "frostbite_blizzard_desc": "A freezing storm covers the ground for 5s",
+    "voltstrike_unlock_title": "WEAPON UNLOCKED",
+    "voltstrike_unlock_desc": "Voltstrike - The Lightning is now available!",
+    "voltstrike_p14_title": "MALICIOUS THUNDERBOLT",
+    "voltstrike_p14_desc": "Phase 14: Malicious Thunderbolt - Voltstrike becomes the strike itself.",
+    "voltstrike_up_title": "THE PRESSURE RISES",
+    "voltstrike_up_desc": "Reached {name}",
     "devourer_up_title": "DEVOURER AWAKENED",
     "devourer_up_desc": "PHASE: {name}",
     "achievement_unlocked_title": "Achievement Unlocked!",
@@ -656,6 +682,11 @@
       "name": "Frostbite",
       "tag": "FROZEN",
       "description": "A freezing weapon that overwhelms the battlefield by taking movement away rather than outrunning the enemy. Features Freeze [Z] and Blizzard [X]."
+    },
+    "voltstrike": {
+      "name": "Voltstrike",
+      "tag": "LIGHTNING",
+      "description": "A lightning weapon built for a single target: precision strikes and overwhelming electrical damage rather than area control. Features Zap [Z]."
     }
   },
   "phases": {
@@ -1270,6 +1301,92 @@
         "shortName": "Absolute Zero",
         "effects": "FINAL TRANSFORMATION: ABSOLUTE ZERO. A glacier made into a weapon — layered translucent ice, constant snow, crystalline structures and frozen ground. Frostbite no longer freezes things; it stops them. Base 165,000 DMG, 366,000 HP and 150 SPD. Freeze.",
         "notification": "The cold has no limit. The world has stopped. This is absolute zero."
+      }
+    },
+    "voltstrike": {
+      "1": {
+        "name": "Phase 1: Spark",
+        "shortName": "Spark",
+        "effects": "A single trace of electrical energy inside a plain blade. Dim, sparse, barely anything to look at. Base 333 DMG and 40 HP.",
+        "notification": "There. Something."
+      },
+      "2": {
+        "name": "Phase 2: Charge",
+        "shortName": "Charge",
+        "effects": "Small arcs jump around the blade and occasionally a tiny spark escapes. Base 666 DMG and 99 HP.",
+        "notification": "It is gathering."
+      },
+      "3": {
+        "name": "Phase 3: Current",
+        "shortName": "Current",
+        "effects": "Electricity flows continuously: thin lines along the blade and small arcs reaching for the ground. Base 1,666 DMG and 333 HP.",
+        "notification": "It flows."
+      },
+      "4": {
+        "name": "Phase 4: Voltage",
+        "shortName": "Voltage",
+        "effects": "The blade stores dangerous electrical pressure: brighter arcs, small lightning flashes and a noticeably stronger aura. Base 3,666 DMG and 666 HP.",
+        "notification": "The pressure rises. Do not let it discharge."
+      },
+      "5": {
+        "name": "Phase 5: Collapse",
+        "shortName": "Collapse",
+        "effects": "DELIBERATE COLLAPSE. The stored energy is simply gone: an extremely dim blade, broken arcs, almost no aura. Unlocks Zap [Z] — the nearest enemy within your swing range takes 125% damage and is stunned for 1.75s. Base 6 DMG and 66 HP.",
+        "notification": "...Nothing. Where did it go? ...No. It is still there."
+      },
+      "6": {
+        "name": "Phase 6: Surge",
+        "shortName": "Surge",
+        "effects": "The stored energy erupts: strong lightning arcs, bright trails and sparks surrounding the wielder. Base 16,999 DMG and 9,999 HP.",
+        "notification": "FOUND IT. RELEASE."
+      },
+      "7": {
+        "name": "Phase 7: Arc",
+        "shortName": "Arc",
+        "effects": "The electricity becomes focused rather than chaotic: sharp arcs travel along the blade and every strike leaves precise trails. Base 36,666 DMG and 26,666 HP.",
+        "notification": "Power without direction is wasted."
+      },
+      "8": {
+        "name": "Phase 8: Thunder",
+        "shortName": "Thunder",
+        "effects": "Strikes begin producing thunderous force: larger flashes, heavier impacts and electrical particles clinging to whatever survives. Base 86,000 DMG and 66,666 HP.",
+        "notification": "You heard that. That was the blade."
+      },
+      "9": {
+        "name": "Phase 9: Lightning",
+        "shortName": "Lightning",
+        "effects": "Real lightning, not merely electrical energy: bolts on every attack, a bright aura and the sword briefly grounding itself. Base 106,666 DMG and 133,333 HP.",
+        "notification": "Lightning answers instantly."
+      },
+      "10": {
+        "name": "Phase 10: Stormbolt",
+        "shortName": "Stormbolt",
+        "effects": "The electricity of a concentrated storm: multiple lightning layers, thunder flashes and distortion around the blade. Base 166,666 DMG and 333,333 HP.",
+        "notification": "The storm has found a point."
+      },
+      "11": {
+        "name": "Phase 11: Overcharge",
+        "shortName": "Overcharge",
+        "effects": "More electricity than the sword should be able to hold: constant activity, energy leaking off the blade and distortion around the wielder. Base 333,333 DMG and 777,777 HP.",
+        "notification": "Too much power. Not enough blade."
+      },
+      "12": {
+        "name": "Phase 12: Thunderstrike",
+        "shortName": "Thunderstrike",
+        "effects": "A weaponised lightning strike: columns of lightning, massive trails and bolts that follow the swing path itself. Base 633,333 DMG and 1,666,666 HP.",
+        "notification": "You cannot outrun lightning. You can only be struck."
+      },
+      "13": {
+        "name": "Phase 13: Cataclysm",
+        "shortName": "Cataclysm",
+        "effects": "Catastrophic electrical levels: huge arcs, multiple discharges and lightning crawling across the whole blade. Base 799,999 DMG and 2,200,000 HP.",
+        "notification": "The sky is cracking."
+      },
+      "14": {
+        "name": "Phase 14: Malicious Thunderbolt",
+        "shortName": "Malicious Thunderbolt",
+        "effects": "FINAL TRANSFORMATION: MALICIOUS THUNDERBOLT. Voltstrike no longer generates lightning — it has become a malicious thunderbolt given form, barely containing the energy inside it. Base 1,333,333 DMG, 3,666,666 HP and 160 SPD. STRIKE.",
+        "notification": "You called it lightning. You called it thunder. You were wrong. This is something worse."
       }
     }
   },

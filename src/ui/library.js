@@ -32,6 +32,7 @@ import {
   libTabHellfire,
   libTabWindy,
   libTabFrostbite,
+  libTabVoltstrike,
   libSwordTag,
   libSwordName,
   libSwordDesc
@@ -344,6 +345,11 @@ export function renderLibrarySwords(game) {
     if (sId === "frostbite") libTabFrostbite.classList.add("active");
     else libTabFrostbite.classList.remove("active");
   }
+  if (libTabVoltstrike) {
+    libTabVoltstrike.textContent = I18n ? I18n.getSwordInfo("voltstrike").name.toUpperCase() : "VOLTSTRIKE";
+    if (sId === "voltstrike") libTabVoltstrike.classList.add("active");
+    else libTabVoltstrike.classList.remove("active");
+  }
 
   const phases = swordDef.phases;
   libraryPhasesContainer.innerHTML = "";
@@ -361,14 +367,16 @@ export function renderLibrarySwords(game) {
     const isWeakSoil = sId === "soil" && p.phase === 9;
     // Frostbite's two deliberate collapses, straight from the sword spec.
     const isWeakFb = sId === "frostbite" && (p.phase === 7 || p.phase === 11);
+    // Voltstrike's single deliberate collapse, plus the 250-KS gap to Surge.
+    const isWeakVs = sId === "voltstrike" && p.phase === 5;
     // metallic p8, flora p7 and hellfire p7 were flagged here too, so they carried a
     // DELIBERATE COLLAPSE badge. They are not weak phases: their stats rise normally
     // (e.g. hellfire p7 9,072 DMG -> p8 18,144 DMG) and none of their render modules
     // has a collapse variant, unlike aquatic p8 and soil p9 whose data carries
     // weaponType "collapse" plus a cracked/weakened visual. A weak badge on them was
     // simply wrong, so they were dropped rather than relabelled TRANSITIONAL HURDLE.
-    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb;
-    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb;
+    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs;
+    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs;
 
     let scaledRow = null;
     if (isCurrent && game.player.isSwordEquipped) {
@@ -563,6 +571,13 @@ export function initLibraryWiring(game) {
   if (libTabFrostbite) {
     libTabFrostbite.addEventListener("click", () => {
       setSelectedLibrarySword("frostbite");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabVoltstrike) {
+    libTabVoltstrike.addEventListener("click", () => {
+      setSelectedLibrarySword("voltstrike");
       renderLibrarySwords(game);
     });
   }

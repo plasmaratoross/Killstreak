@@ -83,6 +83,7 @@ export const libTabFlora = document.getElementById("lib-tab-flora");
 export const libTabHellfire = document.getElementById("lib-tab-hellfire");
 export const libTabWindy = document.getElementById("lib-tab-windy");
 export const libTabFrostbite = document.getElementById("lib-tab-frostbite");
+export const libTabVoltstrike = document.getElementById("lib-tab-voltstrike");
 export const libSwordTag = document.getElementById("lib-sword-tag");
 export const libSwordName = document.getElementById("lib-sword-name");
 export const libSwordDesc = document.getElementById("lib-sword-desc");

@@ -56,6 +56,7 @@ const REMOVED_AFTER_HOIST = new Map([['menuLobbyBtn', 'menu-lobby-btn']]);
 const ADDED_AFTER_HOIST = new Map([
   ['libTabWindy', 'lib-tab-windy'],
   ['libTabFrostbite', 'lib-tab-frostbite'],
+  ['libTabVoltstrike', 'lib-tab-voltstrike'],
 ]);
 
 console.log('--- fidelity ---');

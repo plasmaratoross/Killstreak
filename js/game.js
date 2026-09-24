@@ -93,6 +93,10 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.activeFreezes = [];
       this.blizzardCooldown = 0;
       this.activeBlizzards = [];
+
+      // Voltstrike Skill (Zap)
+      this.zapCooldown = 0;
+      this.activeZaps = [];
       this.isPaused = false;
 
       // Bloodmoon Event State
@@ -346,6 +350,16 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           }
           return false;
         }
+      } else if (swordId === "voltstrike") {
+        if ((this.saveData.totalKills || 0) < 45000) {
+          if (this.callbacks.onToast) {
+            const I18n = window.Killstreak && window.Killstreak.I18n;
+            const title = I18n ? I18n.t("toasts.weapon_locked_title") : "WEAPON LOCKED";
+            const desc = I18n ? I18n.t("toasts.weapon_voltstrike_locked_desc", { defaultValue: "Requires 45,000 Total Kills to equip Voltstrike!" }) : "Requires 45,000 Total Kills to equip Voltstrike!";
+            this.callbacks.onToast(title, desc, "🔒");
+          }
+          return false;
+        }
       }
 
       const isSwitchingSword = this.player.swordId !== swordId;
@@ -354,7 +368,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       }
 
       this.player.swordId = swordId;
-      this.player.swordName = swordId === "frostbite" ? "Frostbite" : (swordId === "windy" ? "Windy" : (swordId === "hellfire" ? "Hellfire" : (swordId === "flora" ? "Flora" : (swordId === "metallic" ? "Metallic" : (swordId === "soil" ? "Soil" : (swordId === "aquatic" ? "Aquatic" : (swordId === "overdrive" ? "Overdrive" : "Devourer")))))));
+      this.player.swordName = swordId === "voltstrike" ? "Voltstrike" : (swordId === "frostbite" ? "Frostbite" : (swordId === "windy" ? "Windy" : (swordId === "hellfire" ? "Hellfire" : (swordId === "flora" ? "Flora" : (swordId === "metallic" ? "Metallic" : (swordId === "soil" ? "Soil" : (swordId === "aquatic" ? "Aquatic" : (swordId === "overdrive" ? "Overdrive" : "Devourer"))))))));
       this.player.isSwordEquipped = true;
       this.saveData.equippedSword = swordId;
       this.saveData.isSwordEquipped = true;
@@ -415,6 +429,12 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.activeBlizzards = [];
       }
 
+      // Voltstrike skill disabled when not using Voltstrike
+      if (swordId !== "voltstrike") {
+        this.zapCooldown = 0;
+        this.activeZaps = [];
+      }
+
       this.syncSwordPhase(true);
       if (this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
         this.player.applyKillstreakScaling(this.killstreak);
@@ -441,6 +461,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           cycloneCooldown: this.cycloneCooldown,
           freezeCooldown: this.freezeCooldown,
           blizzardCooldown: this.blizzardCooldown,
+          zapCooldown: this.zapCooldown,
           phase: this.player.phase.phase
         });
       }
@@ -481,6 +502,11 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       // First time equipping Frostbite -> Play unlock cutscene
       if (swordId === "frostbite" && !this.saveData.frostbiteUnlockCutsceneSeen) {
         CutsceneSystem.start(this, "frostbite_unlock");
+      }
+
+      // First time equipping Voltstrike -> Play unlock cutscene
+      if (swordId === "voltstrike" && !this.saveData.voltstrikeUnlockCutsceneSeen) {
+        CutsceneSystem.start(this, "voltstrike_unlock");
       }
 
       return true;
@@ -538,7 +564,10 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const isHellfire = this.player.swordId === "hellfire";
       const isWindy = this.player.swordId === "windy";
       const isFrostbite = this.player.swordId === "frostbite";
-      const phases = isFrostbite
+      const isVoltstrike = this.player.swordId === "voltstrike";
+      const phases = isVoltstrike
+        ? Config.VOLTSTRIKE_PHASES
+        : (isFrostbite
         ? Config.FROSTBITE_PHASES
         : (isWindy
         ? Config.WINDY_PHASES
@@ -552,7 +581,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
               ? Config.SOIL_PHASES
               : (isAquatic
                 ? Config.AQUATIC_PHASES
-                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))))));
+                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))))));
       let matchedPhase = phases[0];
 
       for (let i = phases.length - 1; i >= 0; i--) {
@@ -565,7 +594,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const previousPhase = this.player.phase;
       const isPhaseUp = Boolean(previousPhase && matchedPhase.phase > previousPhase.phase);
       const prevSwordId = (previousPhase && typeof previousPhase.cssClass === "string")
-        ? (previousPhase.cssClass.startsWith("phase-fb") ? "frostbite" : (previousPhase.cssClass.startsWith("phase-wd") ? "windy" : (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer"))))))))
+        ? (previousPhase.cssClass.startsWith("phase-vs") ? "voltstrike" : (previousPhase.cssClass.startsWith("phase-fb") ? "frostbite" : (previousPhase.cssClass.startsWith("phase-wd") ? "windy" : (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer")))))))))
         : null;
       const isDifferentSword = Boolean(previousPhase && prevSwordId !== this.player.swordId);
       const phaseChanged = Boolean(previousPhase && (matchedPhase.phase !== previousPhase.phase || isDifferentSword));
@@ -574,7 +603,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.player.setPhase(matchedPhase, isPhaseUp);
       }
 
-      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire || isWindy || isFrostbite) {
+      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire || isWindy || isFrostbite || isVoltstrike) {
         this.gluttonyCooldown = 0;
         this.engulfCooldown = 0;
         this.isEngulfActive = false;
@@ -587,7 +616,9 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.onSwordPhaseUp(matchedPhase);
       }
 
-      if (isFrostbite) {
+      if (isVoltstrike) {
+        this.saveData.voltstrikePhase = matchedPhase.phase;
+      } else if (isFrostbite) {
         this.saveData.frostbitePhase = matchedPhase.phase;
       } else if (isHellfire) {
         this.saveData.hellfirePhase = matchedPhase.phase;
@@ -888,6 +919,45 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           const title = I18n ? I18n.t("toasts.windy_up_title", { defaultValue: "THE STORM RISES" }) : "THE STORM RISES";
           const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.windy_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
           this.callbacks.onToast(title, desc, "🌬️");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "voltstrike") {
+        if (phase.phase === 14) {
+          AchievementSystem.unlockAchievement(this, "voltstrike_ascended");
+        }
+
+        if (phase.phase === 14 && !this.saveData.voltstrikePhase14CutsceneSeen) {
+          CutsceneSystem.start(this, "voltstrike_p14");
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 14 ? 22 : (phase.phase >= 9 ? 14 : 8), 0.35);
+        }
+
+        const pCount = phase.phase === 14 ? 80 : (phase.phase >= 9 ? 45 : 30);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 240;
+          let pColor = phase.phase === 14 ? (i % 3 === 0 ? "#f0f9ff" : (i % 3 === 1 ? "#fde047" : "#7dd3fc")) : (i % 2 === 0 ? (phase.color || "#fde047") : "#fef3c7");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("voltstrike", phase.phase) : phase;
+        const phaseTitle = `VOLTSTRIKE: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#fde047", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.voltstrike_up_title", { defaultValue: "THE PRESSURE RISES" }) : "THE PRESSURE RISES";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.voltstrike_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "⚡");
         }
         return;
       }
@@ -1423,6 +1493,17 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         }
       }
 
+      // Update Voltstrike Skill Cooldown and the active Zap bolts
+      if (this.zapCooldown > 0) {
+        this.zapCooldown -= dt;
+      }
+      for (let i = this.activeZaps.length - 1; i >= 0; i--) {
+        this.activeZaps[i].timer -= dt;
+        if (this.activeZaps[i].timer <= 0) {
+          this.activeZaps.splice(i, 1);
+        }
+      }
+
       // Update Frostbite Skill Cooldowns, Freeze pulse, and Blizzard zones
       if (this.freezeCooldown > 0) {
         this.freezeCooldown -= dt;
@@ -1506,6 +1587,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           cycloneCooldown: this.cycloneCooldown,
           freezeCooldown: this.freezeCooldown,
           blizzardCooldown: this.blizzardCooldown,
+          zapCooldown: this.zapCooldown,
           phase: this.player.phase.phase
         });
       }
@@ -1815,6 +1897,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.activeFreezes = [];
       this.blizzardCooldown = 0;
       this.activeBlizzards = [];
+      this.zapCooldown = 0;
+      this.activeZaps = [];
       if (this.player) {
         this.player.isEngulfActive = false;
         this.player.swordId = "devourer";
@@ -1866,6 +1950,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           cycloneCooldown: this.cycloneCooldown,
           freezeCooldown: this.freezeCooldown,
           blizzardCooldown: this.blizzardCooldown,
+          zapCooldown: this.zapCooldown,
           phase: this.player.phase.phase
         });
       }
@@ -1900,6 +1985,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.activeFreezes = [];
       this.blizzardCooldown = 0;
       this.activeBlizzards = [];
+      this.zapCooldown = 0;
+      this.activeZaps = [];
       if (this.player) {
         this.player.shield = 0;
         this.player.shieldDuration = 0;
@@ -1976,8 +2063,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.player.swordId === sId && this.player.isSwordEquipped) {
             standPhase = this.player.phase;
           } else {
-            const pList = sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))))));
-            const pNum = sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))))))
+            const pList = sId === "voltstrike" ? Config.VOLTSTRIKE_PHASES : (sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))))));
+            const pNum = sId === "voltstrike" ? (this.saveData.voltstrikePhase || 1) : (sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1)))))))))
             standPhase = pList.find(p => p.phase === pNum) || pList[0];
           }
           stand.draw(this.ctx, standPhase, isLocked, false, Boolean(nearbyStand));
@@ -1992,8 +2079,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.player.swordId === sId && this.player.isSwordEquipped) {
             standPhase = this.player.phase;
           } else {
-            const pList = sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))))));
-            const pNum = sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))))))
+            const pList = sId === "voltstrike" ? Config.VOLTSTRIKE_PHASES : (sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))))));
+            const pNum = sId === "voltstrike" ? (this.saveData.voltstrikePhase || 1) : (sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1)))))))))
             standPhase = pList.find(p => p.phase === pNum) || pList[0];
           }
           nearbyStand.drawBadge(this.ctx, standPhase, isLocked);
@@ -2085,6 +2172,34 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
 
         this.ctx.fillStyle = `rgba(6, 182, 212, ${progress * 0.18})`;
         this.ctx.fill();
+        this.ctx.restore();
+      }
+
+      // Draw Active Zap bolts — Voltstrike: a single strike, so a bolt rather than a ring
+      for (let zap of this.activeZaps) {
+        const progress = zap.timer / zap.maxTimer;
+        this.ctx.save();
+        this.ctx.strokeStyle = `rgba(254, 243, 199, ${progress * 0.55})`;
+        this.ctx.lineWidth = 6;
+        this.ctx.beginPath();
+        this.ctx.moveTo(zap.x0, zap.y0);
+        this.ctx.lineTo(zap.x1, zap.y1);
+        this.ctx.stroke();
+
+        // Jagged core, deterministic from the stored seed so it does not flicker
+        // into a different shape every frame.
+        this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 + progress * 0.5})`;
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(zap.x0, zap.y0);
+        const segs = 7;
+        for (let i = 1; i < segs; i++) {
+          const t = i / segs;
+          const j = (Math.sin((zap.seed + i) * 91.7) * 24634.6345 % 1) * 14 * Math.sin(t * Math.PI);
+          this.ctx.lineTo(zap.x0 + (zap.x1 - zap.x0) * t + j, zap.y0 + (zap.y1 - zap.y0) * t + j * 0.6);
+        }
+        this.ctx.lineTo(zap.x1, zap.y1);
+        this.ctx.stroke();
         this.ctx.restore();
       }
 

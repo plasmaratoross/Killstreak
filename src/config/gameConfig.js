@@ -59,5 +59,6 @@ export const ACHIEVEMENTS = [
   { id: "flora_ascended",     badge: "flora_ascended",     icon: "🌿",  title: "The Evergrowth",       description: "Unlock when reaching the final phase of Flora (230,000 killstreak).",                killsRequired: 230000 },
   { id: "hellfire_ascended",  badge: "hellfire_ascended",  icon: "🔥",  title: "The Infernal",         description: "Unlock when reaching the final phase of Hellfire (264,375 killstreak).",             killsRequired: 264375 },
   { id: "windy_ascended",     badge: "windy_ascended",     icon: "🌬️", title: "The Aerial",           description: "Unlock when reaching the final phase of Windy (266,000 killstreak).",                killsRequired: 266000 },
-  { id: "frostbite_ascended", badge: "frostbite_ascended", icon: "🧊",  title: "The Frozen",           description: "Unlock when reaching the final phase of Frostbite (366,000 killstreak).",            killsRequired: 366000 }
+  { id: "frostbite_ascended", badge: "frostbite_ascended", icon: "🧊",  title: "The Frozen",           description: "Unlock when reaching the final phase of Frostbite (366,000 killstreak).",            killsRequired: 366000 },
+  { id: "voltstrike_ascended", badge: "voltstrike_ascended", icon: "⚡",  title: "The Lightning",        description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",           killsRequired: 699999 }
 ];

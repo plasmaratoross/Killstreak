@@ -20,6 +20,7 @@
   const HELLFIRE_PHASES = (SWORDS.hellfire && SWORDS.hellfire.phases) || [];
   const WINDY_PHASES = (SWORDS.windy && SWORDS.windy.phases) || [];
   const FROSTBITE_PHASES = (SWORDS.frostbite && SWORDS.frostbite.phases) || [];
+  const VOLTSTRIKE_PHASES = (SWORDS.voltstrike && SWORDS.voltstrike.phases) || [];
 
   // Structured NPC Formation Offsets (Relative to Zone Center)
   const NPC_FORMATION_10_SLOTS = [
@@ -189,6 +190,14 @@
       icon: "🧊",
       description: "Unlock when reaching the final phase of Frostbite (366,000 killstreak).",
       killsRequired: 366000
+    },
+    {
+      id: "voltstrike_ascended",
+      title: "The Lightning",
+      badge: "voltstrike_ascended",
+      icon: "⚡",
+      description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",
+      killsRequired: 699999
     }
   ];
 
@@ -353,6 +362,7 @@
     HELLFIRE_PHASES,
     WINDY_PHASES,
     FROSTBITE_PHASES,
+    VOLTSTRIKE_PHASES,
     SWORDS,
     KILLSTREAK_SCALING,
     DEVOURER_SCALING,
