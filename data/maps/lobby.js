@@ -102,6 +102,17 @@
         title: "WEAPON PEDESTAL",
         subtitle: "WINDY",
         unlockKills: 24000
+      },
+      {
+        id: "frostbite_stand",
+        swordId: "frostbite",
+        x: 880,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "FROSTBITE",
+        unlockKills: 32500
       }
     ],
     // Backwards-compatible single reference

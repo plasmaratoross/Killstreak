@@ -755,6 +755,137 @@ export const CUTSCENES = {
     }
   },
 
+  frostbite_unlock: {
+    type: "frostbite_unlock",
+
+    shake: [8, 0.5],
+
+    achieve: null,
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite") : "FROSTBITE",
+          text: I18n ? I18n.t("cutscene.frostbite_unlock_1") : "Thirty-two thousand, five hundred kills. Something in the air has stopped moving."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite") : "FROSTBITE",
+          text: I18n ? I18n.t("cutscene.frostbite_unlock_2") : "Cold."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite") : "FROSTBITE",
+          text: I18n ? I18n.t("cutscene.frostbite_unlock_3") : "That's all it is. Not yet a weapon — just a shape that refuses to warm up."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite") : "FROSTBITE",
+          text: I18n ? I18n.t("cutscene.frostbite_unlock_4") : "But the cold is spreading. Tell it where."
+        }
+      ];
+    },
+
+    onFinish(game) {
+    // Re-resolve bindings that were file-scope in js/game.js.
+    const Storage = window.Killstreak.Storage;
+    const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+    game.saveData.frostbiteUnlockCutsceneSeen = true;
+    Storage.save(game.saveData);
+
+    game.camera.shake(12, 0.55);
+    for (let i = 0; i < 55; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 110 + Math.random() * 230;
+      const color = i % 2 === 0 ? "#a5f3fc" : "#e0f2fe";
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+      );
+    }
+
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    game.floatingTexts.push(
+      new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.frostbite_unlocked", { defaultValue: "FROSTBITE UNLOCKED!" }) : "FROSTBITE UNLOCKED!", "#a5f3fc", 20)
+    );
+
+    if (game.callbacks.onCutsceneEnd) {
+      game.callbacks.onCutsceneEnd();
+    }
+    if (game.callbacks.onToast) {
+      const tTitle = I18n ? I18n.t("toasts.frostbite_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+      const tDesc = I18n ? I18n.t("toasts.frostbite_unlock_desc", { defaultValue: "Frostbite — The Frozen is now available!" }) : "Frostbite — The Frozen is now available!";
+      game.callbacks.onToast(tTitle, tDesc, "🧊");
+    }
+    return;
+    }
+  },
+
+  frostbite_p12: {
+    type: "frostbite_p12",
+
+    shake: [12, 0.5],
+
+    achieve: "frostbite_ascended",
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite_p12") : "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
+          text: I18n ? I18n.t("cutscene.frostbite_p12_1") : "[The frost stops falling. It simply hangs, suspended, waiting for permission to move.]"
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite_p12") : "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
+          text: I18n ? I18n.t("cutscene.frostbite_p12_2") : "The cold has no limit."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite_p12") : "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
+          text: I18n ? I18n.t("cutscene.frostbite_p12_3") : "The world has stopped."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite_p12") : "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
+          text: I18n ? I18n.t("cutscene.frostbite_p12_4") : "[Every layer of ice goes still at the same instant. Nothing melts. Nothing breaks.]\n\nThis is absolute zero."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_frostbite_p12") : "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
+          text: I18n ? I18n.t("cutscene.frostbite_p12_5") : "Freeze."
+        }
+      ];
+    },
+
+    onFinish(game) {
+    const Storage = window.Killstreak.Storage;
+    const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+    game.saveData.frostbitePhase12CutsceneSeen = true;
+    Storage.save(game.saveData);
+
+    game.camera.shake(18, 0.6);
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 130 + Math.random() * 260;
+      const color = i % 3 === 0 ? "#e0f2fe" : (i % 3 === 1 ? "#a5f3fc" : "#ffffff");
+      game.particles.push(
+        new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.0, 0.7)
+      );
+    }
+
+    const I18n = window.Killstreak && window.Killstreak.I18n;
+    game.floatingTexts.push(
+      new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.frostbite_p12", { defaultValue: "ABSOLUTE ZERO!" }) : "ABSOLUTE ZERO!", "#e0f2fe", 20)
+    );
+
+    if (game.callbacks.onCutsceneEnd) {
+      game.callbacks.onCutsceneEnd();
+    }
+    if (game.callbacks.onToast) {
+      const tTitle = I18n ? I18n.t("toasts.frostbite_p12_title", { defaultValue: "ABSOLUTE ZERO" }) : "ABSOLUTE ZERO";
+      const tDesc = I18n ? I18n.t("toasts.frostbite_p12_desc", { defaultValue: "Frostbite has reached its final form." }) : "Frostbite has reached its final form.";
+      game.callbacks.onToast(tTitle, tDesc, "🧊");
+    }
+    return;
+    }
+  },
+
   windy_unlock: {
     type: "windy_unlock",
 

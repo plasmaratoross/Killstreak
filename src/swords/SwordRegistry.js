@@ -1,5 +1,5 @@
 /**
- * SwordRegistry — central lookup for all 8 swords.
+ * SwordRegistry — central lookup for all 9 swords.
  *
  * Maps swordId → { data, render } so Player and Game never contain per-sword
  * if/switch chains.
@@ -19,6 +19,7 @@ import metallicData   from './metallic/metallic.data.json';
 import floraData      from './flora/flora.data.json';
 import hellfireData   from './hellfire/hellfire.data.json';
 import windyData      from './windy/windy.data.json';
+import frostbiteData  from './frostbite/frostbite.data.json';
 
 import devourerRender  from './devourer/devourer.render.js';
 import overdriveRender from './overdrive/overdrive.render.js';
@@ -27,8 +28,7 @@ import soilRender      from './soil/soil.render.js';
 import metallicRender  from './metallic/metallic.render.js';
 import floraRender     from './flora/flora.render.js';
 import hellfireRender  from './hellfire/hellfire.render.js';
-import windyRender     from './windy/windy.render.js';
-
+import windyRender     from './windy/windy.render.js';import frostbiteRender from './frostbite/frostbite.render.js';
 // Ability modules are deliberately NOT imported here — see the header. They are
 // imported by src/systems/AbilitySystem.js, which owns the dispatch.
 
@@ -38,7 +38,8 @@ import windyRender     from './windy/windy.render.js';
  *   devourer  → Gluttony (Z) + Engulf (X)
  *   overdrive → none; its Z falls through to Gluttony, whose
  *               `swordId !== "devourer"` guard rejects it
- *   aquatic, soil, metallic, flora, hellfire, windy → their own Z ability
+ *   aquatic, soil, metallic, flora, hellfire, windy, frostbite → their own Z ability
+ *   frostbite → Freeze (Z) + Blizzard (X)
  *
  * @type {Record<string, { data: object, render: object }>}
  */
@@ -51,6 +52,7 @@ const SwordRegistry = {
   flora:     { data: floraData,     render: floraRender },
   hellfire:  { data: hellfireData,  render: hellfireRender },
   windy:     { data: windyData,     render: windyRender },
+  frostbite: { data: frostbiteData, render: frostbiteRender },
 };
 
 export default SwordRegistry;
@@ -66,4 +68,4 @@ export function getSwordRenderer(swordId) {
 }
 
 /** All valid sword IDs in progression order */
-export const SWORD_IDS = ['devourer', 'overdrive', 'aquatic', 'soil', 'metallic', 'flora', 'hellfire', 'windy'];
+export const SWORD_IDS = ['devourer', 'overdrive', 'aquatic', 'soil', 'metallic', 'flora', 'hellfire', 'windy', 'frostbite'];

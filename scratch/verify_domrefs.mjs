@@ -53,7 +53,10 @@ const REMOVED_AFTER_HOIST = new Map([['menuLobbyBtn', 'menu-lobby-btn']]);
 // Refs ADDED after the hoist, for features that did not exist then. Same reasoning in
 // reverse: listed explicitly rather than relaxing the counts, and the guard below
 // proves each added name really has its element in index.html.
-const ADDED_AFTER_HOIST = new Map([['libTabWindy', 'lib-tab-windy']]);
+const ADDED_AFTER_HOIST = new Map([
+  ['libTabWindy', 'lib-tab-windy'],
+  ['libTabFrostbite', 'lib-tab-frostbite'],
+]);
 
 console.log('--- fidelity ---');
 check(`original main.js declared ${beforeFull.size} refs`, beforeFull.size === 122, `found ${beforeFull.size}`);

@@ -19,6 +19,7 @@ const DEFAULT_SAVE = {
   floraPhase: 1,
   hellfirePhase: 1,
   windyPhase: 1,
+  frostbitePhase: 1,
   equippedSword: "devourer",
   isSwordEquipped: true,
   phase17CutsceneSeen: false,
@@ -34,6 +35,8 @@ const DEFAULT_SAVE = {
   hellfirePhase10CutsceneSeen: false,
   windyUnlockCutsceneSeen: false,
   windyPhase13CutsceneSeen: false,
+  frostbiteUnlockCutsceneSeen: false,
+  frostbitePhase12CutsceneSeen: false,
   achievements: [],
   badges: [],
   settings: {
@@ -44,7 +47,7 @@ const DEFAULT_SAVE = {
   }
 };
 
-const VALID_SWORDS = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy"];
+const VALID_SWORDS = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite"];
 
 const SaveManager = {
   load() {
@@ -72,7 +75,10 @@ const SaveManager = {
         soilPhase: typeof parsed.soilPhase === "number" ? parsed.soilPhase : 1,
         metallicPhase: typeof parsed.metallicPhase === "number" ? parsed.metallicPhase : 1,
         floraPhase: typeof parsed.floraPhase === "number" ? parsed.floraPhase : 1,
-        hellfirePhase: typeof parsed.hellfirePhase === "number" ? parsed.hellfirePhase : 1,      windyPhase: typeof parsed.windyPhase === "number" ? parsed.windyPhase : 1,        equippedSword: eqSword,
+        hellfirePhase: typeof parsed.hellfirePhase === "number" ? parsed.hellfirePhase : 1,
+        windyPhase: typeof parsed.windyPhase === "number" ? parsed.windyPhase : 1,
+        frostbitePhase: typeof parsed.frostbitePhase === "number" ? parsed.frostbitePhase : 1,
+        equippedSword: eqSword,
         isSwordEquipped: typeof parsed.isSwordEquipped === "boolean" ? parsed.isSwordEquipped : true,
         phase17CutsceneSeen: Boolean(parsed.phase17CutsceneSeen),
         aquaticUnlockCutsceneSeen: Boolean(parsed.aquaticUnlockCutsceneSeen),
@@ -84,8 +90,12 @@ const SaveManager = {
         floraUnlockCutsceneSeen: Boolean(parsed.floraUnlockCutsceneSeen),
         floraPhase10CutsceneSeen: Boolean(parsed.floraPhase10CutsceneSeen),
         hellfireUnlockCutsceneSeen: Boolean(parsed.hellfireUnlockCutsceneSeen),
-        hellfirePhase10CutsceneSeen: Boolean(parsed.hellfirePhase10CutsceneSeen),      windyUnlockCutsceneSeen: Boolean(parsed.windyUnlockCutsceneSeen),
-      windyPhase13CutsceneSeen: Boolean(parsed.windyPhase13CutsceneSeen),        achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
+        hellfirePhase10CutsceneSeen: Boolean(parsed.hellfirePhase10CutsceneSeen),
+        windyUnlockCutsceneSeen: Boolean(parsed.windyUnlockCutsceneSeen),
+        windyPhase13CutsceneSeen: Boolean(parsed.windyPhase13CutsceneSeen),
+        frostbiteUnlockCutsceneSeen: Boolean(parsed.frostbiteUnlockCutsceneSeen),
+        frostbitePhase12CutsceneSeen: Boolean(parsed.frostbitePhase12CutsceneSeen),
+        achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
         badges: Array.isArray(parsed.badges) ? parsed.badges : [],
         settings: {
           screenShake: parsed.settings && typeof parsed.settings.screenShake === "boolean" ? parsed.settings.screenShake : true,
@@ -127,6 +137,7 @@ const SaveManager = {
       floraPhase: typeof data.floraPhase === "number" ? data.floraPhase : 1,
       hellfirePhase: typeof data.hellfirePhase === "number" ? data.hellfirePhase : 1,
       windyPhase: typeof data.windyPhase === "number" ? data.windyPhase : 1,
+      frostbitePhase: typeof data.frostbitePhase === "number" ? data.frostbitePhase : 1,
       equippedSword: eqSword,
       isSwordEquipped: typeof data.isSwordEquipped === "boolean" ? data.isSwordEquipped : true,
       phase17CutsceneSeen: Boolean(data.phase17CutsceneSeen),
@@ -142,6 +153,8 @@ const SaveManager = {
       hellfirePhase10CutsceneSeen: Boolean(data.hellfirePhase10CutsceneSeen),
       windyUnlockCutsceneSeen: Boolean(data.windyUnlockCutsceneSeen),
       windyPhase13CutsceneSeen: Boolean(data.windyPhase13CutsceneSeen),
+      frostbiteUnlockCutsceneSeen: Boolean(data.frostbiteUnlockCutsceneSeen),
+      frostbitePhase12CutsceneSeen: Boolean(data.frostbitePhase12CutsceneSeen),
       achievements: Array.isArray(data.achievements) ? [...data.achievements] : [],
       badges: Array.isArray(data.badges) ? [...data.badges] : [],
       settings: data.settings ? {

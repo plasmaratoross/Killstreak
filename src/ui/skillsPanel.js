@@ -31,8 +31,8 @@ export function updateSkillsUI(game, skillsData) {
 
   const swordId = (skillsData && skillsData.swordId) || (game && game.player && game.player.swordId) || "devourer";
 
-  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire or Windy is equipped
-  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy")) {
+  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy or Frostbite is equipped
+  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite")) {
     if (hudSkillsBar) hudSkillsBar.classList.add("hidden");
     skillGluttonyBtn.disabled = true;
     skillEngulfBtn.disabled = true;
@@ -131,6 +131,57 @@ export function updateSkillsUI(game, skillsData) {
       skillGluttonyBtn.className = "skill-btn skill-ready";
       skillGluttonyBtn.disabled = false;
       skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // FROSTBITE SKILLS: Freeze (Z) + Blizzard (X) — the only sword with two of its own
+  if (swordId === "frostbite") {
+    skillGluttonyBtn.classList.remove("hidden");
+    skillEngulfBtn.classList.remove("hidden");
+
+    const zLabel = skillGluttonyBtn.querySelector(".skill-btn-label");
+    const xLabel = skillEngulfBtn.querySelector(".skill-btn-label");
+    if (zLabel) zLabel.textContent = I18n ? I18n.t("skills.freeze_label") : "[ Z — FREEZE ]";
+    if (xLabel) xLabel.textContent = I18n ? I18n.t("skills.blizzard_label") : "[ X — BLIZZARD ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.freeze_title") : "Freeze [Z] — Encases every enemy within your average swing range in ice for 5s; frozen targets take double damage (Phase 7+, 25s CD)";
+    skillEngulfBtn.title = I18n ? I18n.t("skills.blizzard_title") : "Blizzard [X] — A freezing storm covering 4x your average swing range for 5s, dealing 50% damage every 0.25s and slowing enemies by 15% (Phase 11+, 60s CD)";
+
+    const fzCd = (skillsData && typeof skillsData.freezeCooldown === "number")
+      ? skillsData.freezeCooldown
+      : (game && typeof game.freezeCooldown === "number" ? game.freezeCooldown : 0);
+    const bzCd = (skillsData && typeof skillsData.blizzardCooldown === "number")
+      ? skillsData.blizzardCooldown
+      : (game && typeof game.blizzardCooldown === "number" ? game.blizzardCooldown : 0);
+
+    // Z — Freeze unlocks at the first deliberate collapse (phase 7).
+    if (phase < 7) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p7") : "LOCKED (P7)";
+    } else if (fzCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${fzCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+
+    // X — Blizzard unlocks at the second collapse (phase 11).
+    if (phase < 11) {
+      skillEngulfBtn.className = "skill-btn skill-locked";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.locked_p11") : "LOCKED (P11)";
+    } else if (bzCd > 0) {
+      skillEngulfBtn.className = "skill-btn skill-cooldown";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = `${bzCd.toFixed(1)}s`;
+    } else {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
     }
     return;
   }

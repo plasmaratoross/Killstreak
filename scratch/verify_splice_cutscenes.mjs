@@ -53,9 +53,10 @@ check('constructor resolves dialogue via CutsceneSystem.getLines',
   gameText.includes('CutsceneSystem.getLines("devourer_p17")'));
 const startCalls = (gameText.match(/CutsceneSystem\.start\(this, "/g) || []).length;
 // 11 -> 13: the windy sword adds its unlock and final-phase (p13) call sites, the
-// same pair every other sword contributes (devourer contributes only p17). The
-// count IS the invariant — a lost call site still fails here.
-check(`all 13 start call sites rewired (found ${startCalls})`, startCalls === 13);
+// same pair every other sword contributes (devourer contributes only p17).
+// 13 -> 15: frostbite contributes the same pair (unlock + p12).
+// The count IS the invariant — a lost call site still fails here.
+check(`all 15 start call sites rewired (found ${startCalls})`, startCalls === 15);
 check('surrounding systems intact',
   // updateBloodmoon/unlockAchievement are absent on purpose — Phase 5 moved them
   // into src/systems. Exact accounting lives in scratch/verify_inventory.mjs.

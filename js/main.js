@@ -235,6 +235,8 @@ import { setNumContent } from '../src/utils/dom.js';
           iconEl.textContent = "🔥";
         } else if (step.speaker.includes("WINDY") || step.speaker.includes("AERIAL")) {
           iconEl.textContent = "🌬️";
+        } else if (step.speaker.includes("FROSTBITE") || step.speaker.includes("FROZEN")) {
+          iconEl.textContent = "🧊";
         } else {
           iconEl.textContent = "👑";
         }

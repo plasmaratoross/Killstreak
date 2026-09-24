@@ -19,6 +19,7 @@
   const FLORA_PHASES = (SWORDS.flora && SWORDS.flora.phases) || [];
   const HELLFIRE_PHASES = (SWORDS.hellfire && SWORDS.hellfire.phases) || [];
   const WINDY_PHASES = (SWORDS.windy && SWORDS.windy.phases) || [];
+  const FROSTBITE_PHASES = (SWORDS.frostbite && SWORDS.frostbite.phases) || [];
 
   // Structured NPC Formation Offsets (Relative to Zone Center)
   const NPC_FORMATION_10_SLOTS = [
@@ -180,6 +181,14 @@
       icon: "🌬️",
       description: "Unlock when reaching the final phase of Windy (266,000 killstreak).",
       killsRequired: 266000
+    },
+    {
+      id: "frostbite_ascended",
+      title: "The Frozen",
+      badge: "frostbite_ascended",
+      icon: "🧊",
+      description: "Unlock when reaching the final phase of Frostbite (366,000 killstreak).",
+      killsRequired: 366000
     }
   ];
 
@@ -343,6 +352,7 @@
     FLORA_PHASES,
     HELLFIRE_PHASES,
     WINDY_PHASES,
+    FROSTBITE_PHASES,
     SWORDS,
     KILLSTREAK_SCALING,
     DEVOURER_SCALING,

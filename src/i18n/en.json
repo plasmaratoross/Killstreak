@@ -49,6 +49,12 @@
     "cataclysm_title": "Cataclysm [Z] — Slams blade releasing explosive magma eruptions dealing 5.75x DMG (Phase 4+, 15.3s CD)",
     "cyclone_label": "[ Z — CYCLONE ]",
     "cyclone_title": "Cyclone [Z] — Spinning vortex striking everything within 3x your swing radius for 5.5x DMG (Phase 4+, 35s CD)",
+    "freeze_label": "[ Z — FREEZE ]",
+    "freeze_title": "Freeze [Z] — Encases every enemy within your average swing range in ice for 5s; frozen targets take double damage (Phase 7+, 25s CD)",
+    "blizzard_label": "[ X — BLIZZARD ]",
+    "blizzard_title": "Blizzard [X] — A freezing storm covering 4x your average swing range for 5s, dealing 50% damage every 0.25s and slowing enemies by 15% (Phase 11+, 60s CD)",
+    "locked_p7": "LOCKED (P7)",
+    "locked_p11": "LOCKED (P11)",
     "locked_p4": "LOCKED (P4)",
     "locked_p9": "LOCKED (P9)",
     "locked_p10": "LOCKED (P10)",
@@ -69,6 +75,8 @@
     "hellfire_p10": "THE INFERNAL!",
     "windy_unlocked": "WINDY UNLOCKED!",
     "windy_p13": "BECOME THE TEMPEST!",
+    "frostbite_unlocked": "FROSTBITE UNLOCKED!",
+    "frostbite_p12": "ABSOLUTE ZERO!",
     "all_devourer": "THE ALL DEVOURER ASCENDS!",
     "fortitude": "FORTITUDE!",
     "tsunami": "TSUNAMI!",
@@ -179,6 +187,10 @@
       "windy_ascended": {
         "title": "The Aerial",
         "description": "Unlock when reaching the final phase of Windy (266,000 killstreak)."
+      },
+      "frostbite_ascended": {
+        "title": "The Frozen",
+        "description": "Unlock when reaching the final phase of Frostbite (366,000 killstreak)."
       }
     }
   },
@@ -253,6 +265,8 @@
     "speaker_hellfire_p10": "HELLFIRE — PHASE 10: THE INFERNAL",
     "speaker_windy": "WINDY",
     "speaker_windy_p13": "WINDY — PHASE 13: ULTIMATE TEMPEST",
+    "speaker_frostbite": "FROSTBITE",
+    "speaker_frostbite_p12": "FROSTBITE — PHASE 12: ABSOLUTE ZERO",
     "speaker_grove": "ELDER GROVE",
     "speaker_anvil": "ANVIL OF WILL",
     "speaker_abyss": "INFERNAL ABYSS",
@@ -332,6 +346,15 @@
     "windy_p13_3": "There is no gale.",
     "windy_p13_4": "[The horizon folds inward. Every rotating layer of sky answers at once.]\n\nThere is only the storm.",
     "windy_p13_5": "Become the tempest.",
+    "frostbite_unlock_1": "Thirty-two thousand, five hundred kills. Something in the air has stopped moving.",
+    "frostbite_unlock_2": "Cold.",
+    "frostbite_unlock_3": "That's all it is. Not yet a weapon - just a shape that refuses to warm up.",
+    "frostbite_unlock_4": "But the cold is spreading. Tell it where.",
+    "frostbite_p12_1": "[The frost stops falling. It simply hangs, suspended, waiting for permission to move.]",
+    "frostbite_p12_2": "The cold has no limit.",
+    "frostbite_p12_3": "The world has stopped.",
+    "frostbite_p12_4": "[Every layer of ice goes still at the same instant. Nothing melts. Nothing breaks.]\n\nThis is absolute zero.",
+    "frostbite_p12_5": "Freeze.",
     "hint": "[SPACE] or Click to Continue",
     "btn_skip": "SKIP [ESC]"
   },
@@ -384,6 +407,16 @@
     "windy_p13_desc": "Phase 13: Ultimate Tempest — Windy becomes the storm.",
     "windy_up_title": "THE STORM RISES",
     "windy_up_desc": "Reached {name}",
+    "frostbite_unlock_title": "WEAPON UNLOCKED",
+    "frostbite_unlock_desc": "Frostbite - The Frozen is now available!",
+    "frostbite_p12_title": "ABSOLUTE ZERO",
+    "frostbite_p12_desc": "Phase 12: Absolute Zero - Frostbite stops the world.",
+    "frostbite_up_title": "THE COLD DEEPENS",
+    "frostbite_up_desc": "Reached {name}",
+    "frostbite_freeze_title": "FROZEN",
+    "frostbite_freeze_desc": "{count} enemies frozen for 5s - deal double damage",
+    "frostbite_blizzard_title": "BLIZZARD",
+    "frostbite_blizzard_desc": "A freezing storm covers the ground for 5s",
     "devourer_up_title": "DEVOURER AWAKENED",
     "devourer_up_desc": "PHASE: {name}",
     "achievement_unlocked_title": "Achievement Unlocked!",
@@ -618,6 +651,11 @@
       "name": "Windy",
       "tag": "AERIAL",
       "description": "An aerial weapon that grows through movement and atmospheric pressure rather than weight. Features Cyclone [Z]."
+    },
+    "frostbite": {
+      "name": "Frostbite",
+      "tag": "FROZEN",
+      "description": "A freezing weapon that overwhelms the battlefield by taking movement away rather than outrunning the enemy. Features Freeze [Z] and Blizzard [X]."
     }
   },
   "phases": {
@@ -1158,6 +1196,80 @@
         "shortName": "Ultimate Tempest",
         "effects": "FINAL TRANSFORMATION: ULTIMATE TEMPEST. Windy is no longer controlling the wind — Windy has become the storm. Base 70,000 DMG, 145,000 HP, and 220 SPD. Become the tempest.",
         "notification": "There is only the storm."
+      }
+    },
+    "frostbite": {
+      "1": {
+        "name": "Phase 1: Ice Cube",
+        "shortName": "Ice Cube",
+        "effects": "A tiny piece of frozen matter shaped into a sword. Pale, sparse, almost no particles. Base 4 DMG and 20 HP.",
+        "notification": "Cold. That's all it is."
+      },
+      "2": {
+        "name": "Phase 2: Frost",
+        "shortName": "Frost",
+        "effects": "A thin frost layer spreads across the blade, with small ice crystals and faint particles. Base 12 DMG and 50 HP.",
+        "notification": "The cold is spreading."
+      },
+      "3": {
+        "name": "Phase 3: Chill",
+        "shortName": "Chill",
+        "effects": "More crystals form and a faint cold mist drifts off the blade. Base 40 DMG and 125 HP.",
+        "notification": "You can feel it now."
+      },
+      "4": {
+        "name": "Phase 4: Icebound",
+        "shortName": "Icebound",
+        "effects": "Thick ice formations encase the blade and the handle frosts over, trailing ice particles on every swing. Base 105 DMG and 500 HP.",
+        "notification": "The cold has taken hold."
+      },
+      "5": {
+        "name": "Phase 5: Frozen",
+        "shortName": "Frozen",
+        "effects": "The sword begins freezing the battlefield itself: frost trails, cold mist and frozen impact effects. Base 315 DMG and 1,250 HP.",
+        "notification": "The world slows in the cold."
+      },
+      "6": {
+        "name": "Phase 6: Glacier",
+        "shortName": "Glacier",
+        "effects": "The first major form: a glacier-like blade with heavy ice formations, a thick frost aura and ice shards on impact. Base 860 DMG and 3,250 HP.",
+        "notification": "The glacier awakens. Everything beneath it will freeze."
+      },
+      "7": {
+        "name": "Phase 7: Shatter",
+        "shortName": "Shatter",
+        "effects": "DELIBERATE COLLAPSE. The glacier breaks: a cracked, fragmentary weapon with almost no aura. Unlocks Freeze [Z] — encases enemies in ice for 5s, doubling all damage they take. Base 6 DMG and 40 HP.",
+        "notification": "...Crack. Something broke. But not the cold."
+      },
+      "8": {
+        "name": "Phase 8: Permafrost",
+        "shortName": "Permafrost",
+        "effects": "The ice reforms stronger than before: larger crystals, a strong frost aura, frozen ground effects and floating shards. Base 6,766 DMG and 8,675 HP.",
+        "notification": "It survived the fracture. Now it remembers."
+      },
+      "9": {
+        "name": "Phase 9: Deep Freeze",
+        "shortName": "Deep Freeze",
+        "effects": "The cold becomes oppressive: dense frost mist, large crystals and ice spreading across the ground. Base 15,000 DMG and 16,666 HP.",
+        "notification": "The cold has no bottom."
+      },
+      "10": {
+        "name": "Phase 10: Frozen Wasteland",
+        "shortName": "Frozen Wasteland",
+        "effects": "The sword creates its own frozen environment: massive ice structures, snow, frozen ground and shards constantly forming and breaking. Base 52,000 DMG and 89,000 HP.",
+        "notification": "There is no warmth left. Only ice."
+      },
+      "11": {
+        "name": "Phase 11: Fracture",
+        "shortName": "Fracture",
+        "effects": "DELIBERATE COLLAPSE. Enormous power becomes unstable: large cracks, missing ice sections and a weak frost aura. Unlocks Blizzard [X] — a 5s freezing storm dealing 50% damage every 0.25s and slowing enemies by 15%. Base 1,333 DMG and 3,333 HP.",
+        "notification": "Too much... Even ice can break. ...But can it melt?"
+      },
+      "12": {
+        "name": "Phase 12: Absolute Zero",
+        "shortName": "Absolute Zero",
+        "effects": "FINAL TRANSFORMATION: ABSOLUTE ZERO. A glacier made into a weapon — layered translucent ice, constant snow, crystalline structures and frozen ground. Frostbite no longer freezes things; it stops them. Base 165,000 DMG, 366,000 HP and 150 SPD. Freeze.",
+        "notification": "The cold has no limit. The world has stopped. This is absolute zero."
       }
     }
   },

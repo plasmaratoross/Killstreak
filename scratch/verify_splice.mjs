@@ -193,21 +193,34 @@ for (const c of cases) {
   const out = [...src];
   for (const r of ranges) out.splice(r.start, r.end - r.start + 1);
 
-  // Windy sword lines added inside existing methods (they postdate this backup), so
-  // they are removed from both sides before the byte comparison.
-  const WINDY_ADDITIONS = [
+  // Sword lines added inside existing methods (they postdate this backup), so they
+  // are removed from both sides before the byte comparison. Every entry is an exact
+  // whole line, and the list is deliberately narrow: anything else still fails.
+  const ADDITIONS = [
+    // Windy
     '      const isWindy = this.swordId === "windy";',
     '      else if (isWindy) shadowCol = "rgba(34, 211, 238, 0.45)";',
     '      else if (isWindy) playerFill = "#0f172a";',
     '      else if (isWindy) playerStroke = "#22d3ee";',
-    '      else if (isWindy) eyeColor = "#06b6d4";'
+    '      else if (isWindy) eyeColor = "#06b6d4";',
+    // Frostbite
+    '      const isFrostbite = this.swordId === "frostbite";',
+    '      else if (isFrostbite) shadowCol = "rgba(165, 243, 252, 0.45)";',
+    '      else if (isFrostbite) playerFill = "#082f49";',
+    '      else if (isFrostbite) playerStroke = "#7dd3fc";',
+    '      else if (isFrostbite) eyeColor = "#22d3ee";'
   ];
-  const stripWindy = (t) => t.split(eol).filter((l) => !WINDY_ADDITIONS.includes(l)).join(eol);
+  const stripAdditions = (t) => t.split(eol).filter((l) => !ADDITIONS.includes(l)).join(eol);
 
-  // Windy changes that ADD or REWRITE lines, so they are folded into the
-  // reconstructed `expected` exactly as they were made to the file. Every entry is an
-  // exact match, so any other change outside the removed methods still fails.
-  const WINDY_TRANSFORMS = [
+  // Changes that ADD or REWRITE lines, so they are folded into the reconstructed
+  // `expected` exactly as they were made to the file. Every entry is an exact match,
+  // so any other change outside the removed methods still fails.
+  //
+  // ORDER MATTERS for the headerColor pair: the 10-space form is a text superset of
+  // the 8-space form, so the draw() entry has to be applied first or it would also
+  // rewrite the drawBadge() line.
+  const TRANSFORMS = [
+    // ---------------------------------------------------------------- Windy
     ['      const isHellfire = this.swordId === "hellfire";\n      const phaseColor = isLocked',
      '      const isHellfire = this.swordId === "hellfire";\n      const isWindy = this.swordId === "windy";\n      const phaseColor = isLocked'],
     ['          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {',
@@ -217,13 +230,55 @@ for (const c of cases) {
     ['        headerColor = isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))));',
      '        headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));'],
     ['        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: EMBER";\n      } else if (isFlora) {',
-     '        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: EMBER";\n      } else if (isWindy) {\n        fullTitle = "🌬️ WINDY";\n        subColor = "#22d3ee";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("windy", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";\n      } else if (isFlora) {']
+     '        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: EMBER";\n      } else if (isWindy) {\n        fullTitle = "🌬️ WINDY";\n        subColor = "#22d3ee";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("windy", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";\n      } else if (isFlora) {'],
+
+    // ------------------------------------------------------------ Frostbite
+    // SwordStand.draw AND drawBadge share this phaseColor fallback verbatim, so one
+    // entry covers both.
+    ['            : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))));',
+     '            : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8"))))))));'],
+    ['        : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)"))))));',
+     '        : (isFrostbite ? "rgba(165, 243, 252, 0.34)" : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)")))))));'],
+    ['        : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)"))))));',
+     '        : (isFrostbite ? "rgba(125, 211, 252, 0.8)" : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)")))))));'],
+    // draw() headerColor (10 spaces) BEFORE drawBadge()'s (8 spaces) — see the note above.
+    // The full line is restated because wrapping the ternary in `isFrostbite ? ... : ( … )`
+    // also adds one closing paren at the end.
+    ['          headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));',
+     '          headerColor = isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));'],
+    ['        headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));',
+     '        headerColor = isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));'],
+    ['        } else if (isWindy) {\n          compactTitle = "WINDY";\n          subColor = "#22d3ee";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {',
+     '        } else if (isWindy) {\n          compactTitle = "WINDY";\n          subColor = "#22d3ee";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFrostbite) {\n          compactTitle = "FROSTBITE";\n          subColor = "#7dd3fc";\n          compactSub = `PHASE ${pNum}`;\n        } else if (isFlora) {'],
+    ['        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";\n      } else if (isFlora) {',
+     '        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";\n      } else if (isFrostbite) {\n        fullTitle = "🧊 FROSTBITE";\n        subColor = "#7dd3fc";\n        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("frostbite", activePhase.phase) : activePhase;\n        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: ICE CUBE";\n      } else if (isFlora) {'],
+    // NPC status system (Frostbite's Freeze / Blizzard).
+    ['      this.wingTimer = Math.random() * Math.PI * 2;\n\n      // Arbitrary zone wandering state',
+     '      this.wingTimer = Math.random() * Math.PI * 2;\n\n      // Status effects (Frostbite\'s Freeze / Blizzard). `rootTimer` is older than\n      // these and is still set externally by Flora\'s Worldroot ability.\n      this.frozenTimer = 0;\n      this.slowTimer = 0;\n      this.slowFactor = 1;\n\n      // Arbitrary zone wandering state'],
+    ['    takeDamage(amount, angle, force = 200) {\n      this.hp -= amount;\n      this.hitFlashTimer = 0.14;',
+     '    takeDamage(amount, angle, force = 200) {\n      // Frostbite\'s Frozen status: a frozen target takes double damage from every\n      // player source. Doing it here rather than at the seven call sites means\n      // sword swings and abilities all behave the same, and the value actually\n      // dealt is returned so callers can display it.\n      const dealt = this.frozenTimer > 0 ? amount * 2 : amount;\n      this.hp -= dealt;\n      this.hitFlashTimer = 0.14;'],
+    ['          game.handleNpcDeath(this);\n        }\n      }\n    }\n\n    getShoveRatio() {',
+     '          game.handleNpcDeath(this);\n        }\n      }\n\n      return dealt;\n    }\n\n    getShoveRatio() {'],
+    ['      this.wingTimer += dt * (this.isHostile ? 16 : 8);\n\n      // Apply knockback decay',
+     '      this.wingTimer += dt * (this.isHostile ? 16 : 8);\n\n      // Status timers. Frozen stops movement and interrupts attacks; Slow scales\n      // movement speed until it expires.\n      if (this.frozenTimer > 0) this.frozenTimer -= dt;\n      if (this.slowTimer > 0) {\n        this.slowTimer -= dt;\n        if (this.slowTimer <= 0) this.slowFactor = 1;\n      }\n      const isFrozen = this.frozenTimer > 0;\n      const speedScale = this.slowTimer > 0 ? this.slowFactor : 1;\n\n      // Apply knockback decay'],
+    ['        if (this.rootTimer > 0) {\n          this.rootTimer -= dt;\n        } else if (this.wanderMoveTimer > 0) {',
+     '        if (this.rootTimer > 0) {\n          this.rootTimer -= dt;\n        } else if (isFrozen) {\n          // Frozen: movement stops entirely, so no wandering either.\n        } else if (this.wanderMoveTimer > 0) {'],
+    ['        if (this.rootTimer > 0) {\n          this.rootTimer -= dt;\n        } else {\n          // HOSTILE RULE: Chases the player while staying strictly in zone',
+     '        if (this.rootTimer > 0) {\n          this.rootTimer -= dt;\n        } else if (!isFrozen) {\n          // HOSTILE RULE: Chases the player while staying strictly in zone'],
+    ['            const wSpeed = this.speed * 0.42;\n            this.x += (dirX / mag) * wSpeed * dt;',
+     '            const wSpeed = this.speed * 0.42 * speedScale;\n            this.x += (dirX / mag) * wSpeed * dt;'],
+    ['            this.x += (dirX / mag) * this.speed * dt;\n            this.y += (dirY / mag) * this.speed * dt;',
+     '            this.x += (dirX / mag) * this.speed * speedScale * dt;\n            this.y += (dirY / mag) * this.speed * speedScale * dt;'],
+    ['          // Physical contact attack: If hostile, deals damage on contact!\n          if (this.isHostile && this.attackCooldown <= 0) {',
+     '          // Physical contact attack: If hostile, deals damage on contact!\n          // A frozen enemy cannot land this either — the weapon-range attack above\n          // is inside the frost guard, so this one needs its own check.\n          if (this.isHostile && this.attackCooldown <= 0 && !isFrozen) {'],
+    ['        ctx.setLineDash([]);\n        ctx.restore();\n      }\n\n      // Health bar: Show for all living NPCs (fixed: normal sentries now properly have a health bar)',
+     '        ctx.setLineDash([]);\n        ctx.restore();\n      }\n\n      // Frostbite Frozen status: the enemy is encased in ice. Drawn before the\n      // health bar so the bar stays readable on top of the encasement.\n      if (this.frozenTimer > 0) {\n        ctx.save();\n\n        ctx.fillStyle = "rgba(165, 243, 252, 0.42)";\n        ctx.beginPath();\n        ctx.arc(this.x, this.y, this.radius + 4, 0, Math.PI * 2);\n        ctx.fill();\n\n        ctx.strokeStyle = "#e0f2fe";\n        ctx.lineWidth = 2;\n        ctx.beginPath();\n        ctx.arc(this.x, this.y, this.radius + 4, 0, Math.PI * 2);\n        ctx.stroke();\n\n        // Angular facets, so the encasement reads as ice rather than a bubble.\n        ctx.strokeStyle = "rgba(224, 242, 254, 0.85)";\n        ctx.lineWidth = 1;\n        for (let i = 0; i < 5; i++) {\n          const a = (i / 5) * Math.PI * 2 + 0.4;\n          ctx.beginPath();\n          ctx.moveTo(this.x + Math.cos(a) * this.radius * 0.35, this.y + Math.sin(a) * this.radius * 0.35);\n          ctx.lineTo(this.x + Math.cos(a) * (this.radius + 4), this.y + Math.sin(a) * (this.radius + 4));\n          ctx.stroke();\n        }\n\n        // The ice cracks open as the effect expires.\n        if (this.frozenTimer < 1) {\n          ctx.strokeStyle = `rgba(255, 255, 255, ${0.9 - this.frozenTimer * 0.9})`;\n          ctx.lineWidth = 1.4;\n          for (let i = 0; i < 3; i++) {\n            const off = (i - 1) * 4;\n            ctx.beginPath();\n            ctx.moveTo(this.x - this.radius * 0.6, this.y + off);\n            ctx.lineTo(this.x + this.radius * 0.6, this.y + off + Math.cos(i * 2.1) * 3);\n            ctx.stroke();\n          }\n        }\n\n        ctx.restore();\n      } else if (this.slowTimer > 0) {\n        // Blizzard slow: frost gathers around the enemy\'s feet.\n        ctx.save();\n\n        ctx.strokeStyle = "rgba(186, 230, 253, 0.75)";\n        ctx.lineWidth = 2;\n        ctx.beginPath();\n        ctx.arc(this.x, this.y + this.radius * 0.5, this.radius * 0.85, 0, Math.PI * 2);\n        ctx.stroke();\n\n        ctx.fillStyle = "rgba(224, 242, 254, 0.6)";\n        for (let i = 0; i < 3; i++) {\n          const a = (i / 3) * Math.PI * 2 + this.wingTimer * 0.3;\n          ctx.beginPath();\n          ctx.arc(\n            this.x + Math.cos(a) * this.radius * 0.8,\n            this.y + this.radius * 0.5 + Math.sin(a) * this.radius * 0.4,\n            1.6, 0, Math.PI * 2\n          );\n          ctx.fill();\n        }\n\n        ctx.restore();\n      }\n\n      // Health bar: Show for all living NPCs (fixed: normal sentries now properly have a health bar)']
   ];
-  const applyWindy = (t) => WINDY_TRANSFORMS.reduce(
+  const applyTransforms = (t) => TRANSFORMS.reduce(
     (acc, [from, to]) => acc.split(from.split('\n').join(eol)).join(to.split('\n').join(eol)), t);
 
-  const expected = stripWindy(applyWindy(c.post(out.join(eol), eol)));
-  const actual = stripWindy(fs.readFileSync(path.join(root, c.cur), 'utf8'));
+  const expected = stripAdditions(applyTransforms(c.post(out.join(eol), eol)));
+  const actual = stripAdditions(fs.readFileSync(path.join(root, c.cur), 'utf8'));
   let detail = '';
   if (expected !== actual) {
     const e = expected.split(/\r?\n/);

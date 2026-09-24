@@ -17,7 +17,8 @@ const LOBBY_MAP = {
     { id: "metallic_stand",  swordId: "metallic",  x: 650,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "METALLIC",  unlockKills: 6613 },
     { id: "flora_stand",     swordId: "flora",     x: 707.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "FLORA",     unlockKills: 10500 },
     { id: "hellfire_stand",  swordId: "hellfire",  x: 765,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "HELLFIRE",  unlockKills: 18125 },
-    { id: "windy_stand",     swordId: "windy",     x: 822.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "WINDY",     unlockKills: 24000 }
+    { id: "windy_stand",     swordId: "windy",     x: 822.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "WINDY",     unlockKills: 24000 },
+    { id: "frostbite_stand", swordId: "frostbite", x: 880,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "FROSTBITE", unlockKills: 32500 }
   ],
   swordStand: { x: 420, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "DEVOURER" },
   portalToCombat: { x: 1980, y: 650, width: 36, height: 160, label: "ENTER GRASSLAND", interactRadius: 75 },

@@ -21,6 +21,7 @@
     floraPhase: 1,
     hellfirePhase: 1,
     windyPhase: 1,
+    frostbitePhase: 1,
     equippedSword: "devourer",
     isSwordEquipped: true,
     phase17CutsceneSeen: false,
@@ -36,6 +37,8 @@
     hellfirePhase10CutsceneSeen: false,
     windyUnlockCutsceneSeen: false,
     windyPhase13CutsceneSeen: false,
+    frostbiteUnlockCutsceneSeen: false,
+    frostbitePhase12CutsceneSeen: false,
     achievements: [],
     badges: [],
     settings: {
@@ -60,7 +63,7 @@
         const currentLang = (parsed.settings && (parsed.settings.language === "vi" || parsed.settings.language === "en"))
           ? parsed.settings.language
           : "en";
-        const validSwords = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy"];
+        const validSwords = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite"];
         const eqSword = validSwords.includes(parsed.equippedSword) ? parsed.equippedSword : "devourer";
         return {
           kills: unifiedKills,
@@ -75,6 +78,7 @@
           floraPhase: typeof parsed.floraPhase === "number" ? parsed.floraPhase : 1,
           hellfirePhase: typeof parsed.hellfirePhase === "number" ? parsed.hellfirePhase : 1,
           windyPhase: typeof parsed.windyPhase === "number" ? parsed.windyPhase : 1,
+          frostbitePhase: typeof parsed.frostbitePhase === "number" ? parsed.frostbitePhase : 1,
           equippedSword: eqSword,
           isSwordEquipped: typeof parsed.isSwordEquipped === "boolean" ? parsed.isSwordEquipped : true,
           phase17CutsceneSeen: Boolean(parsed.phase17CutsceneSeen),
@@ -90,6 +94,8 @@
           hellfirePhase10CutsceneSeen: Boolean(parsed.hellfirePhase10CutsceneSeen),
           windyUnlockCutsceneSeen: Boolean(parsed.windyUnlockCutsceneSeen),
           windyPhase13CutsceneSeen: Boolean(parsed.windyPhase13CutsceneSeen),
+          frostbiteUnlockCutsceneSeen: Boolean(parsed.frostbiteUnlockCutsceneSeen),
+          frostbitePhase12CutsceneSeen: Boolean(parsed.frostbitePhase12CutsceneSeen),
           achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
           badges: Array.isArray(parsed.badges) ? parsed.badges : [],
           settings: {
@@ -118,7 +124,7 @@
         ? data.settings.language
         : "en";
 
-      const validSwords = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy"];
+      const validSwords = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite"];
       const eqSword = validSwords.includes(data.equippedSword) ? data.equippedSword : "devourer";
 
       const payload = {
@@ -134,6 +140,7 @@
         floraPhase: typeof data.floraPhase === "number" ? data.floraPhase : 1,
         hellfirePhase: typeof data.hellfirePhase === "number" ? data.hellfirePhase : 1,
         windyPhase: typeof data.windyPhase === "number" ? data.windyPhase : 1,
+        frostbitePhase: typeof data.frostbitePhase === "number" ? data.frostbitePhase : 1,
         equippedSword: eqSword,
         isSwordEquipped: typeof data.isSwordEquipped === "boolean" ? data.isSwordEquipped : true,
         phase17CutsceneSeen: Boolean(data.phase17CutsceneSeen),
@@ -149,6 +156,8 @@
         hellfirePhase10CutsceneSeen: Boolean(data.hellfirePhase10CutsceneSeen),
         windyUnlockCutsceneSeen: Boolean(data.windyUnlockCutsceneSeen),
         windyPhase13CutsceneSeen: Boolean(data.windyPhase13CutsceneSeen),
+        frostbiteUnlockCutsceneSeen: Boolean(data.frostbiteUnlockCutsceneSeen),
+        frostbitePhase12CutsceneSeen: Boolean(data.frostbitePhase12CutsceneSeen),
         achievements: Array.isArray(data.achievements) ? [...data.achievements] : [],
         badges: Array.isArray(data.badges) ? [...data.badges] : [],
         settings: data.settings ? {

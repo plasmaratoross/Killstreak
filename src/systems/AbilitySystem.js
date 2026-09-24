@@ -29,6 +29,8 @@ import metallicAbility from '../swords/metallic/metallic.ability.js';
 import floraAbility from '../swords/flora/flora.ability.js';
 import hellfireAbility from '../swords/hellfire/hellfire.ability.js';
 import windyAbility from '../swords/windy/windy.ability.js';
+import frostbiteAbility from '../swords/frostbite/frostbite.ability.js';
+import frostbiteBlizzardAbility from '../swords/frostbite/frostbite.blizzard.ability.js';
 
 /**
  * Primary (Z) ability for the currently equipped sword.
@@ -46,16 +48,28 @@ export function activatePrimary(game) {
   if (swordId === "flora") return floraAbility.activate(game);
   if (swordId === "hellfire") return hellfireAbility.activate(game);
   if (swordId === "windy") return windyAbility.activate(game);
+  if (swordId === "frostbite") return frostbiteAbility.activate(game);
 
   return devourerAbility.activate(game);
 }
 
 /**
- * Secondary (X) ability. The original code called `activateEngulf`
- * unconditionally, with no swordId test.
+ * Secondary (X) ability.
+ *
+ * Originally this called `activateEngulf` unconditionally, with no swordId test.
+ * Frostbite is the first sword to bring its own secondary (Blizzard), so the
+ * chain now has exactly one branch; every other sword still falls through to
+ * Engulf and is rejected by its `swordId !== "devourer"` guard, exactly as before.
  *
  * @param {object} game
  */
 export function activateSecondary(game) {
+  const swordId = game.player && game.player.swordId;
+
+  // Frostbite is the only sword with its own secondary. Everything else falls
+  // through to Engulf, whose `swordId !== "devourer"` guard then rejects it —
+  // which is exactly the pre-existing behaviour for those swords.
+  if (swordId === "frostbite") return frostbiteBlizzardAbility.activate(game);
+
   return devourerEngulfAbility.activate(game);
 }

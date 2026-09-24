@@ -87,10 +87,26 @@ const WINDY_ADDITION = new RegExp(
   + ')$'
 );
 
+// 5. FROSTBITE SWORD ADDITION (both languages). Same reasoning as the windy
+//    allowance above — the legacy copy predates the sword, so its keys have
+//    nothing to match. Scoped to frostbite's own keys only.
+const FROSTBITE_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\\.(?:speaker_frostbite(?:_p12)?|frostbite_(?:unlock|p12)_\\d+)'
+  + '|swords\\.frostbite\\.(?:name|tag|description)'
+  + '|phases\\.frostbite\\.\\d+\\.(?:name|shortName|effects|notification)'
+  + '|skills\\.(?:freeze_(?:label|title)|blizzard_(?:label|title)|locked_p(?:7|11))'
+  + '|floating\\.frostbite_(?:unlocked|p12)'
+  + '|toasts\\.frostbite_[a-z0-9_]+'
+  + '|achievements\\.items\\.frostbite_ascended\\.(?:title|description)'
+  + ')$'
+);
+
 const allowedToDiffer = (key, lang) =>
   CUTSCENE_RESYNC.test(key)
   || MAIN_MENU_BUTTON_REMOVAL.test(key)
   || WINDY_ADDITION.test(key)
+  || FROSTBITE_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));
 
 /** Flatten to { 'a.b.c': value } so differences can be located precisely. */

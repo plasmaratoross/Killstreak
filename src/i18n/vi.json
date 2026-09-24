@@ -48,6 +48,12 @@
     "cataclysm_label": "[ Z — ĐẠI HỌA DIỆT THẾ ]",
     "cataclysm_title": "Đại Họa Diệt Thế [Z] — Cắm kiếm bộc phát cột dung nham gây sát thương gấp 5.75 lần kiếm (GĐ 4+, 15.3s hồi chiêu)",
     "cyclone_label": "[ Z — LỐC XOÁY ]",
+    "freeze_label": "[ Z — ĐÓNG BĂNG ]",
+    "freeze_title": "Đóng Băng [Z] — Đóng băng mọi kẻ địch trong tầm chém trung bình của ngươi suốt 5 giây; mục tiêu bị đóng băng nhận gấp đôi sát thương (GĐ 7+, 25s hồi chiêu)",
+    "blizzard_label": "[ X — BÃO TUYẾT ]",
+    "blizzard_title": "Bão Tuyết [X] — Cơn bão đóng băng phủ rộng gấp 4 lần tầm chém trung bình suốt 5 giây, gây 50% sát thương mỗi 0.25 giây và làm chậm kẻ địch 15% (GĐ 11+, 60s hồi chiêu)",
+    "locked_p7": "KHÓA (GĐ7)",
+    "locked_p11": "KHÓA (GĐ11)",
     "cyclone_title": "Lốc Xoáy [Z] — Xoáy kiếm cuốn phăng mọi kẻ địch trong bán kính gấp 3 lần tầm chém, gây sát thương gấp 5.5 lần (GĐ 4+, 35s hồi chiêu)",
     "locked_p4": "KHÓA (GĐ4)",
     "locked_p9": "KHÓA (GĐ9)",
@@ -69,6 +75,8 @@
     "hellfire_p10": "CHÚA TỂ HỎA NGỤC!",
     "windy_unlocked": "ĐÃ MỞ KHÓA WINDY!",
     "windy_p13": "HÃY TRỞ THÀNH CƠN BÃO!",
+    "frostbite_unlocked": "ĐÃ MỞ KHÓA FROSTBITE!",
+    "frostbite_p12": "ĐỘ KHÔNG TUYỆT ĐỐI!",
     "all_devourer": "THE ALL DEVOURER THĂNG HOA!",
     "fortitude": "KIÊN CƯỜNG!",
     "tsunami": "SÓNG THẦN!",
@@ -179,6 +187,10 @@
       "windy_ascended": {
         "title": "Kẻ Trên Không",
         "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Windy (266,000 chuỗi hạ gục)."
+      },
+      "frostbite_ascended": {
+        "title": "Kẻ Băng Giá",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Frostbite (366,000 chuỗi hạ gục)."
       }
     }
   },
@@ -253,6 +265,8 @@
     "speaker_hellfire_p10": "HELLFIRE — GIAI ĐOẠN 10: CHÚA TỂ HỎA NGỤC",
     "speaker_windy": "WINDY",
     "speaker_windy_p13": "WINDY — GIAI ĐOẠN 13: BÃO TỐ TỐI THƯỢNG",
+    "speaker_frostbite": "FROSTBITE",
+    "speaker_frostbite_p12": "FROSTBITE — GIAI ĐOẠN 12: ĐỘ KHÔNG TUYỆT ĐỐI",
     "speaker_grove": "RỪNG CỔ THỤ",
     "speaker_anvil": "ĐE SẮT Ý CHÍ",
     "speaker_abyss": "VỰC THẲM HỎA NGỤC",
@@ -332,6 +346,15 @@
     "windy_p13_3": "Không còn cơn gió lớn.",
     "windy_p13_4": "[Chân trời gấp vào trong. Mọi tầng xoáy của bầu trời cùng lúc đáp lại.]\n\nChỉ còn lại cơn bão.",
     "windy_p13_5": "Hãy trở thành cơn bão.",
+    "frostbite_unlock_1": "Ba mươi hai nghìn năm trăm mạng. Có gì đó trong không khí đã ngừng chuyển động.",
+    "frostbite_unlock_2": "Lạnh.",
+    "frostbite_unlock_3": "Chỉ có thế. Chưa phải vũ khí - chỉ là một hình dạng không chịu ấm lên.",
+    "frostbite_unlock_4": "Nhưng cái lạnh đang lan ra. Hãy bảo nó đóng băng nơi nào.",
+    "frostbite_p12_1": "[Tuyết ngừng rơi. Nó chỉ lơ lửng, chờ được phép chuyển động.]",
+    "frostbite_p12_2": "Cái lạnh không có giới hạn.",
+    "frostbite_p12_3": "Thế giới đã dừng lại.",
+    "frostbite_p12_4": "[Mọi tầng băng đứng yên cùng một khoảnh khắc. Không gì tan chảy. Không gì vỡ vụn.]\n\nĐây là độ không tuyệt đối.",
+    "frostbite_p12_5": "Đóng băng.",
     "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
     "btn_skip": "BỎ QUA [ESC]"
   },
@@ -384,6 +407,16 @@
     "windy_p13_desc": "Giai đoạn 13: Bão Tố Tối Thượng — Windy trở thành cơn bão.",
     "windy_up_title": "BÃO TỐ NỔI LÊN",
     "windy_up_desc": "Đã đạt {name}",
+    "frostbite_unlock_title": "VŨ KHÍ MỚI ĐÃ MỞ",
+    "frostbite_unlock_desc": "Frostbite - Kẻ Băng Giá hiện đã sẵn sàng!",
+    "frostbite_p12_title": "ĐỘ KHÔNG TUYỆT ĐỐI",
+    "frostbite_p12_desc": "Giai đoạn 12: Độ Không Tuyệt Đối - Frostbite khiến thế giới ngừng lại.",
+    "frostbite_up_title": "CÁI LẠNH CÀNG SÂU",
+    "frostbite_up_desc": "Đã đạt {name}",
+    "frostbite_freeze_title": "ĐÓNG BĂNG",
+    "frostbite_freeze_desc": "{count} kẻ địch bị đóng băng 5 giây - nhận gấp đôi sát thương",
+    "frostbite_blizzard_title": "BÃO TUYẾT",
+    "frostbite_blizzard_desc": "Cơn bão đóng băng phủ kín mặt đất suốt 5 giây",
     "devourer_up_title": "DEVOURER THỨC TỈNH",
     "devourer_up_desc": "GIAI ĐOẠN: {name}",
     "achievement_unlocked_title": "Mở Khóa Thành Tựu!",
@@ -618,6 +651,11 @@
       "name": "Windy",
       "tag": "VŨ KHÍ KHÔNG TRUNG",
       "description": "Vũ khí trên không phát triển qua chuyển động và áp suất khí quyển thay vì trọng lượng. Sở hữu kỹ năng Cyclone [Z]."
+    },
+    "frostbite": {
+      "name": "Frostbite",
+      "tag": "KẺ BĂNG GIÁ",
+      "description": "Vũ khí băng giá chinh phục chiến trường bằng cách tước đi chuyển động thay vì chạy nhanh hơn đối thủ. Sở hữu kỹ năng Freeze [Z] và Blizzard [X]."
     }
   },
   "phases": {
@@ -1158,6 +1196,80 @@
         "shortName": "Bão Tố Tối Thượng",
         "effects": "BIẾN ĐỔI TỐI HẬU: BÃO TỐ TỐI THƯỢNG. Windy không còn điều khiển gió — Windy đã trở thành cơn bão. Cơ bản 70,000 Sát thương, 145,000 Máu và 220 Tốc độ. Hãy trở thành cơn bão.",
         "notification": "Chỉ còn lại cơn bão."
+      }
+    },
+    "frostbite": {
+      "1": {
+        "name": "Giai đoạn 1: Khối Băng",
+        "shortName": "Khối Băng",
+        "effects": "Một mảnh vật chất đóng băng nhỏ bé được tạo hình thành kiếm. Nhạt màu, thưa thớt, gần như không có hạt. Cơ bản 4 Sát thương và 20 Máu.",
+        "notification": "Lạnh. Chỉ có thế."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Sương Giá",
+        "shortName": "Sương Giá",
+        "effects": "Một lớp sương giá mỏng lan khắp lưỡi kiếm, cùng những tinh thể băng nhỏ và hạt mờ. Cơ bản 12 Sát thương và 50 Máu.",
+        "notification": "Cái lạnh đang lan ra."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Lạnh Buốt",
+        "shortName": "Lạnh Buốt",
+        "effects": "Nhiều tinh thể hơn hình thành và một làn sương lạnh mờ tỏa ra từ lưỡi kiếm. Cơ bản 40 Sát thương và 125 Máu.",
+        "notification": "Ngươi đã cảm nhận được rồi."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Đóng Băng",
+        "shortName": "Đóng Băng",
+        "effects": "Những khối băng dày bao phủ lưỡi kiếm và chuôi kiếm phủ sương, để lại các hạt băng theo mỗi nhát chém. Cơ bản 105 Sát thương và 500 Máu.",
+        "notification": "Cái lạnh đã bám rễ."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Kết Đông",
+        "shortName": "Kết Đông",
+        "effects": "Thanh kiếm bắt đầu đóng băng chính chiến trường: vệt sương, sương lạnh và hiệu ứng va chạm đóng băng. Cơ bản 315 Sát thương và 1,250 Máu.",
+        "notification": "Thế giới chậm lại trong giá lạnh."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Sông Băng",
+        "shortName": "Sông Băng",
+        "effects": "Hình thái lớn đầu tiên: lưỡi kiếm như sông băng với những khối băng nặng, hào quang sương giá dày và mảnh băng khi va chạm. Cơ bản 860 Sát thương và 3,250 Máu.",
+        "notification": "Sông băng đã thức giấc. Mọi thứ bên dưới nó sẽ đóng băng."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Vỡ Vụn",
+        "shortName": "Vỡ Vụn",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Sông băng vỡ: một vũ khí nứt nẻ, rời rạc, gần như không còn hào quang. Mở khóa Freeze [Z] — đóng băng kẻ địch 5 giây, nhân đôi mọi sát thương chúng phải chịu. Cơ bản 6 Sát thương và 40 Máu.",
+        "notification": "...Rắc. Có gì đó vỡ. Nhưng không phải cái lạnh."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Băng Vĩnh Cửu",
+        "shortName": "Băng Vĩnh Cửu",
+        "effects": "Băng tái tạo mạnh hơn trước: tinh thể lớn hơn, hào quang sương giá mạnh, hiệu ứng mặt đất đóng băng và mảnh băng lơ lửng. Cơ bản 6,766 Sát thương và 8,675 Máu.",
+        "notification": "Nó đã sống sót qua vết nứt. Giờ nó ghi nhớ."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Đóng Băng Sâu",
+        "shortName": "Đóng Băng Sâu",
+        "effects": "Cái lạnh trở nên ngột ngạt: sương giá dày đặc, tinh thể lớn và băng lan khắp mặt đất. Cơ bản 15,000 Sát thương và 16,666 Máu.",
+        "notification": "Cái lạnh không có đáy."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Vùng Đất Băng Giá",
+        "shortName": "Vùng Đất Băng Giá",
+        "effects": "Thanh kiếm tạo ra môi trường đóng băng của riêng nó: những khối băng khổng lồ, tuyết, mặt đất đóng băng và mảnh băng không ngừng hình thành rồi vỡ. Cơ bản 52,000 Sát thương và 89,000 Máu.",
+        "notification": "Không còn hơi ấm. Chỉ còn băng."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Rạn Nứt",
+        "shortName": "Rạn Nứt",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH. Sức mạnh khổng lồ trở nên bất ổn: những vết nứt lớn, các phần băng mất đi và hào quang sương giá yếu ớt. Mở khóa Blizzard [X] — cơn bão đóng băng 5 giây gây 50% sát thương mỗi 0.25 giây và làm chậm kẻ địch 15%. Cơ bản 1,333 Sát thương và 3,333 Máu.",
+        "notification": "Quá nhiều... Ngay cả băng cũng có thể vỡ. ...Nhưng liệu nó có thể tan?"
+      },
+      "12": {
+        "name": "Giai đoạn 12: Độ Không Tuyệt Đối",
+        "shortName": "Độ Không Tuyệt Đối",
+        "effects": "BIẾN ĐỔI TỐI HẬU: ĐỘ KHÔNG TUYỆT ĐỐI. Một sông băng được rèn thành vũ khí — các tầng băng trong suốt xếp lớp, tuyết không ngừng, cấu trúc tinh thể và mặt đất đóng băng. Frostbite không còn đóng băng mọi thứ; nó khiến chúng dừng lại. Cơ bản 165,000 Sát thương, 366,000 Máu và 150 Tốc độ. Đóng băng.",
+        "notification": "Cái lạnh không có giới hạn. Thế giới đã dừng lại. Đây là độ không tuyệt đối."
       }
     }
   },

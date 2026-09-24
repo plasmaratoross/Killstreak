@@ -645,6 +645,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isFlora = this.swordId === "flora";
       const isHellfire = this.swordId === "hellfire";
       const isWindy = this.swordId === "windy";
+      const isFrostbite = this.swordId === "frostbite";
 
       let shadowCol = "rgba(56, 189, 248, 0.4)";
       if (isDevP17) shadowCol = "rgba(250, 204, 21, 0.8)";
@@ -659,6 +660,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isMetallic) shadowCol = "rgba(148, 163, 184, 0.4)";
       else if (isSoil) shadowCol = "rgba(180, 83, 9, 0.4)";
       else if (isWindy) shadowCol = "rgba(34, 211, 238, 0.45)";
+      else if (isFrostbite) shadowCol = "rgba(165, 243, 252, 0.45)";
 
       ctx.shadowColor = shadowCol;
       ctx.shadowBlur = (isDevP17 || isOdP7 || isAqP13 || isSoilP10 || isMetP10 || isFloraP10 || isHellP10) ? 24 : 10;
@@ -676,6 +678,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isFlora) playerFill = "#1c1917";
       else if (isMetallic) playerFill = "#0f172a";
       else if (isWindy) playerFill = "#0f172a";
+      else if (isFrostbite) playerFill = "#082f49";
 
       ctx.fillStyle = playerFill;
       ctx.fill();
@@ -695,6 +698,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isMetallic) playerStroke = "#94a3b8";
       else if (isSoil) playerStroke = "#b45309";
       else if (isWindy) playerStroke = "#22d3ee";
+      else if (isFrostbite) playerStroke = "#7dd3fc";
 
       ctx.strokeStyle = playerStroke;
       ctx.stroke();
@@ -721,6 +725,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       else if (isMetallic) eyeColor = "#64748b";
       else if (isSoil) eyeColor = "#92400e";
       else if (isWindy) eyeColor = "#06b6d4";
+      else if (isFrostbite) eyeColor = "#22d3ee";
 
       ctx.fillStyle = eyeColor;
       ctx.beginPath();
@@ -793,6 +798,12 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       this.knockbackY = 0;
       this.wingTimer = Math.random() * Math.PI * 2;
 
+      // Status effects (Frostbite's Freeze / Blizzard). `rootTimer` is older than
+      // these and is still set externally by Flora's Worldroot ability.
+      this.frozenTimer = 0;
+      this.slowTimer = 0;
+      this.slowFactor = 1;
+
       // Arbitrary zone wandering state
       this.wanderTargetX = this.x;
       this.wanderTargetY = this.y;
@@ -802,7 +813,12 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
     }
 
     takeDamage(amount, angle, force = 200) {
-      this.hp -= amount;
+      // Frostbite's Frozen status: a frozen target takes double damage from every
+      // player source. Doing it here rather than at the seven call sites means
+      // sword swings and abilities all behave the same, and the value actually
+      // dealt is returned so callers can display it.
+      const dealt = this.frozenTimer > 0 ? amount * 2 : amount;
+      this.hp -= dealt;
       this.hitFlashTimer = 0.14;
 
       // Mass resistance to knockback based on unit type or modular config
@@ -828,6 +844,8 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
           game.handleNpcDeath(this);
         }
       }
+
+      return dealt;
     }
 
     getShoveRatio() {
@@ -854,6 +872,16 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
       if (this.attackCooldown > 0) this.attackCooldown -= dt;
       this.wingTimer += dt * (this.isHostile ? 16 : 8);
+
+      // Status timers. Frozen stops movement and interrupts attacks; Slow scales
+      // movement speed until it expires.
+      if (this.frozenTimer > 0) this.frozenTimer -= dt;
+      if (this.slowTimer > 0) {
+        this.slowTimer -= dt;
+        if (this.slowTimer <= 0) this.slowFactor = 1;
+      }
+      const isFrozen = this.frozenTimer > 0;
+      const speedScale = this.slowTimer > 0 ? this.slowFactor : 1;
 
       // Apply knockback decay
       this.x += this.knockbackX * dt;
@@ -884,6 +912,8 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
 
         if (this.rootTimer > 0) {
           this.rootTimer -= dt;
+        } else if (isFrozen) {
+          // Frozen: movement stops entirely, so no wandering either.
         } else if (this.wanderMoveTimer > 0) {
           this.wanderMoveTimer -= dt;
           const wdx = this.wanderTargetX - this.x;
@@ -909,7 +939,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
             }
 
             const mag = Math.hypot(dirX, dirY) || 1;
-            const wSpeed = this.speed * 0.42;
+            const wSpeed = this.speed * 0.42 * speedScale;
             this.x += (dirX / mag) * wSpeed * dt;
             this.y += (dirY / mag) * wSpeed * dt;
           }
@@ -917,7 +947,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       } else {
         if (this.rootTimer > 0) {
           this.rootTimer -= dt;
-        } else {
+        } else if (!isFrozen) {
           // HOSTILE RULE: Chases the player while staying strictly in zone
           const dx = player.x - this.x;
           const dy = player.y - this.y;
@@ -942,8 +972,8 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
             }
 
             const mag = Math.hypot(dirX, dirY) || 1;
-            this.x += (dirX / mag) * this.speed * dt;
-            this.y += (dirY / mag) * this.speed * dt;
+            this.x += (dirX / mag) * this.speed * speedScale * dt;
+            this.y += (dirY / mag) * this.speed * speedScale * dt;
           }
         }
 
@@ -966,7 +996,9 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
           this.y = player.y + Math.sin(pushAngle) * minPDist;
 
           // Physical contact attack: If hostile, deals damage on contact!
-          if (this.isHostile && this.attackCooldown <= 0) {
+          // A frozen enemy cannot land this either — the weapon-range attack above
+          // is inside the frost guard, so this one needs its own check.
+          if (this.isHostile && this.attackCooldown <= 0 && !isFrozen) {
             player.takeDamage(this.damage, this);
             this.attackCooldown = this.attackRate;
           }
@@ -2269,6 +2301,72 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         ctx.restore();
       }
 
+      // Frostbite Frozen status: the enemy is encased in ice. Drawn before the
+      // health bar so the bar stays readable on top of the encasement.
+      if (this.frozenTimer > 0) {
+        ctx.save();
+
+        ctx.fillStyle = "rgba(165, 243, 252, 0.42)";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius + 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#e0f2fe";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius + 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Angular facets, so the encasement reads as ice rather than a bubble.
+        ctx.strokeStyle = "rgba(224, 242, 254, 0.85)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2 + 0.4;
+          ctx.beginPath();
+          ctx.moveTo(this.x + Math.cos(a) * this.radius * 0.35, this.y + Math.sin(a) * this.radius * 0.35);
+          ctx.lineTo(this.x + Math.cos(a) * (this.radius + 4), this.y + Math.sin(a) * (this.radius + 4));
+          ctx.stroke();
+        }
+
+        // The ice cracks open as the effect expires.
+        if (this.frozenTimer < 1) {
+          ctx.strokeStyle = `rgba(255, 255, 255, ${0.9 - this.frozenTimer * 0.9})`;
+          ctx.lineWidth = 1.4;
+          for (let i = 0; i < 3; i++) {
+            const off = (i - 1) * 4;
+            ctx.beginPath();
+            ctx.moveTo(this.x - this.radius * 0.6, this.y + off);
+            ctx.lineTo(this.x + this.radius * 0.6, this.y + off + Math.cos(i * 2.1) * 3);
+            ctx.stroke();
+          }
+        }
+
+        ctx.restore();
+      } else if (this.slowTimer > 0) {
+        // Blizzard slow: frost gathers around the enemy's feet.
+        ctx.save();
+
+        ctx.strokeStyle = "rgba(186, 230, 253, 0.75)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y + this.radius * 0.5, this.radius * 0.85, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(224, 242, 254, 0.6)";
+        for (let i = 0; i < 3; i++) {
+          const a = (i / 3) * Math.PI * 2 + this.wingTimer * 0.3;
+          ctx.beginPath();
+          ctx.arc(
+            this.x + Math.cos(a) * this.radius * 0.8,
+            this.y + this.radius * 0.5 + Math.sin(a) * this.radius * 0.4,
+            1.6, 0, Math.PI * 2
+          );
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
       // Health bar: Show for all living NPCs (fixed: normal sentries now properly have a health bar)
       let barWidth = typeof this.barWidth === "number" ? this.barWidth : 28;
       if (!this.barWidth) {
@@ -2428,18 +2526,19 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isFlora = this.swordId === "flora";
       const isHellfire = this.swordId === "hellfire";
       const isWindy = this.swordId === "windy";
+      const isFrostbite = this.swordId === "frostbite";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
             ? activePhase.color
-            : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))));
+            : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8"))))))));
       const I18n = window.Killstreak && window.Killstreak.I18n;
 
       // 1. Radiant Ground Floor Aura (sized for compact row spacing)
       const auraGrad = ctx.createRadialGradient(this.x, this.y, 4, this.x, this.y, this.radius + 12);
       const auraColor = isLocked
         ? "rgba(71, 85, 105, 0.28)"
-        : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)"))))));
+        : (isFrostbite ? "rgba(165, 243, 252, 0.34)" : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)")))))));
       auraGrad.addColorStop(0, auraColor);
       auraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = auraGrad;
@@ -2455,7 +2554,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       ctx.lineDashOffset = -this.hoverTime * 8;
       ctx.strokeStyle = isLocked
         ? "rgba(100, 116, 139, 0.45)"
-        : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)"))))));
+        : (isFrostbite ? "rgba(125, 211, 252, 0.8)" : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)")))))));
       ctx.stroke();
       ctx.setLineDash([]);
 
@@ -2676,7 +2775,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         let compactTitle = "";
         let compactSub = "";
         if (isLocked) {
-          headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));
+          headerColor = isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
           subColor = "#94a3b8";
           const unlockReq = this.unlockKills || (window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Swords && window.Killstreak.Data.Swords[this.swordId] && window.Killstreak.Data.Swords[this.swordId].unlockKills) || 0;
           const formattedK = unlockReq >= 1000 ? `${parseFloat((unlockReq / 1000).toFixed(2))}K` : `${unlockReq}`;
@@ -2689,6 +2788,10 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         } else if (isWindy) {
           compactTitle = "WINDY";
           subColor = "#22d3ee";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isFrostbite) {
+          compactTitle = "FROSTBITE";
+          subColor = "#7dd3fc";
           compactSub = `PHASE ${pNum}`;
         } else if (isFlora) {
           compactTitle = "FLORA";
@@ -2743,11 +2846,12 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isFlora = this.swordId === "flora";
       const isHellfire = this.swordId === "hellfire";
       const isWindy = this.swordId === "windy";
+      const isFrostbite = this.swordId === "frostbite";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
             ? activePhase.color
-            : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))));
+            : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8"))))))));
       const I18n = window.Killstreak && window.Killstreak.I18n;
 
       let fullTitle = "";
@@ -2756,7 +2860,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       let subColor = phaseColor;
 
       if (isLocked) {
-        headerColor = isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8"))))));
+        headerColor = isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
         const sName = (I18n ? (I18n.getSwordInfo(this.swordId) || {}).name || this.swordId : this.swordId).toUpperCase();
         fullTitle = `🔒 ${sName} (${I18n && I18n.currentLang === "vi" ? "ĐÃ KHÓA" : "LOCKED"})`;
         subColor = "#94a3b8";
@@ -2774,6 +2878,11 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         subColor = "#22d3ee";
         const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("windy", activePhase.phase) : activePhase;
         fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: BREEZE";
+      } else if (isFrostbite) {
+        fullTitle = "🧊 FROSTBITE";
+        subColor = "#7dd3fc";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("frostbite", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: ICE CUBE";
       } else if (isFlora) {
         fullTitle = "🌿 FLORA";
         subColor = "#4ade80";

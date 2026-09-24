@@ -886,6 +886,12 @@ body {
   color: #a5f3fc;
 }
 
+.subtab-btn.active#lib-tab-frostbite {
+  background: rgba(56, 189, 248, 0.28);
+  border-color: rgba(125, 211, 252, 0.8);
+  color: #e0f2fe;
+}
+
 .library-section {
   max-height: 360px;
   overflow-y: auto;

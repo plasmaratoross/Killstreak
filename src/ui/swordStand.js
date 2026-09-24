@@ -51,13 +51,14 @@ export function updateSwordStandUI(game) {
   const isFlora = sId === "flora";
   const isHellfire = sId === "hellfire";
   const isWindy = sId === "windy";
+  const isFrostbite = sId === "frostbite";
   const totalKills = (game.saveData && game.saveData.totalKills) || 0;
   const unlockReq = swordDef.unlockKills || 0;
   const isLocked = unlockReq > 0 && totalKills < unlockReq;
 
   standSwordName.textContent = sInfo.name.toUpperCase();
   if (standWeaponTitle) standWeaponTitle.textContent = sInfo.name.toUpperCase();
-  if (standSwordIcon) standSwordIcon.textContent = swordDef.icon || (isWindy ? "🌬️" : (isHellfire ? "🔥" : (isFlora ? "🌿" : (isMetallic ? "⚙️" : (isSoil ? "🛡️" : (isAquatic ? "🌊" : (isOverdrive ? "⚡" : "👁️")))))));
+  if (standSwordIcon) standSwordIcon.textContent = swordDef.icon || (isFrostbite ? "🧊" : (isWindy ? "🌬️" : (isHellfire ? "🔥" : (isFlora ? "🌿" : (isMetallic ? "⚙️" : (isSoil ? "🛡️" : (isAquatic ? "🌊" : (isOverdrive ? "⚡" : "👁️"))))))));
 
   let p = null;
   const isEquippedWithThis = game.player.isSwordEquipped && game.player.swordId === sId;
@@ -87,6 +88,9 @@ export function updateSwordStandUI(game) {
     } else if (isWindy) {
       pList = Config.WINDY_PHASES;
       savedNum = game.saveData.windyPhase || 1;
+    } else if (isFrostbite) {
+      pList = Config.FROSTBITE_PHASES;
+      savedNum = game.saveData.frostbitePhase || 1;
     }
     p = (pList && pList.find(x => x.phase === savedNum)) || (pList && pList[0]) || Config.SWORD_PHASES[0];
   }
@@ -226,12 +230,14 @@ export function initSwordStandWiring(game, onClose) {
       ironWillActive: Boolean(game.player.ironWillActive || game.player.ironWillTimer > 0),
       worldrootCooldown: game.worldrootCooldown,
       cataclysmCooldown: game.cataclysmCooldown,
-      cycloneCooldown: game.cycloneCooldown
+      cycloneCooldown: game.cycloneCooldown,
+      freezeCooldown: game.freezeCooldown,
+      blizzardCooldown: game.blizzardCooldown
     });
 
     const sInfo = I18n ? I18n.getSwordInfo(sId) : swordDef;
     if (isEquipped) {
-      const sIcon = sId === "windy" ? "🌬️" : (sId === "soil" ? "🛡️" : (sId === "aquatic" ? "🌊" : (sId === "metallic" ? "⚙️" : (sId === "flora" ? "🌿" : (sId === "hellfire" ? "🔥" : (sId === "overdrive" ? "⚡" : "👁️"))))));
+      const sIcon = sId === "frostbite" ? "🧊" : (sId === "windy" ? "🌬️" : (sId === "soil" ? "🛡️" : (sId === "aquatic" ? "🌊" : (sId === "metallic" ? "⚙️" : (sId === "flora" ? "🌿" : (sId === "hellfire" ? "🔥" : (sId === "overdrive" ? "⚡" : "👁️")))))));
       const eqTitle = I18n ? I18n.t("toasts.sword_equipped_title", { name: sInfo.name }) : `${game.player.swordName || "Sword"} Equipped`;
       const eqDesc = I18n ? I18n.t("toasts.sword_equipped_desc") : "Ready to fight in the grassland.";
       showToast(eqTitle, eqDesc, sIcon);
