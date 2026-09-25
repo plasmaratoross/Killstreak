@@ -24,6 +24,9 @@ const DEFAULT_SAVE = {
   lumenPhase: 1,
   umbraPhase: 1,
   sanguinePhase: 1,
+  orderPhase: 1,
+  tremorPhase: 1,
+  poisonPhase: 1,
   equippedSword: "devourer",
   isSwordEquipped: true,
   phase17CutsceneSeen: false,
@@ -49,6 +52,12 @@ const DEFAULT_SAVE = {
   umbraPhase15CutsceneSeen: false,
   sanguineUnlockCutsceneSeen: false,
   sanguinePhase16CutsceneSeen: false,
+  orderUnlockCutsceneSeen: false,
+  orderPhase12CutsceneSeen: false,
+  tremorUnlockCutsceneSeen: false,
+  tremorPhase10CutsceneSeen: false,
+  poisonUnlockCutsceneSeen: false,
+  poisonPhase14CutsceneSeen: false,
   achievements: [],
   badges: [],
   settings: {
@@ -59,7 +68,7 @@ const DEFAULT_SAVE = {
   }
 };
 
-const VALID_SWORDS = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite", "voltstrike", "lumen", "umbra", "sanguine"];
+const VALID_SWORDS = ["devourer", "overdrive", "aquatic", "soil", "metallic", "flora", "hellfire", "windy", "frostbite", "voltstrike", "lumen", "umbra", "sanguine", "order", "tremor", "poison"];
 
 const SaveManager = {
   load() {
@@ -94,6 +103,9 @@ const SaveManager = {
         lumenPhase: typeof parsed.lumenPhase === "number" ? parsed.lumenPhase : 1,
         umbraPhase: typeof parsed.umbraPhase === "number" ? parsed.umbraPhase : 1,
         sanguinePhase: typeof parsed.sanguinePhase === "number" ? parsed.sanguinePhase : 1,
+        orderPhase: typeof parsed.orderPhase === "number" ? parsed.orderPhase : 1,
+        tremorPhase: typeof parsed.tremorPhase === "number" ? parsed.tremorPhase : 1,
+        poisonPhase: typeof parsed.poisonPhase === "number" ? parsed.poisonPhase : 1,
         equippedSword: eqSword,
         isSwordEquipped: typeof parsed.isSwordEquipped === "boolean" ? parsed.isSwordEquipped : true,
         phase17CutsceneSeen: Boolean(parsed.phase17CutsceneSeen),
@@ -119,6 +131,12 @@ const SaveManager = {
         umbraPhase15CutsceneSeen: Boolean(parsed.umbraPhase15CutsceneSeen),
         sanguineUnlockCutsceneSeen: Boolean(parsed.sanguineUnlockCutsceneSeen),
         sanguinePhase16CutsceneSeen: Boolean(parsed.sanguinePhase16CutsceneSeen),
+        orderUnlockCutsceneSeen: Boolean(parsed.orderUnlockCutsceneSeen),
+        orderPhase12CutsceneSeen: Boolean(parsed.orderPhase12CutsceneSeen),
+        tremorUnlockCutsceneSeen: Boolean(parsed.tremorUnlockCutsceneSeen),
+        tremorPhase10CutsceneSeen: Boolean(parsed.tremorPhase10CutsceneSeen),
+        poisonUnlockCutsceneSeen: Boolean(parsed.poisonUnlockCutsceneSeen),
+        poisonPhase14CutsceneSeen: Boolean(parsed.poisonPhase14CutsceneSeen),
         achievements: Array.isArray(parsed.achievements) ? parsed.achievements : [],
         badges: Array.isArray(parsed.badges) ? parsed.badges : [],
         settings: {
@@ -163,6 +181,12 @@ const SaveManager = {
       windyPhase: typeof data.windyPhase === "number" ? data.windyPhase : 1,
       frostbitePhase: typeof data.frostbitePhase === "number" ? data.frostbitePhase : 1,
       voltstrikePhase: typeof data.voltstrikePhase === "number" ? data.voltstrikePhase : 1,
+      lumenPhase: typeof data.lumenPhase === "number" ? data.lumenPhase : 1,
+      umbraPhase: typeof data.umbraPhase === "number" ? data.umbraPhase : 1,
+      sanguinePhase: typeof data.sanguinePhase === "number" ? data.sanguinePhase : 1,
+      orderPhase: typeof data.orderPhase === "number" ? data.orderPhase : 1,
+      tremorPhase: typeof data.tremorPhase === "number" ? data.tremorPhase : 1,
+      poisonPhase: typeof data.poisonPhase === "number" ? data.poisonPhase : 1,
       equippedSword: eqSword,
       isSwordEquipped: typeof data.isSwordEquipped === "boolean" ? data.isSwordEquipped : true,
       phase17CutsceneSeen: Boolean(data.phase17CutsceneSeen),
@@ -182,6 +206,18 @@ const SaveManager = {
       frostbitePhase12CutsceneSeen: Boolean(data.frostbitePhase12CutsceneSeen),
       voltstrikeUnlockCutsceneSeen: Boolean(data.voltstrikeUnlockCutsceneSeen),
       voltstrikePhase14CutsceneSeen: Boolean(data.voltstrikePhase14CutsceneSeen),
+      lumenUnlockCutsceneSeen: Boolean(data.lumenUnlockCutsceneSeen),
+      lumenPhase14CutsceneSeen: Boolean(data.lumenPhase14CutsceneSeen),
+      umbraUnlockCutsceneSeen: Boolean(data.umbraUnlockCutsceneSeen),
+      umbraPhase15CutsceneSeen: Boolean(data.umbraPhase15CutsceneSeen),
+      sanguineUnlockCutsceneSeen: Boolean(data.sanguineUnlockCutsceneSeen),
+      sanguinePhase16CutsceneSeen: Boolean(data.sanguinePhase16CutsceneSeen),
+      orderUnlockCutsceneSeen: Boolean(data.orderUnlockCutsceneSeen),
+      orderPhase12CutsceneSeen: Boolean(data.orderPhase12CutsceneSeen),
+      tremorUnlockCutsceneSeen: Boolean(data.tremorUnlockCutsceneSeen),
+      tremorPhase10CutsceneSeen: Boolean(data.tremorPhase10CutsceneSeen),
+      poisonUnlockCutsceneSeen: Boolean(data.poisonUnlockCutsceneSeen),
+      poisonPhase14CutsceneSeen: Boolean(data.poisonPhase14CutsceneSeen),
       achievements: Array.isArray(data.achievements) ? [...data.achievements] : [],
       badges: Array.isArray(data.badges) ? [...data.badges] : [],
       settings: data.settings ? {

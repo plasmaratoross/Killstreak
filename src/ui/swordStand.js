@@ -65,7 +65,7 @@ export function updateSwordStandUI(game) {
 
   standSwordName.textContent = sInfo.name.toUpperCase();
   if (standWeaponTitle) standWeaponTitle.textContent = sInfo.name.toUpperCase();
-  if (standSwordIcon) standSwordIcon.textContent = swordDef.icon || (isVoltstrike ? "⚡" : (isFrostbite ? "🧊" : (isWindy ? "🌬️" : (isHellfire ? "🔥" : (isFlora ? "🌿" : (isMetallic ? "⚙️" : (isSoil ? "🛡️" : (isAquatic ? "🌊" : (isOverdrive ? "⚡" : "👁️")))))))));
+  if (standSwordIcon) standSwordIcon.textContent = swordDef.icon || (isPoison ? "☠️" : (isTremor ? "🌋" : (isOrder ? "⚖️" : (isSanguine ? "🩸" : (isUmbra ? "🕳️" : (isLumen ? "✨" : (isVoltstrike ? "⚡" : (isFrostbite ? "🧊" : (isWindy ? "🌬️" : (isHellfire ? "🔥" : (isFlora ? "🌿" : (isMetallic ? "⚙️" : (isSoil ? "🛡️" : (isAquatic ? "🌊" : (isOverdrive ? "⚡" : "👁️")))))))))))))));
 
   let p = null;
   const isEquippedWithThis = game.player.isSwordEquipped && game.player.swordId === sId;

@@ -2,6 +2,7 @@
   "id": "poison",
   "name": "Poison",
   "tag": "POISON",
+  "icon": "☠️",
   "description": "A fragile assassin sword that sacrifices direct damage for lethal poison, precise mobility, and devastating stored-damage executions.",
   "unlockKills": 125000,
   "phases": [

@@ -2524,7 +2524,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       this.radius = config.radius;
       this.interactRadius = config.interactRadius;
       this.title = config.title || "WEAPON PEDESTAL";
-      this.subtitle = config.subtitle || (this.swordId === "overdrive" ? "OVERDRIVE" : "DEVOURER");
+      this.subtitle = config.subtitle || (this.swordId ? this.swordId.toUpperCase() : "DEVOURER");
       this.unlockKills = config.unlockKills || 0;
       this.hoverTime = 0;
     }
@@ -2555,18 +2555,51 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isLumen = this.swordId === "lumen";
       const isUmbra = this.swordId === "umbra";
       const isSanguine = this.swordId === "sanguine";
+      const isOrder = this.swordId === "order";
+      const isTremor = this.swordId === "tremor";
+      const isPoison = this.swordId === "poison";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
             ? activePhase.color
-            : (isSanguine ? "#f43f5e" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))))));
+            : (isPoison ? "#22c55e"
+            : isTremor ? "#f97316"
+            : isOrder ? "#fef08a"
+            : isSanguine ? "#f43f5e"
+            : isUmbra ? "#a78bfa"
+            : isLumen ? "#ffffff"
+            : isVoltstrike ? "#fde047"
+            : isFrostbite ? "#7dd3fc"
+            : isWindy ? "#22d3ee"
+            : isHellfire ? "#dc2626"
+            : isFlora ? "#15803d"
+            : isMetallic ? "#94a3b8"
+            : isSoil ? "#d97706"
+            : isAquatic ? "#06b6d4"
+            : isOverdrive ? "#ffffff"
+            : "#38bdf8"));
       const I18n = window.Killstreak && window.Killstreak.I18n;
 
       // 1. Radiant Ground Floor Aura (sized for compact row spacing)
       const auraGrad = ctx.createRadialGradient(this.x, this.y, 4, this.x, this.y, this.radius + 12);
       const auraColor = isLocked
         ? "rgba(71, 85, 105, 0.28)"
-        : (isSanguine ? "rgba(239, 68, 68, 0.32)" : isUmbra ? "rgba(167, 139, 250, 0.32)" : isLumen ? "rgba(255, 255, 255, 0.30)" : isVoltstrike ? "rgba(253, 224, 71, 0.30)" : (isFrostbite ? "rgba(165, 243, 252, 0.34)" : (isHellfire ? "rgba(220, 38, 38, 0.32)" : (isFlora ? "rgba(34, 197, 94, 0.30)" : (isMetallic ? "rgba(148, 163, 184, 0.28)" : (isSoil ? "rgba(180, 83, 9, 0.32)" : (isAquatic ? "rgba(6, 182, 212, 0.30)" : (isOverdrive ? "rgba(239, 68, 68, 0.28)" : "rgba(56, 189, 248, 0.28)"))))))));
+        : (isPoison ? "rgba(34, 197, 94, 0.32)"
+        : isTremor ? "rgba(249, 115, 22, 0.34)"
+        : isOrder ? "rgba(254, 240, 138, 0.32)"
+        : isSanguine ? "rgba(239, 68, 68, 0.32)"
+        : isUmbra ? "rgba(167, 139, 250, 0.32)"
+        : isLumen ? "rgba(255, 255, 255, 0.30)"
+        : isVoltstrike ? "rgba(253, 224, 71, 0.30)"
+        : isFrostbite ? "rgba(165, 243, 252, 0.34)"
+        : isWindy ? "rgba(34, 211, 238, 0.30)"
+        : isHellfire ? "rgba(220, 38, 38, 0.32)"
+        : isFlora ? "rgba(34, 197, 94, 0.30)"
+        : isMetallic ? "rgba(148, 163, 184, 0.28)"
+        : isSoil ? "rgba(180, 83, 9, 0.32)"
+        : isAquatic ? "rgba(6, 182, 212, 0.30)"
+        : isOverdrive ? "rgba(239, 68, 68, 0.28)"
+        : "rgba(56, 189, 248, 0.28)");
       auraGrad.addColorStop(0, auraColor);
       auraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = auraGrad;
@@ -2582,7 +2615,22 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       ctx.lineDashOffset = -this.hoverTime * 8;
       ctx.strokeStyle = isLocked
         ? "rgba(100, 116, 139, 0.45)"
-        : (isSanguine ? "rgba(239, 68, 68, 0.85)" : isUmbra ? "rgba(167, 139, 250, 0.8)" : isLumen ? "rgba(255, 255, 255, 0.8)" : isVoltstrike ? "rgba(253, 224, 71, 0.8)" : (isFrostbite ? "rgba(125, 211, 252, 0.8)" : (isHellfire ? "rgba(239, 68, 68, 0.85)" : (isFlora ? "rgba(74, 222, 128, 0.8)" : (isMetallic ? "rgba(203, 213, 225, 0.8)" : (isSoil ? "rgba(245, 158, 11, 0.8)" : (isAquatic ? "rgba(6, 182, 212, 0.75)" : (isOverdrive ? "rgba(239, 68, 68, 0.7)" : "rgba(56, 189, 248, 0.7)"))))))));
+        : (isPoison ? "rgba(74, 222, 128, 0.85)"
+        : isTremor ? "rgba(249, 115, 22, 0.85)"
+        : isOrder ? "rgba(254, 240, 138, 0.85)"
+        : isSanguine ? "rgba(239, 68, 68, 0.85)"
+        : isUmbra ? "rgba(167, 139, 250, 0.8)"
+        : isLumen ? "rgba(255, 255, 255, 0.8)"
+        : isVoltstrike ? "rgba(253, 224, 71, 0.8)"
+        : isFrostbite ? "rgba(125, 211, 252, 0.8)"
+        : isWindy ? "rgba(34, 211, 238, 0.8)"
+        : isHellfire ? "rgba(239, 68, 68, 0.85)"
+        : isFlora ? "rgba(74, 222, 128, 0.8)"
+        : isMetallic ? "rgba(203, 213, 225, 0.8)"
+        : isSoil ? "rgba(245, 158, 11, 0.8)"
+        : isAquatic ? "rgba(6, 182, 212, 0.75)"
+        : isOverdrive ? "rgba(239, 68, 68, 0.7)"
+        : "rgba(56, 189, 248, 0.7)");
       ctx.stroke();
       ctx.setLineDash([]);
 
@@ -2593,7 +2641,24 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       ctx.fillStyle = isLocked ? "#1e293b" : "#334155";
       ctx.fill();
       ctx.lineWidth = 1.4;
-      ctx.strokeStyle = isLocked ? "#334155" : (isHellfire ? "#7f1d1d" : (isFlora ? "#14532d" : (isMetallic ? "#334155" : (isSoil ? "#78350f" : (isAquatic ? "#0369a1" : (isOverdrive ? "#991b1b" : "#0284c7"))))));
+      ctx.strokeStyle = isLocked
+        ? "#334155"
+        : (isPoison ? "#14532d"
+        : isTremor ? "#7c2d12"
+        : isOrder ? "#854d0e"
+        : isSanguine ? "#881337"
+        : isUmbra ? "#4c1d95"
+        : isLumen ? "#a1a1aa"
+        : isVoltstrike ? "#a16207"
+        : isFrostbite ? "#0e7490"
+        : isWindy ? "#0891b2"
+        : isHellfire ? "#7f1d1d"
+        : isFlora ? "#14532d"
+        : isMetallic ? "#334155"
+        : isSoil ? "#78350f"
+        : isAquatic ? "#0369a1"
+        : isOverdrive ? "#991b1b"
+        : "#0284c7");
       ctx.stroke();
 
       // Tier 2: Pedestal Core Table
@@ -2602,7 +2667,24 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       ctx.fillStyle = isLocked ? "#0f172a" : "#1e293b";
       ctx.fill();
       ctx.lineWidth = 1.8;
-      ctx.strokeStyle = isLocked ? "#475569" : (isHellfire ? "#dc2626" : (isFlora ? "#22c55e" : (isMetallic ? "#cbd5e1" : (isSoil ? "#b45309" : (isAquatic ? "#38bdf8" : (isOverdrive ? "#f87171" : "#7dd3fc"))))));
+      ctx.strokeStyle = isLocked
+        ? "#475569"
+        : (isPoison ? "#22c55e"
+        : isTremor ? "#ea580c"
+        : isOrder ? "#fef08a"
+        : isSanguine ? "#f43f5e"
+        : isUmbra ? "#c084fc"
+        : isLumen ? "#ffffff"
+        : isVoltstrike ? "#fde047"
+        : isFrostbite ? "#38bdf8"
+        : isWindy ? "#22d3ee"
+        : isHellfire ? "#dc2626"
+        : isFlora ? "#22c55e"
+        : isMetallic ? "#cbd5e1"
+        : isSoil ? "#b45309"
+        : isAquatic ? "#38bdf8"
+        : isOverdrive ? "#f87171"
+        : "#7dd3fc");
       ctx.stroke();
 
       // Tier 3: Inner Socket
@@ -2610,7 +2692,24 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       ctx.arc(this.x, this.y, this.radius * 0.48, 0, Math.PI * 2);
       ctx.fillStyle = isLocked ? "#020617" : "rgba(15, 23, 42, 0.95)";
       ctx.fill();
-      ctx.strokeStyle = isLocked ? "#475569" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#f8fafc" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : phaseColor))))));
+      ctx.strokeStyle = isLocked
+        ? "#475569"
+        : (isPoison ? "#4ade80"
+        : isTremor ? "#f97316"
+        : isOrder ? "#fde047"
+        : isSanguine ? "#fb7185"
+        : isUmbra ? "#a78bfa"
+        : isLumen ? "#ffffff"
+        : isVoltstrike ? "#fde047"
+        : isFrostbite ? "#7dd3fc"
+        : isWindy ? "#22d3ee"
+        : isHellfire ? "#ef4444"
+        : isFlora ? "#4ade80"
+        : isMetallic ? "#f8fafc"
+        : isSoil ? "#f59e0b"
+        : isAquatic ? "#06b6d4"
+        : isOverdrive ? "#ef4444"
+        : phaseColor);
       ctx.lineWidth = 1.6;
       ctx.stroke();
 
@@ -2767,25 +2866,320 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         ctx.fillStyle = "#fbbf24";
         ctx.fillRect(3, -0.6, 16, 1.2);
         ctx.restore();
-      } else {
-        ctx.shadowColor = phaseColor;
+      } else if (isWindy) {
+        ctx.shadowColor = "#22d3ee";
         ctx.shadowBlur = 12;
 
-        ctx.fillStyle = "#1e293b";
-        ctx.fillRect(-6, -3.2, 5, 6.4);
+        ctx.fillStyle = "#0e7490";
+        ctx.fillRect(-7, -2.2, 6, 4.4);
 
-        ctx.fillStyle = phaseColor;
+        ctx.fillStyle = "#0891b2";
         ctx.beginPath();
-        ctx.moveTo(-1, -2.0);
-        ctx.lineTo(20, -2.0);
-        ctx.lineTo(26, 0);
-        ctx.lineTo(20, 2.0);
-        ctx.lineTo(-1, 2.0);
+        ctx.arc(-1.5, 0, 3.2, -Math.PI * 0.5, Math.PI * 0.5);
+        ctx.fill();
+
+        ctx.fillStyle = "#38bdf8";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.4);
+        ctx.quadraticCurveTo(12, -4.0, 26, 0);
+        ctx.quadraticCurveTo(14, 1.2, 1.5, 2.0);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#e0f2fe";
+        ctx.fillRect(3, -0.6, 16, 1.2);
+        ctx.restore();
+      } else if (isFrostbite) {
+        ctx.shadowColor = "#7dd3fc";
+        ctx.shadowBlur = 12;
+
+        ctx.fillStyle = "#0c4a6e";
+        ctx.fillRect(-7, -2.2, 6, 4.4);
+
+        ctx.fillStyle = "#0284c7";
+        ctx.fillRect(-1.5, -4.5, 3, 9);
+
+        ctx.fillStyle = "#a5f3fc";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.4);
+        ctx.lineTo(8, -1.8);
+        ctx.lineTo(13, -3.0);
+        ctx.lineTo(19, -1.8);
+        ctx.lineTo(27, 0);
+        ctx.lineTo(19, 1.8);
+        ctx.lineTo(13, 3.0);
+        ctx.lineTo(8, 1.8);
+        ctx.lineTo(1.5, 2.4);
         ctx.closePath();
         ctx.fill();
 
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, -0.6, 18, 1.2);
+        ctx.fillRect(3, -0.6, 16, 1.2);
+        ctx.restore();
+      } else if (isVoltstrike) {
+        ctx.shadowColor = "#fde047";
+        ctx.shadowBlur = 13;
+
+        ctx.fillStyle = "#713f12";
+        ctx.fillRect(-7, -2.2, 6, 4.4);
+
+        ctx.fillStyle = "#eab308";
+        ctx.fillRect(-1.5, -4.5, 3, 9);
+
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.2);
+        ctx.lineTo(9, -1.2);
+        ctx.lineTo(7, -3.2);
+        ctx.lineTo(17, -1.0);
+        ctx.lineTo(15, -2.8);
+        ctx.lineTo(27, 0);
+        ctx.lineTo(18, 2.2);
+        ctx.lineTo(19, 0.8);
+        ctx.lineTo(10, 2.6);
+        ctx.lineTo(11, 1.0);
+        ctx.lineTo(1.5, 2.2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#fef9c3";
+        ctx.fillRect(3, -0.6, 16, 1.2);
+        ctx.restore();
+      } else if (isLumen) {
+        ctx.shadowColor = "#ffffff";
+        ctx.shadowBlur = 14;
+
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(-7, -1.8, 6, 3.6);
+
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.arc(-1.5, 0, 4.0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.moveTo(2.0, -1.8);
+        ctx.lineTo(22, -0.8);
+        ctx.lineTo(28, 0);
+        ctx.lineTo(22, 0.8);
+        ctx.lineTo(2.0, 1.8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#fef9c3";
+        ctx.fillRect(4, -0.5, 18, 1.0);
+        ctx.restore();
+      } else if (isUmbra) {
+        ctx.shadowColor = "#a78bfa";
+        ctx.shadowBlur = 14;
+
+        ctx.fillStyle = "#1e1b4b";
+        ctx.fillRect(-7, -2.4, 6, 4.8);
+
+        ctx.fillStyle = "#2e1065";
+        ctx.fillRect(-1.5, -4.5, 3, 9);
+
+        ctx.fillStyle = "#7c3aed";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.6);
+        ctx.quadraticCurveTo(12, -4.5, 27, -1.0);
+        ctx.lineTo(24, 1.5);
+        ctx.quadraticCurveTo(12, -1.0, 1.5, 2.2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#c084fc";
+        ctx.fillRect(3, -0.6, 15, 1.2);
+        ctx.restore();
+      } else if (isSanguine) {
+        ctx.shadowColor = "#ef4444";
+        ctx.shadowBlur = 14;
+
+        ctx.fillStyle = "#4c0519";
+        ctx.fillRect(-7, -2.4, 6, 4.8);
+
+        ctx.fillStyle = "#881337";
+        ctx.fillRect(-1.5, -4.5, 3, 9);
+
+        ctx.fillStyle = "#dc2626";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.2);
+        ctx.lineTo(7, -3.2);
+        ctx.lineTo(12, -1.8);
+        ctx.lineTo(18, -3.2);
+        ctx.lineTo(27, 0);
+        ctx.lineTo(18, 3.2);
+        ctx.lineTo(12, 1.8);
+        ctx.lineTo(7, 3.2);
+        ctx.lineTo(1.5, 2.2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#ffe4e6";
+        ctx.fillRect(3, -0.6, 16, 1.2);
+        ctx.restore();
+      } else if (isOrder) {
+        ctx.shadowColor = "#fde047";
+        ctx.shadowBlur = 14;
+
+        // Symmetrical Ivory Grip
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(-7, -2, 5.5, 4);
+
+        // Golden Balance-Scale Crossguard
+        ctx.fillStyle = "#eab308";
+        ctx.beginPath();
+        ctx.rect(-1.5, -5.5, 3, 11);
+        ctx.arc(-1.5, -5.5, 1.8, 0, Math.PI * 2);
+        ctx.arc(-1.5, 5.5, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Twin-Edge Holy Platinum Blade
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.4);
+        ctx.lineTo(20, -2.0);
+        ctx.lineTo(27, 0);
+        ctx.lineTo(20, 2.0);
+        ctx.lineTo(1.5, 2.4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Pure White Fuller Spine
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -1.0);
+        ctx.lineTo(22, -0.6);
+        ctx.lineTo(26, 0);
+        ctx.lineTo(22, 0.6);
+        ctx.lineTo(1.5, 1.0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Golden Inner Energy Channel
+        ctx.fillStyle = "#fde047";
+        ctx.fillRect(3, -0.5, 17, 1.0);
+        ctx.restore();
+      } else if (isTremor) {
+        ctx.shadowColor = "#f97316";
+        ctx.shadowBlur = 14;
+
+        // Heavy Volcanic Stone Grip
+        ctx.fillStyle = "#1c1917";
+        ctx.fillRect(-7, -2.5, 6, 5);
+
+        // Basalt Rugged Crossguard
+        ctx.fillStyle = "#44403c";
+        ctx.beginPath();
+        ctx.rect(-1.5, -5.5, 3.5, 11);
+        ctx.fill();
+
+        // Cleaved Basalt Slab Blade
+        ctx.fillStyle = "#292524";
+        ctx.beginPath();
+        ctx.moveTo(2, -3.2);
+        ctx.lineTo(18, -3.0);
+        ctx.lineTo(25, -1.2);
+        ctx.lineTo(27, 0);
+        ctx.lineTo(25, 2.2);
+        ctx.lineTo(18, 3.2);
+        ctx.lineTo(2, 3.2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Molten Fissure Vein
+        ctx.fillStyle = "#ea580c";
+        ctx.beginPath();
+        ctx.moveTo(3, -1.4);
+        ctx.lineTo(10, -0.6);
+        ctx.lineTo(14, -1.6);
+        ctx.lineTo(20, -0.6);
+        ctx.lineTo(24, 0);
+        ctx.lineTo(20, 0.8);
+        ctx.lineTo(13, 0.2);
+        ctx.lineTo(9, 1.2);
+        ctx.lineTo(3, 0.4);
+        ctx.closePath();
+        ctx.fill();
+
+        // White-hot inner lava vein
+        ctx.fillStyle = "#fed7aa";
+        ctx.fillRect(4, -0.5, 15, 1.0);
+        ctx.restore();
+      } else if (isPoison) {
+        ctx.shadowColor = "#22c55e";
+        ctx.shadowBlur = 13;
+
+        // Obsidian Grip
+        ctx.fillStyle = "#022c22";
+        ctx.fillRect(-7, -2.0, 6, 4);
+
+        // Serpent Ring Needle Guard
+        ctx.fillStyle = "#14532d";
+        ctx.beginPath();
+        ctx.arc(-1, 0, 3.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Chitin Needle Blade
+        ctx.fillStyle = "#064e3b";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.0);
+        ctx.lineTo(14, -1.4);
+        ctx.lineTo(26, -0.4);
+        ctx.lineTo(28, 0);
+        ctx.lineTo(26, 0.4);
+        ctx.lineTo(14, 1.4);
+        ctx.lineTo(1.5, 2.0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Bright Toxic Venom Channel
+        ctx.fillStyle = "#22c55e";
+        ctx.fillRect(2, -0.6, 18, 1.2);
+
+        // Fluorescent Venom Tip
+        ctx.fillStyle = "#4ade80";
+        ctx.beginPath();
+        ctx.arc(26, 0, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else {
+        ctx.shadowColor = "#38bdf8";
+        ctx.shadowBlur = 12;
+
+        // Cosmic Obsidian Hilt
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(-7, -2.5, 6, 5);
+
+        // Void Crossguard
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(-1.5, -4.5, 3, 9);
+
+        // Devourer Blade
+        ctx.fillStyle = "#0284c7";
+        ctx.beginPath();
+        ctx.moveTo(1.5, -2.2);
+        ctx.lineTo(20, -2.0);
+        ctx.lineTo(26, 0);
+        ctx.lineTo(20, 2.0);
+        ctx.lineTo(1.5, 2.2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cyan Dimensional Rift
+        ctx.fillStyle = "#38bdf8";
+        ctx.fillRect(3, -0.6, 16, 1.2);
+
+        // Devourer Eye
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(10, 0, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#0284c7";
+        ctx.beginPath();
+        ctx.arc(10, 0, 0.8, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
       }
 
@@ -2803,12 +3197,24 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         let compactTitle = "";
         let compactSub = "";
         if (isLocked) {
-          headerColor = isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
+          headerColor = isPoison ? "#22c55e" : isTremor ? "#f97316" : isOrder ? "#fef08a" : isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
           subColor = "#94a3b8";
           const unlockReq = this.unlockKills || (window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Swords && window.Killstreak.Data.Swords[this.swordId] && window.Killstreak.Data.Swords[this.swordId].unlockKills) || 0;
           const formattedK = unlockReq >= 1000 ? `${parseFloat((unlockReq / 1000).toFixed(2))}K` : `${unlockReq}`;
           compactTitle = `🔒 ${formattedK}`;
           compactSub = "LOCKED";
+        } else if (isOrder) {
+          compactTitle = "ORDER";
+          subColor = "#fef08a";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isTremor) {
+          compactTitle = "TREMOR";
+          subColor = "#f97316";
+          compactSub = `PHASE ${pNum}`;
+        } else if (isPoison) {
+          compactTitle = "POISON";
+          subColor = "#22c55e";
+          compactSub = `PHASE ${pNum}`;
         } else if (isHellfire) {
           compactTitle = "HELLFIRE";
           subColor = "#ef4444";
@@ -2895,11 +3301,29 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       const isLumen = this.swordId === "lumen";
       const isUmbra = this.swordId === "umbra";
       const isSanguine = this.swordId === "sanguine";
+      const isOrder = this.swordId === "order";
+      const isTremor = this.swordId === "tremor";
+      const isPoison = this.swordId === "poison";
       const phaseColor = isLocked
         ? "#64748b"
         : (activePhase
             ? activePhase.color
-            : (isSanguine ? "#f43f5e" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : (isFrostbite ? "#7dd3fc" : (isHellfire ? "#dc2626" : (isFlora ? "#15803d" : (isMetallic ? "#94a3b8" : (isSoil ? "#d97706" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ffffff" : "#38bdf8")))))))));
+            : (isPoison ? "#22c55e"
+            : isTremor ? "#f97316"
+            : isOrder ? "#fef08a"
+            : isSanguine ? "#f43f5e"
+            : isUmbra ? "#a78bfa"
+            : isLumen ? "#ffffff"
+            : isVoltstrike ? "#fde047"
+            : isFrostbite ? "#7dd3fc"
+            : isWindy ? "#22d3ee"
+            : isHellfire ? "#dc2626"
+            : isFlora ? "#15803d"
+            : isMetallic ? "#94a3b8"
+            : isSoil ? "#d97706"
+            : isAquatic ? "#06b6d4"
+            : isOverdrive ? "#ffffff"
+            : "#38bdf8"));
       const I18n = window.Killstreak && window.Killstreak.I18n;
 
       let fullTitle = "";
@@ -2908,7 +3332,7 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
       let subColor = phaseColor;
 
       if (isLocked) {
-        headerColor = isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
+        headerColor = isPoison ? "#22c55e" : isTremor ? "#f97316" : isOrder ? "#fef08a" : isSanguine ? "#ef4444" : isUmbra ? "#a78bfa" : isLumen ? "#ffffff" : isVoltstrike ? "#fde047" : isFrostbite ? "#7dd3fc" : (isWindy ? "#22d3ee" : (isHellfire ? "#ef4444" : (isFlora ? "#4ade80" : (isMetallic ? "#cbd5e1" : (isSoil ? "#f59e0b" : (isAquatic ? "#06b6d4" : (isOverdrive ? "#ef4444" : "#94a3b8")))))));
         const sName = (I18n ? (I18n.getSwordInfo(this.swordId) || {}).name || this.swordId : this.swordId).toUpperCase();
         fullTitle = `🔒 ${sName} (${I18n && I18n.currentLang === "vi" ? "ĐÃ KHÓA" : "LOCKED"})`;
         subColor = "#94a3b8";
@@ -2916,6 +3340,21 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         fullSubtitle = I18n && I18n.currentLang === "vi"
           ? `[ CẦN ${unlockReq.toLocaleString()} HẠ GỤC ]`
           : `[ ${unlockReq.toLocaleString()} KILLS REQUIRED ]`;
+      } else if (isOrder) {
+        fullTitle = "⚖️ ORDER";
+        subColor = "#fef08a";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("order", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: CITATION";
+      } else if (isTremor) {
+        fullTitle = "🌋 TREMOR";
+        subColor = "#f97316";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("tremor", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: RUMBLE";
+      } else if (isPoison) {
+        fullTitle = "☠️ POISON";
+        subColor = "#22c55e";
+        const pInfo = (I18n && activePhase) ? I18n.getPhaseInfo("poison", activePhase.phase) : activePhase;
+        fullSubtitle = pInfo ? (I18n ? I18n.t("hud.phase_prefix", { name: (pInfo.shortName || "").toUpperCase() }) : `PHASE: ${(pInfo.shortName || "").toUpperCase()}`) : "PHASE 1: VENOM";
       } else if (isHellfire) {
         fullTitle = "🔥 HELLFIRE";
         subColor = "#ef4444";

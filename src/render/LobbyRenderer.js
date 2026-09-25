@@ -50,15 +50,42 @@ export function drawLobbyFloor(game, map) {
       drawSafeRoundRect(ctx, rug.x + 8, rug.y + 8, rug.width - 16, rug.height - 16, 8);
       ctx.stroke();
 
-      // If gallery rug, render soft radiant floor halos under the 3 pedestals
+      // If gallery rug, render soft radiant floor halos under the pedestals
       if (rug.id === "gallery_rug" && map.swordStands) {
         for (let stand of map.swordStands) {
           const haloGrad = ctx.createRadialGradient(stand.x, stand.y, 4, stand.x, stand.y, 32);
-          const haloColor = stand.swordId === "soil"
-            ? "rgba(180, 83, 9, 0.25)"
-            : (stand.swordId === "aquatic"
-              ? "rgba(6, 182, 212, 0.22)"
-              : (stand.swordId === "overdrive" ? "rgba(239, 68, 68, 0.20)" : "rgba(56, 189, 248, 0.20)"));
+          const sId = stand.swordId;
+          const haloColor = sId === "poison"
+            ? "rgba(34, 197, 94, 0.26)"
+            : (sId === "tremor"
+              ? "rgba(249, 115, 22, 0.26)"
+              : (sId === "order"
+                ? "rgba(254, 240, 138, 0.26)"
+                : (sId === "sanguine"
+                  ? "rgba(244, 63, 94, 0.24)"
+                  : (sId === "umbra"
+                    ? "rgba(167, 139, 250, 0.24)"
+                    : (sId === "lumen"
+                      ? "rgba(255, 255, 255, 0.24)"
+                      : (sId === "voltstrike"
+                        ? "rgba(253, 224, 71, 0.24)"
+                        : (sId === "frostbite"
+                          ? "rgba(125, 211, 252, 0.24)"
+                          : (sId === "windy"
+                            ? "rgba(34, 211, 238, 0.24)"
+                            : (sId === "hellfire"
+                              ? "rgba(239, 68, 68, 0.24)"
+                              : (sId === "flora"
+                                ? "rgba(34, 197, 94, 0.24)"
+                                : (sId === "metallic"
+                                  ? "rgba(203, 213, 225, 0.24)"
+                                  : (sId === "soil"
+                                    ? "rgba(180, 83, 9, 0.25)"
+                                    : (sId === "aquatic"
+                                      ? "rgba(6, 182, 212, 0.22)"
+                                      : (sId === "overdrive"
+                                        ? "rgba(239, 68, 68, 0.20)"
+                                        : "rgba(56, 189, 248, 0.20)"))))))))))))));
           haloGrad.addColorStop(0, haloColor);
           haloGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
           ctx.fillStyle = haloGrad;
