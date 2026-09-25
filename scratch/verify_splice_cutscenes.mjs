@@ -58,8 +58,10 @@ const startCalls = (gameText.match(/CutsceneSystem\.start\(this, "/g) || []).len
 // 15 -> 17: voltstrike contributes the same pair (unlock + p14).
 // 17 -> 23: lumen (unlock + p14), umbra (unlock + p15) and sanguine (unlock + p16)
 //           each contribute the same pair.
+// 23 -> 29: order (unlock + p12), tremor (unlock + p10) and poison (unlock + p14)
+//           each contribute the same pair.
 // The count IS the invariant — a lost call site still fails here.
-check(`all 23 start call sites rewired (found ${startCalls})`, startCalls === 23);
+check(`all 29 start call sites rewired (found ${startCalls})`, startCalls === 29);
 check('surrounding systems intact',
   // updateBloodmoon/unlockAchievement are absent on purpose — Phase 5 moved them
   // into src/systems. Exact accounting lives in scratch/verify_inventory.mjs.

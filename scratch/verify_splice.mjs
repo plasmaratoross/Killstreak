@@ -2,7 +2,9 @@
  * Phase 2 splice verification.
  *
  * Proves the splice removed exactly the intended methods and nothing else, by
- * diffing the full method inventory of the backups against the spliced files.
+ * diffing the full method inventory of the backups against the spliced files,
+ * and pins js/entities.js against its baseline so an unregistered edit to that
+ * 3,700-line legacy monolith still fails here.
  *
  * Run:  node scratch/verify_splice.mjs
  */
@@ -103,10 +105,10 @@ console.log('\n--- js/game.js ---');
 console.log('  (skipped: superseded by Phase 3 — see scratch/verify_splice_cutscenes.mjs)');
 
 // ------------------------------------------------------------------ integrity
-// Exact test: rebuild the spliced file from the backup by applying precisely the
-// documented transform, then require a byte-identical result. That proves
-// nothing outside the removed methods was touched.
-console.log('\n--- integrity (exact reconstruction) ---');
+// Exact test: the live file must equal its baseline plus the few lines registered
+// in ADDITIONS, so an unregistered edit to this legacy monolith still fails here.
+// See the `bak` note below for why the baseline moved off the pre-splice backup.
+console.log('\n--- integrity (baseline + registered additions) ---');
 
 function makeBlanker() {
   let inBlock = false;
@@ -164,10 +166,18 @@ function findMethodEnd(src, sigIdx) {
 const cases = [
   {
     cur: 'js/entities.js',
-    bak: 'scratch/backup/entities.js.bak',
-    methods: ['drawBlade', 'drawOverdriveBlade', 'drawAquaticBlade', 'drawPhaseAura', 'drawOverdriveAura',
-      'drawAquaticAura', 'drawSoilBlade', 'drawSoilAura', 'drawMetallicBlade', 'drawMetallicAura',
-      'drawFloraBlade', 'drawFloraAura', 'drawHellfireBlade', 'drawHellfireAura'],
+    // Baseline MOVED on 2026-09-25, from scratch/backup/entities.js.bak (the
+    // pre-Phase-2 file, whose 14 spliced methods used to be cut out here).
+    // Commit 38e850f then added the SwordStand pedestal appearances and element
+    // themes — 455 lines, inside kept regions — so byte-identity survived only
+    // by whitelisting that whole commit, which would have stopped checking ~12%
+    // of the file. That is why `methods` is empty: this baseline is already
+    // spliced, so the transform that follows it is the identity, and
+    // post/TRANSFORMS now no-op against it (kept as the record of what the
+    // earlier swords changed). The splice itself is still asserted by the
+    // inventory block above, which reads the original backup.
+    bak: 'scratch/backup/entities.js.post38e850f.bak',
+    methods: [],
     post: (text, eol) => {
       text = text.replace(BLADE_CHAIN_SRC.split('\n').join(eol), '        getSwordRenderer(this.swordId).drawBlade(ctx, geom, this);');
       text = text.replace(AURA_CHAIN_SRC.split('\n').join(eol), '        getSwordRenderer(this.swordId).drawAura(ctx, this);');
@@ -233,7 +243,14 @@ for (const c of cases) {
     '      else if (isLumen) eyeColor = "#fbbf24";',
     '      else if (isUmbra) eyeColor = "#7c3aed";',
     '      else if (isSanguine) eyeColor = "#b91c1c";',
-    '        ...(map.corals || []),'
+    '        ...(map.corals || []),',
+    // NPC identity — Order's Judgment marks targets and Tremor's Seismic Wave
+    // dedupes hits by `npc.id`; with no id on NPC, `ids.includes(undefined)` was
+    // true for every NPC and one touch marked/executed the whole zone.
+    '      // Unique identity: Order\'s Judgment marks targets and Tremor\'s Seismic Wave',
+    '      // dedupes hits by `npc.id`. Without it every NPC shares `undefined`, so',
+    '      // `ids.includes(npc.id)` matches the entire zone after the first touch.',
+    '      this.id = (NPC.nextId = (NPC.nextId || 0) + 1);'
   ];
   const stripAdditions = (t) => t.split(eol).filter((l) => !ADDITIONS.includes(l)).join(eol);
 
@@ -353,8 +370,12 @@ for (const c of cases) {
     ['      } else {\n        // --- NORMAL SENTRY RENDERING ---',
      '      } else if (window.Killstreak && window.Killstreak.AtlantisNpcRenderer && window.Killstreak.AtlantisNpcRenderer.draw(ctx, this, isHit)) {\n        // Handled by Atlantis NPC renderer\n      } else {\n        // --- NORMAL SENTRY RENDERING ---']
   ];
-  const applyTransforms = (t) => TRANSFORMS.reduce(
-    (acc, [from, to]) => acc.split(from.split('\n').join(eol)).join(to.split('\n').join(eol)), t);
+  // The baseline is post-splice, so every rewrite below is already in it: applying
+  // them again is not merely a no-op, it is wrong — several TRANSFORMS end with
+  // the text they match (`} else {\n // --- NORMAL SENTRY RENDERING ---`), so
+  // re-applying them duplicates a branch. The list is kept as the record of what
+  // the later swords changed; it is deliberately not applied.
+  const applyTransforms = (t) => t;
 
   const expected = stripAdditions(applyTransforms(c.post(out.join(eol), eol)));
   const actual = stripAdditions(fs.readFileSync(path.join(root, c.cur), 'utf8'));
@@ -365,7 +386,7 @@ for (const c of cases) {
     const i = e.findIndex((l, k) => l !== a[k]);
     detail = `first divergence at line ${i + 1}\n        expected: ${e[i]}\n        actual  : ${a[i]}`;
   }
-  check(`${c.cur} is byte-identical to the documented transform of its backup`, expected === actual, detail);
+  check(`${c.cur} is byte-identical to its baseline plus the registered additions`, expected === actual, detail);
 }
 
 console.log('');

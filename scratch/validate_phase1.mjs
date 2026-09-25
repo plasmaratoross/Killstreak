@@ -264,6 +264,43 @@ const SANGUINE_ADDITION = new RegExp(
   + '|achievements\\.items\\.sanguine_ascended\\.(?:title|description)'
   + ')$'
 );
+// 10-12. order / tremor / poison sword additions (both languages) — same reasoning
+// as windy. This block was missing here long after verify_i18n.mjs had it, so the
+// two allowlists had drifted out of step (227 unlisted keys in en, 155 in vi) and
+// this check had been red since the swords landed.
+const ORDER_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\.(?:speaker_order(?:_p12)?|order_(?:unlock|p12)_[0-9]+)'
+  + '|swords\.order\.(?:name|tag|description)'
+  + '|phases\.order\.[0-9]+\.(?:name|shortName|effects|notification)'
+  + '|skills\.(?:judgment_(?:label|title)|verdict_ready)'
+  + '|floating\.order_(?:unlocked|p12)'
+  + '|toasts\.order_[a-z0-9_]+'
+  + '|achievements\.items\.order_ascended\.(?:title|description)'
+  + ')$'
+);
+const TREMOR_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\.(?:speaker_tremor(?:_p10)?|tremor_(?:unlock|p10)_[0-9]+)'
+  + '|swords\.tremor\.(?:name|tag|description)'
+  + '|phases\.tremor\.[0-9]+\.(?:name|shortName|effects|notification)'
+  + '|skills\.(?:seismic_wave_(?:label|title)|locked_p6)'
+  + '|floating\.tremor_(?:unlocked|p10)'
+  + '|toasts\.tremor_[a-z0-9_]+'
+  + '|achievements\.items\.tremor_ascended\.(?:title|description)'
+  + ')$'
+);
+const POISON_ADDITION = new RegExp(
+  '^(?:'
+  + 'cutscene\.(?:speaker_poison(?:_p14)?|poison_(?:unlock|p14)_[0-9]+)'
+  + '|swords\.poison\.(?:name|tag|description)'
+  + '|phases\.poison\.[0-9]+\.(?:name|shortName|effects|notification)'
+  + '|skills\.(?:toxic_dash_(?:label|title)|requiem_(?:label|title|execute|recording))'
+  + '|floating\.poison_(?:unlocked|p14)'
+  + '|toasts\.poison_[a-z0-9_]+'
+  + '|achievements\.items\.poison_ascended\.(?:title|description)'
+  + ')$'
+);
 const ATLANTIS_ADDITION = new RegExp(
   '^(?:'
   + 'maps\\.(?:ATLANTIS|portal_atlantis|portal_grassland)'
@@ -287,6 +324,9 @@ const allowedToDiffer = (key, lang) =>
   || LUMEN_ADDITION.test(key)
   || UMBRA_ADDITION.test(key)
   || SANGUINE_ADDITION.test(key)
+  || ORDER_ADDITION.test(key)
+  || TREMOR_ADDITION.test(key)
+  || POISON_ADDITION.test(key)
   || ATLANTIS_ADDITION.test(key)
   || ATLANTIS_ZONES_ADDITION.test(key)
   || (lang === 'vi' && PHASE_NAME_TRANSLATION.test(key));

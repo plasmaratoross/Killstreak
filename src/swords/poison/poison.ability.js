@@ -32,47 +32,157 @@ export default {
     game.toxicDashCooldown = TOXIC_DASH_COOLDOWN;
 
     // Movement / facing angle
-    let angle = game.player.angle !== undefined ? game.player.angle : 0;
-    if (game.player.vx !== 0 || game.player.vy !== 0) {
-      angle = Math.atan2(game.player.vy, game.player.vx);
+    let moveX = 0;
+    let moveY = 0;
+    if (game.input) {
+      if (game.input.up) moveY -= 1;
+      if (game.input.down) moveY += 1;
+      if (game.input.left) moveX -= 1;
+      if (game.input.right) moveX += 1;
     }
 
-    const startX = game.player.x;
-    const startY = game.player.y;
-    const endX = startX + Math.cos(angle) * TOXIC_DASH_DISTANCE;
-    const endY = startY + Math.sin(angle) * TOXIC_DASH_DISTANCE;
+    let angle = 0;
+    if (moveX !== 0 || moveY !== 0) {
+      angle = Math.atan2(moveY, moveX);
+    } else if (typeof game.player.angle === "number" && !isNaN(game.player.angle)) {
+      angle = game.player.angle;
+    }
 
-    // Clamp end coordinates to map boundaries
-    const currentMap = window.Killstreak.Config.MAPS[game.currentArea];
-    const mapW = currentMap ? currentMap.width : 5000;
-    const mapH = currentMap ? currentMap.height : 5000;
-    const margin = 40;
-    const clampedX = Math.max(margin, Math.min(mapW - margin, endX));
-    const clampedY = Math.max(margin, Math.min(mapH - margin, endY));
+    if (typeof angle !== "number" || isNaN(angle)) {
+      angle = 0;
+    }
+
+    const startX = (typeof game.player.x === "number" && !isNaN(game.player.x)) ? game.player.x : 0;
+    const startY = (typeof game.player.y === "number" && !isNaN(game.player.y)) ? game.player.y : 0;
+
+    // Resolve current map and safe boundary dimensions
+    const Config = (window.Killstreak && window.Killstreak.Config) || {};
+    const activeMap = (game.currentArea === "ATLANTIS" && ((window.Killstreak && window.Killstreak.Data && window.Killstreak.Data.Maps && window.Killstreak.Data.Maps.ATLANTIS) || (Config.MAPS && Config.MAPS.ATLANTIS)))
+      || (Config.MAPS && Config.MAPS[game.currentArea])
+      || (Config.MAPS && Config.MAPS.COMBAT)
+      || game.map
+      || {};
+
+    const mapW = (typeof activeMap.width === "number" && activeMap.width > 0) ? activeMap.width : 5000;
+    const mapH = (typeof activeMap.height === "number" && activeMap.height > 0) ? activeMap.height : 5000;
+    const playerRadius = (game.player && typeof game.player.radius === "number" && !isNaN(game.player.radius)) ? game.player.radius : 20;
+    const margin = playerRadius + 15;
+
+    // Obstacle lists for collision detection during dash
+    const circleObstacles = [
+      ...(activeMap.obstacles || []),
+      ...(activeMap.decorations || []),
+      ...(activeMap.trees || []),
+      ...(activeMap.rocks || []),
+      ...(activeMap.corals || []),
+      ...(activeMap.barrels || []),
+      ...(activeMap.well ? [activeMap.well] : []),
+      ...(activeMap.plants || []),
+      ...(activeMap.lamps || [])
+    ];
+
+    const boxObstacles = [
+      ...(activeMap.houses || []),
+      ...(activeMap.hayBales || []),
+      ...(activeMap.furniture || [])
+    ];
+
+    function collidesWithObstacle(px, py) {
+      for (let i = 0; i < circleObstacles.length; i++) {
+        const obs = circleObstacles[i];
+        if (!obs || typeof obs.x !== "number" || typeof obs.y !== "number") continue;
+        const obsR = typeof obs.radius === "number" ? obs.radius : 25;
+        const d = Math.hypot(px - obs.x, py - obs.y);
+        if (d < playerRadius + obsR) {
+          return true;
+        }
+      }
+      for (let i = 0; i < boxObstacles.length; i++) {
+        const box = boxObstacles[i];
+        if (!box || typeof box.x !== "number" || typeof box.y !== "number") continue;
+        const closestX = Math.max(box.x, Math.min(px, box.x + (box.width || 0)));
+        const closestY = Math.max(box.y, Math.min(py, box.y + (box.height || 0)));
+        const d = Math.hypot(px - closestX, py - closestY);
+        if (d < playerRadius) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Step along the 300px dash path in discrete increments to prevent clipping through obstacles or boundary walls
+    const totalDist = TOXIC_DASH_DISTANCE;
+    const numSteps = 20;
+    const stepSize = totalDist / numSteps;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+
+    let finalX = startX;
+    let finalY = startY;
+
+    for (let s = 1; s <= numSteps; s++) {
+      const targetDist = s * stepSize;
+      const testX = startX + cosA * targetDist;
+      const testY = startY + sinA * targetDist;
+
+      // Check map boundary clamping
+      if (testX < margin || testX > mapW - margin || testY < margin || testY > mapH - margin) {
+        finalX = Math.max(margin, Math.min(mapW - margin, testX));
+        finalY = Math.max(margin, Math.min(mapH - margin, testY));
+        break;
+      }
+
+      // Check obstacle collision
+      if (collidesWithObstacle(testX, testY)) {
+        break;
+      }
+
+      finalX = testX;
+      finalY = testY;
+    }
+
+    // Defensive clamp to ensure final coordinates are strictly within map boundaries and never NaN
+    finalX = Math.max(margin, Math.min(mapW - margin, finalX));
+    finalY = Math.max(margin, Math.min(mapH - margin, finalY));
+
+    if (isNaN(finalX) || isNaN(finalY)) {
+      finalX = Math.max(margin, Math.min(mapW - margin, startX));
+      finalY = Math.max(margin, Math.min(mapH - margin, startY));
+    }
+
+    // Move player immediately and clear knockback impulses
+    game.player.x = finalX;
+    game.player.y = finalY;
+    game.player.knockbackX = 0;
+    game.player.knockbackY = 0;
 
     // Dash trail particles
-    if (Particle) {
-      const steps = 15;
+    if (Particle && game.particles) {
+      const steps = 16;
       for (let s = 0; s <= steps; s++) {
         const t = s / steps;
-        const px = startX + (clampedX - startX) * t;
-        const py = startY + (clampedY - startY) * t;
+        const px = startX + (finalX - startX) * t;
+        const py = startY + (finalY - startY) * t;
         game.particles.push(
-          new Particle(px + (Math.random() - 0.5) * 16, py + (Math.random() - 0.5) * 16, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40, s % 2 === 0 ? "#22c55e" : "#15803d", 3.8, 0.45)
+          new Particle(
+            px + (Math.random() - 0.5) * 16,
+            py + (Math.random() - 0.5) * 16,
+            (Math.random() - 0.5) * 40,
+            (Math.random() - 0.5) * 40,
+            s % 2 === 0 ? "#22c55e" : "#15803d",
+            3.8,
+            0.45
+          )
         );
       }
     }
-
-    // Move player immediately
-    game.player.x = clampedX;
-    game.player.y = clampedY;
 
     // Current damage for the poison ticks
     const baseDmg = game.player.damage || (game.player.phase && game.player.phase.damage) || 12000;
     const tickDamage = Math.round(baseDmg * TOXIC_DASH_TICK_DAMAGE_FRACTION);
 
-    // Hit detection along the line segment from (startX, startY) to (clampedX, clampedY)
-    if (game.npcs) {
+    // Hit detection along the line segment from (startX, startY) to (finalX, finalY)
+    if (game.npcs && Array.isArray(game.npcs)) {
       const hitRadius = 45; // touch tolerance
       if (!game.activePoisonDots) game.activePoisonDots = [];
 
@@ -80,9 +190,9 @@ export default {
         const npc = game.npcs[n];
         if (!npc || npc.isDead || npc.hp <= 0) continue;
 
-        // Distance from point (npc.x, npc.y) to segment (startX, startY) -> (clampedX, clampedY)
-        const dx = clampedX - startX;
-        const dy = clampedY - startY;
+        // Distance from point (npc.x, npc.y) to segment (startX, startY) -> (finalX, finalY)
+        const dx = finalX - startX;
+        const dy = finalY - startY;
         const lenSq = dx * dx + dy * dy;
         let t = 0;
         if (lenSq > 0) {
@@ -92,7 +202,7 @@ export default {
         const projY = startY + t * dy;
         const dist = Math.hypot(npc.x - projX, npc.y - projY);
 
-        if (dist <= hitRadius + npc.radius) {
+        if (dist <= hitRadius + (npc.radius || 20)) {
           // Apply Toxic Dash DoT to NPC
           game.activePoisonDots.push({
             npcId: npc.id,
@@ -101,22 +211,27 @@ export default {
             tickInterval: TOXIC_DASH_TICK_RATE,
             tickTimer: 0,
             remainingDuration: TOXIC_DASH_POISON_DURATION,
-            source: "toxic_dash"
+            source: "toxic_dash",
+            color: "#22c55e"
           });
 
-          if (FloatingText) {
+          if (FloatingText && game.floatingTexts) {
             game.floatingTexts.push(new FloatingText(npc.x, npc.y - 30, "TOXIC POISON!", "#22c55e", 17));
           }
         }
       }
     }
 
-    if (FloatingText) {
+    if (FloatingText && game.floatingTexts) {
       game.floatingTexts.push(new FloatingText(game.player.x, game.player.y - 36, "TOXIC DASH!", "#22c55e", 20));
     }
 
-    if (game.saveData.settings.screenShake) {
+    if (game.camera && game.saveData && game.saveData.settings && game.saveData.settings.screenShake) {
       game.camera.shake(6, 0.2);
+    }
+
+    if (game.camera && typeof game.camera.follow === "function") {
+      game.camera.follow(game.player.x, game.player.y, mapW, mapH, 1);
     }
 
     return true;

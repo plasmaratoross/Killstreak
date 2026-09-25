@@ -121,11 +121,11 @@
     "cataclysm": "ĐẠI HỌA!",
     "gluttony": "PHÀM ĂN!",
     "engulf": "NUỐT CHỬNG!",
-    "order_unlocked": "ĐÃ MỞ KHÓA TRẬT TỰ!",
+    "order_unlocked": "ĐÃ MỞ KHÓA ORDER!",
     "order_p12": "PHÁN QUYẾT TUYỆT ĐỐI!",
     "tremor_unlocked": "ĐÃ MỞ KHÓA TREMOR!",
     "tremor_p10": "CƠN ĐỊA CHẤN!",
-    "poison_unlocked": "ĐÃ MỞ KHÓA ĐỘC TỐ!",
+    "poison_unlocked": "ĐÃ MỞ KHÓA POISON!",
     "poison_p14": "SÁT THỦ MA QUÁI!"
   },
   "prompts": {
@@ -255,7 +255,7 @@
       },
       "order_ascended": {
         "title": "Luật Pháp",
-        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Trật Tự (966.000 killstreak)."
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Order (966.000 killstreak)."
       },
       "tremor_ascended": {
         "title": "Cơn Địa Chấn",
@@ -263,7 +263,7 @@
       },
       "poison_ascended": {
         "title": "Sát Thủ",
-        "description": "Mở khóa khi đạt tới giai đoạn cuối của Độc Tố (1.433.000 killstreak)."
+        "description": "Mở khóa khi đạt tới giai đoạn cuối của Poison (1.433.000 killstreak)."
       }
     }
   },
@@ -474,12 +474,12 @@
     "sanguine_p16_5": "Dừng lại.",
     "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
     "btn_skip": "BỎ QUA [ESC]",
-    "speaker_order": "TRẬT TỰ — LUẬT PHÁP TUYỆT ĐỐI",
+    "speaker_order": "ORDER — LUẬT PHÁP TUYỆT ĐỐI",
     "order_unlock_1": "Luật pháp không cuồng nộ. Nó không rượt đuổi.",
     "order_unlock_2": "Nó chỉ đơn giản quyết định ai phải ngã xuống.",
     "order_unlock_3": "Một trăm linh năm nghìn linh hồn đã được đặt lên bàn cân và nhận thấy thiếu sót.",
     "order_unlock_4": "Hãy cầm lấy thanh kiếm... và để sự phán quyết bắt đầu.",
-    "speaker_order_p12": "TRẬT TỰ — GIAI ĐOẠN 12: PHÁN QUYẾT TUYỆT ĐỐI",
+    "speaker_order_p12": "ORDER — GIAI ĐOẠN 12: PHÁN QUYẾT TUYỆT ĐỐI",
     "order_p12_1": "Điều luật đã viết. Phán quyết đã phong ấn.",
     "order_p12_2": "Không có kháng cáo. Không có khoan hồng.",
     "order_p12_3": "Không có luật pháp nào vượt qua điều này.",
@@ -493,11 +493,11 @@
     "tremor_p10_2": "Mặt đất không cần xin phép để chuyển dịch.",
     "tremor_p10_3": "Khi Tremor giáng xuống, chiến trường chính là vũ khí.",
     "tremor_p10_4": "MẶT ĐẤT ĐÃ ĐÁP LỜI.",
-    "speaker_poison": "ĐỘC TỐ — SÁT THỦ MA QUÁI",
+    "speaker_poison": "POISON — SÁT THỦ MA QUÁI",
     "poison_unlock_1": "Chỉ một giọt là quá đủ.",
     "poison_unlock_2": "Một trăm hai mươi lăm ngàn sinh mạng đã tàn lụi mà không hề nhìn thấy lưỡi đao.",
     "poison_unlock_3": "Hãy cầm lấy lọ độc... và thiêu rụi mạch máu của chúng.",
-    "speaker_poison_p14": "ĐỘC TỐ — GIAI ĐOẠN 14: SÁT THỦ MA QUÁI",
+    "speaker_poison_p14": "POISON — GIAI ĐOẠN 14: SÁT THỦ MA QUÁI",
     "poison_p14_1": "Một vết chém chẳng là gì.",
     "poison_p14_2": "Chất độc mới là tất cả.",
     "poison_p14_3": "Ngươi không cần phải sống sót sau đòn tấn công.",
@@ -632,7 +632,7 @@
     "debug_badges_desc": "Đã cấp {count} huy hiệu. Toàn bộ thành tựu đã mở khóa.",
     "debug_badges_all_unlocked": "Tất cả thành tựu đã được mở khóa từ trước.",
     "order_unlock_title": "ĐÃ MỞ KHÓA VŨ KHÍ",
-    "order_unlock_desc": "Trật Tự — Luật Pháp Tuyệt Đối hiện đã sẵn sàng!",
+    "order_unlock_desc": "Order — Luật Pháp Tuyệt Đối hiện đã sẵn sàng!",
     "order_up_title": "LUẬT PHÁP THĂNG HOA",
     "order_up_desc": "Đã đạt {name}",
     "order_judgment_title": "BẮT ĐẦU PHÁN QUYẾT",
@@ -640,7 +640,7 @@
     "order_verdict_title": "PHÁN QUYẾT CUỐI CÙNG",
     "order_verdict_desc": "{targets} mục tiêu bị hành quyết — {damage} tổng sát thương",
     "order_p12_title": "PHÁN QUYẾT TUYỆT ĐỐI",
-    "order_p12_desc": "Trật Tự đã đạt hình thái tối thượng.",
+    "order_p12_desc": "Order đã đạt hình thái tối thượng.",
     "tremor_unlock_title": "MỞ KHÓA VŨ KHÍ",
     "tremor_unlock_desc": "Tremor — Cơn Địa Chấn hiện đã sẵn sàng!",
     "tremor_up_title": "MẶT ĐẤT RUNG CHUYỂN",
@@ -648,11 +648,11 @@
     "tremor_p10_title": "CƠN ĐỊA CHẤN",
     "tremor_p10_desc": "Tremor đã đạt hình thái tối thượng.",
     "poison_unlock_title": "MỞ KHÓA VŨ KHÍ",
-    "poison_unlock_desc": "Độc Tố — Sát Thủ Ma Quái hiện đã sẵn sàng!",
+    "poison_unlock_desc": "Poison — Sát Thủ Ma Quái hiện đã sẵn sàng!",
     "poison_up_title": "ĐỘC TÍNH LAN RỘNG",
     "poison_up_desc": "Đã đạt {name}",
     "poison_p14_title": "SÁT THỦ MA QUÁI",
-    "poison_p14_desc": "Độc Tố đã đạt tới hình thái tối thượng."
+    "poison_p14_desc": "Poison đã đạt tới hình thái tối thượng."
   },
   "maps": {
     "LOBBY": "Sảnh Thánh Địa",
@@ -1040,9 +1040,9 @@
       "description": "Một vũ khí máu khởi đầu là thứ yếu nhất trong game và kết thúc là thứ mạnh nhất: suốt sáu giai đoạn nó gần như không giữ nổi mình, rồi nó thôi giữ lại. Sở hữu Bloodletting [Z] và Exsanguinate [X]."
     },
     "order": {
-      "name": "Trật Tự",
+      "name": "Order",
       "tag": "LUẬT PHÁP",
-      "description": "Trật Tự đại diện cho quyền năng tuyệt đối của luật pháp. Sức mạnh gia tăng nhanh chóng trước khi trải qua giai đoạn sụp đổ có chủ đích ở Giai đoạn 5. Sau khi hồi phục, thanh kiếm tiến hóa thành khí cụ phán quyết siêu phàm. Kỹ năng đặc trưng, Phán Quyết, cho phép khắc dấu nhiều mục tiêu trước khi đồng loạt hành quyết."
+      "description": "Order đại diện cho quyền năng tuyệt đối của luật pháp. Sức mạnh gia tăng nhanh chóng trước khi trải qua giai đoạn sụp đổ có chủ đích ở Giai đoạn 5. Sau khi hồi phục, thanh kiếm tiến hóa thành khí cụ phán quyết siêu phàm. Kỹ năng đặc trưng, Phán Quyết, cho phép khắc dấu nhiều mục tiêu trước khi đồng loạt hành quyết."
     },
     "tremor": {
       "name": "Tremor",
@@ -1050,7 +1050,7 @@
       "description": "Tremor là thanh kiếm diện rộng mang chủ đề địa chấn được xây dựng xung quanh sức mạnh hủy diệt thô bạo và xung lực áp đảo. Kiếm khởi đầu yếu ớt, trải qua một đợt sụp đổ có chủ đích ở Giai đoạn 6, và tiến hóa thành một vũ khí tàn phá chiến trường ở giai đoạn cuối. Kỹ năng đặc trưng: Sóng Địa Chấn [Z]."
     },
     "poison": {
-      "name": "Độc Tố",
+      "name": "Poison",
       "tag": "VŨ KHÍ ĐỘC DƯỢC",
       "description": "Lưỡi kiếm sát thủ mỏng manh đánh đổi sát thương trực tiếp lấy nọc độc chết chóc, độ cơ động tuyệt đối và đòn hành quyết tích trữ sát thương hủy diệt. Sở hữu Lướt Độc Tố [Z] và Khúc Chiêu Hồn Độc [X]."
     }

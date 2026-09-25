@@ -23,20 +23,33 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
     }
 
     follow(targetX, targetY, mapWidth, mapHeight, dt) {
+      if (typeof targetX !== "number" || isNaN(targetX) || typeof targetY !== "number" || isNaN(targetY)) {
+        return;
+      }
+      if (typeof this.x !== "number" || isNaN(this.x)) this.x = 0;
+      if (typeof this.y !== "number" || isNaN(this.y)) this.y = 0;
+
+      const safeMapW = (typeof mapWidth === "number" && !isNaN(mapWidth) && mapWidth > 0) ? mapWidth : 5000;
+      const safeMapH = (typeof mapHeight === "number" && !isNaN(mapHeight) && mapHeight > 0) ? mapHeight : 5000;
+      const safeDt = (typeof dt === "number" && !isNaN(dt) && dt >= 0) ? dt : 0.016;
+
       const desiredX = targetX - this.viewportWidth / 2;
       const desiredY = targetY - this.viewportHeight / 2;
-      const smoothFactor = 1 - Math.pow(0.001, dt);
+      const smoothFactor = 1 - Math.pow(0.001, safeDt);
 
       this.x += (desiredX - this.x) * smoothFactor;
       this.y += (desiredY - this.y) * smoothFactor;
 
-      const maxX = Math.max(0, mapWidth - this.viewportWidth);
-      const maxY = Math.max(0, mapHeight - this.viewportHeight);
+      const maxX = Math.max(0, safeMapW - this.viewportWidth);
+      const maxY = Math.max(0, safeMapH - this.viewportHeight);
       this.x = Math.max(0, Math.min(maxX, this.x));
       this.y = Math.max(0, Math.min(maxY, this.y));
 
+      if (isNaN(this.x)) this.x = 0;
+      if (isNaN(this.y)) this.y = 0;
+
       if (this.shakeTimer > 0) {
-        this.shakeTimer -= dt;
+        this.shakeTimer -= safeDt;
       } else {
         this.shakeIntensity = 0;
       }
@@ -48,17 +61,19 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
     }
 
     getOffset() {
-      let offsetX = this.x;
-      let offsetY = this.y;
+      let offsetX = (typeof this.x === "number" && !isNaN(this.x)) ? this.x : 0;
+      let offsetY = (typeof this.y === "number" && !isNaN(this.y)) ? this.y : 0;
       if (this.shakeTimer > 0 && this.shakeIntensity > 0) {
         offsetX += (Math.random() - 0.5) * this.shakeIntensity;
         offsetY += (Math.random() - 0.5) * this.shakeIntensity;
       }
-      return { x: offsetX, y: offsetY };
+      return { x: isNaN(offsetX) ? 0 : offsetX, y: isNaN(offsetY) ? 0 : offsetY };
     }
 
     screenToWorld(screenX, screenY) {
-      return { x: screenX + this.x, y: screenY + this.y };
+      const camX = (typeof this.x === "number" && !isNaN(this.x)) ? this.x : 0;
+      const camY = (typeof this.y === "number" && !isNaN(this.y)) ? this.y : 0;
+      return { x: screenX + camX, y: screenY + camY };
     }
   }
 
@@ -261,6 +276,13 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
     }
 
     update(dt, input, map, worldMouse, npcs = []) {
+      if (typeof this.x !== "number" || isNaN(this.x)) {
+        this.x = (map && typeof map.width === "number") ? map.width / 2 : 2500;
+      }
+      if (typeof this.y !== "number" || isNaN(this.y)) {
+        this.y = (map && typeof map.height === "number") ? map.height / 2 : 2500;
+      }
+
       let dx = 0;
       let dy = 0;
 
@@ -371,10 +393,23 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
         this.hurtTimer = Math.max(0, this.hurtTimer - dt);
       }
 
-      this.x = Math.max(this.radius + 10, Math.min(map.width - this.radius - 10, nextX));
-      this.y = Math.max(this.radius + 10, Math.min(map.height - this.radius - 10, nextY));
+      const safeMapWidth = (map && typeof map.width === "number" && !isNaN(map.width)) ? map.width : 5000;
+      const safeMapHeight = (map && typeof map.height === "number" && !isNaN(map.height)) ? map.height : 5000;
+      const minBound = this.radius + 10;
 
-      this.angle = Math.atan2(worldMouse.y - this.y, worldMouse.x - this.x);
+      if (!isNaN(nextX)) {
+        this.x = Math.max(minBound, Math.min(safeMapWidth - minBound, nextX));
+      }
+      if (!isNaN(nextY)) {
+        this.y = Math.max(minBound, Math.min(safeMapHeight - minBound, nextY));
+      }
+
+      if (worldMouse && typeof worldMouse.x === "number" && !isNaN(worldMouse.x) && typeof worldMouse.y === "number" && !isNaN(worldMouse.y)) {
+        this.angle = Math.atan2(worldMouse.y - this.y, worldMouse.x - this.x);
+      }
+      if (typeof this.angle !== "number" || isNaN(this.angle)) {
+        this.angle = 0;
+      }
 
       if (this.isAttacking) {
         this.attackTimer -= dt;
@@ -780,6 +815,10 @@ import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
    */
   class NPC {
     constructor(x, y, zoneIndex = 0, type = "normal", slotIndex = 0) {
+      // Unique identity: Order's Judgment marks targets and Tremor's Seismic Wave
+      // dedupes hits by `npc.id`. Without it every NPC shares `undefined`, so
+      // `ids.includes(npc.id)` matches the entire zone after the first touch.
+      this.id = (NPC.nextId = (NPC.nextId || 0) + 1);
       this.x = x;
       this.y = y;
       this.spawnX = x;
