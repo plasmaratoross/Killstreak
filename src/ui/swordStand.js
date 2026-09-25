@@ -56,6 +56,9 @@ export function updateSwordStandUI(game) {
   const isLumen = sId === "lumen";
   const isUmbra = sId === "umbra";
   const isSanguine = sId === "sanguine";
+  const isOrder = sId === "order";
+  const isTremor = sId === "tremor";
+  const isPoison = sId === "poison";
   const totalKills = (game.saveData && game.saveData.totalKills) || 0;
   const unlockReq = swordDef.unlockKills || 0;
   const isLocked = unlockReq > 0 && totalKills < unlockReq;
@@ -107,6 +110,15 @@ export function updateSwordStandUI(game) {
     } else if (isSanguine) {
       pList = Config.SANGUINE_PHASES;
       savedNum = game.saveData.sanguinePhase || 1;
+    } else if (isOrder) {
+      pList = Config.ORDER_PHASES;
+      savedNum = game.saveData.orderPhase || 1;
+    } else if (isTremor) {
+      pList = Config.TREMOR_PHASES;
+      savedNum = game.saveData.tremorPhase || 1;
+    } else if (isPoison) {
+      pList = Config.POISON_PHASES;
+      savedNum = game.saveData.poisonPhase || 1;
     }
     p = (pList && pList.find(x => x.phase === savedNum)) || (pList && pList[0]) || Config.SWORD_PHASES[0];
   }
@@ -223,7 +235,7 @@ export function initSwordStandWiring(game, onClose) {
     }
 
     let isEquipped = false;
-    if (game.player.swordId === sId) {
+    if (game.player.swordId === sId && game.player.isSwordEquipped) {
       isEquipped = game.toggleSwordEquip();
     } else {
       const success = game.equipSword(sId);

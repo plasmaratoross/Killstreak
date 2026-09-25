@@ -219,6 +219,7 @@ import { setNumContent } from '../src/utils/dom.js';
     },
 
     onCutsceneStart(step) {
+      closeAllModals();
       cutsceneSpeaker.textContent = step.speaker;
       cutsceneText.textContent = step.text;
       const iconEl = cutsceneOverlay.querySelector(".cutscene-icon");

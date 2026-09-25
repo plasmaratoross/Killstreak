@@ -63,5 +63,8 @@ export const ACHIEVEMENTS = [
   { id: "voltstrike_ascended", badge: "voltstrike_ascended", icon: "⚡",  title: "The Lightning",        description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",           killsRequired: 699999 },
   { id: "lumen_ascended",     badge: "lumen_ascended",     icon: "✨", title: "The Radiant",          description: "Unlock when reaching the final phase of Lumen (950,000 killstreak).",                killsRequired: 950000 },
   { id: "umbra_ascended",     badge: "umbra_ascended",     icon: "🕳️", title: "The Void",            description: "Unlock when reaching the final phase of Umbra (1,400,000 killstreak).",              killsRequired: 1400000 },
-  { id: "sanguine_ascended",  badge: "sanguine_ascended",  icon: "🩸", title: "The Blood",           description: "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak).",           killsRequired: 1850000 }
+  { id: "sanguine_ascended",  badge: "sanguine_ascended",  icon: "🩸", title: "The Blood",           description: "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak).",           killsRequired: 1850000 },
+  { id: "order_ascended",     badge: "order_ascended",     icon: "⚖️",  title: "The Law",             description: "Unlock when reaching the final phase of Order (966,000 killstreak).",                 killsRequired: 966000 },
+  { id: "tremor_ascended",    badge: "tremor_ascended",    icon: "🌋",  title: "The Earthquake",      description: "Unlock when reaching the final phase of Tremor (1,200,000 killstreak).",               killsRequired: 1200000 },
+  { id: "poison_ascended",    badge: "poison_ascended",    icon: "☠️",  title: "The Assassin",        description: "Unlock when reaching the final phase of Poison (1,433,000 killstreak).",               killsRequired: 1433000 }
 ];

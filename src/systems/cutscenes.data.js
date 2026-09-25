@@ -1608,6 +1608,372 @@ export const CUTSCENES = {
     }
     return;
     }
+  },
+
+  order_unlock: {
+    type: "order_unlock",
+
+    shake: [12, 0.5],
+
+    achieve: null,
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order") : "ORDER — THE ABSOLUTE LAW",
+          text: I18n ? I18n.t("cutscene.order_unlock_1") : "The law does not rage. It does not chase."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order") : "ORDER — THE ABSOLUTE LAW",
+          text: I18n ? I18n.t("cutscene.order_unlock_2") : "It simply decides who must fall."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order") : "ORDER — THE ABSOLUTE LAW",
+          text: I18n ? I18n.t("cutscene.order_unlock_3") : "One hundred and five thousand souls have been weighed and found wanting."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order") : "ORDER — THE ABSOLUTE LAW",
+          text: I18n ? I18n.t("cutscene.order_unlock_4") : "Take the blade... and let judgment begin."
+        }
+      ];
+    },
+
+    onFinish(game) {
+      const Storage = window.Killstreak.Storage;
+      const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+      game.saveData.orderUnlockCutsceneSeen = true;
+      Storage.save(game.saveData);
+
+      game.camera.shake(14, 0.6);
+      for (let i = 0; i < 60; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 90 + Math.random() * 200;
+        const color = i % 2 === 0 ? "#ffffff" : "#fef08a";
+        game.particles.push(
+          new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      game.floatingTexts.push(
+        new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.order_unlocked", { defaultValue: "ORDER UNLOCKED!" }) : "ORDER UNLOCKED!", "#ffffff", 20)
+      );
+
+      if (game.callbacks.onCutsceneEnd) {
+        game.callbacks.onCutsceneEnd();
+      }
+      if (game.callbacks.onToast) {
+        const tTitle = I18n ? I18n.t("toasts.order_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+        const tDesc = I18n ? I18n.t("toasts.order_unlock_desc", { defaultValue: "Order — The Absolute Law is now available!" }) : "Order — The Absolute Law is now available!";
+        game.callbacks.onToast(tTitle, tDesc, "⚖️");
+      }
+      return;
+    }
+  },
+
+  order_p12: {
+    type: "order_p12",
+
+    shake: [18, 0.6],
+
+    achieve: "order_ascended",
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order_p12") : "ORDER — PHASE 12: ABSOLUTE JUDGMENT",
+          text: I18n ? I18n.t("cutscene.order_p12_1") : "The statute is written. The verdict is sealed."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order_p12") : "ORDER — PHASE 12: ABSOLUTE JUDGMENT",
+          text: I18n ? I18n.t("cutscene.order_p12_2") : "There is no appeal. There is no mercy."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order_p12") : "ORDER — PHASE 12: ABSOLUTE JUDGMENT",
+          text: I18n ? I18n.t("cutscene.order_p12_3") : "There is no law above this."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_order_p12") : "ORDER — PHASE 12: ABSOLUTE JUDGMENT",
+          text: I18n ? I18n.t("cutscene.order_p12_4") : "The sentence is final."
+        }
+      ];
+    },
+
+    onFinish(game) {
+      const Storage = window.Killstreak.Storage;
+      const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+      game.saveData.orderPhase12CutsceneSeen = true;
+      Storage.save(game.saveData);
+
+      game.camera.shake(18, 0.6);
+      for (let i = 0; i < 80; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 130 + Math.random() * 260;
+        const color = i % 3 === 0 ? "#ffffff" : (i % 3 === 1 ? "#fef08a" : "#cbd5e1");
+        game.particles.push(
+          new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.0, 0.7)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      game.floatingTexts.push(
+        new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.order_p12", { defaultValue: "ABSOLUTE JUDGMENT!" }) : "ABSOLUTE JUDGMENT!", "#ffffff", 22)
+      );
+
+      if (game.callbacks.onCutsceneEnd) {
+        game.callbacks.onCutsceneEnd();
+      }
+      if (game.callbacks.onToast) {
+        const tTitle = I18n ? I18n.t("toasts.order_p12_title", { defaultValue: "ABSOLUTE JUDGMENT" }) : "ABSOLUTE JUDGMENT";
+        const tDesc = I18n ? I18n.t("toasts.order_p12_desc", { defaultValue: "Order has reached its final form." }) : "Order has reached its final form.";
+        game.callbacks.onToast(tTitle, tDesc, "⚖️");
+      }
+      return;
+    }
+  },
+
+  tremor_unlock: {
+    type: "tremor_unlock",
+
+    shake: [14, 0.6],
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor") : "TREMOR — THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_unlock_1") : "The bedrock remembers every blow."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor") : "TREMOR — THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_unlock_2") : "One hundred and fifteen thousand souls crushed beneath the fault."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor") : "TREMOR — THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_unlock_3") : "Take the stone... and make the world shake."
+        }
+      ];
+    },
+
+    onFinish(game) {
+      const Storage = window.Killstreak.Storage;
+      const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+      game.saveData.tremorUnlocked = true;
+      Storage.save(game.saveData);
+
+      game.camera.shake(14, 0.6);
+      for (let i = 0; i < 60; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 90 + Math.random() * 200;
+        const color = i % 3 === 0 ? "#f97316" : (i % 3 === 1 ? "#ea580c" : "#78716c");
+        game.particles.push(
+          new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      game.floatingTexts.push(
+        new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.tremor_unlocked", { defaultValue: "TREMOR UNLOCKED!" }) : "TREMOR UNLOCKED!", "#f97316", 20)
+      );
+
+      if (game.callbacks.onCutsceneEnd) {
+        game.callbacks.onCutsceneEnd();
+      }
+      if (game.callbacks.onToast) {
+        const tTitle = I18n ? I18n.t("toasts.tremor_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+        const tDesc = I18n ? I18n.t("toasts.tremor_unlock_desc", { defaultValue: "Tremor — The Earthquake is now available!" }) : "Tremor — The Earthquake is now available!";
+        game.callbacks.onToast(tTitle, tDesc, "🌋");
+      }
+      return;
+    }
+  },
+
+  tremor_p10: {
+    type: "tremor_p10",
+
+    shake: [22, 0.8],
+
+    achieve: "tremor_ascended",
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor_p10") : "TREMOR — PHASE 10: THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_p10_1") : "The fault has opened completely."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor_p10") : "TREMOR — PHASE 10: THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_p10_2") : "The earth does not need permission to move."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor_p10") : "TREMOR — PHASE 10: THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_p10_3") : "When Tremor strikes, the battlefield becomes the weapon."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_tremor_p10") : "TREMOR — PHASE 10: THE EARTHQUAKE",
+          text: I18n ? I18n.t("cutscene.tremor_p10_4") : "THE EARTH HAS ANSWERED."
+        }
+      ];
+    },
+
+    onFinish(game) {
+      const Storage = window.Killstreak.Storage;
+      const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+      game.saveData.tremorPhase10CutsceneSeen = true;
+      Storage.save(game.saveData);
+
+      game.camera.shake(22, 0.8);
+      for (let i = 0; i < 80; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 130 + Math.random() * 260;
+        const color = i % 3 === 0 ? "#f97316" : (i % 3 === 1 ? "#ea580c" : "#451a03");
+        game.particles.push(
+          new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.0, 0.7)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      game.floatingTexts.push(
+        new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.tremor_p10", { defaultValue: "THE EARTHQUAKE!" }) : "THE EARTHQUAKE!", "#f97316", 22)
+      );
+
+      if (game.callbacks.onCutsceneEnd) {
+        game.callbacks.onCutsceneEnd();
+      }
+      if (game.callbacks.onToast) {
+        const tTitle = I18n ? I18n.t("toasts.tremor_p10_title", { defaultValue: "THE EARTHQUAKE" }) : "THE EARTHQUAKE";
+        const tDesc = I18n ? I18n.t("toasts.tremor_p10_desc", { defaultValue: "Tremor has reached its final form." }) : "Tremor has reached its final form.";
+        game.callbacks.onToast(tTitle, tDesc, "🌋");
+      }
+      return;
+    }
+  },
+
+  poison_unlock: {
+    type: "poison_unlock",
+
+    shake: [12, 0.5],
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison") : "POISON — THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_unlock_1") : "A single drop is enough."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison") : "POISON — THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_unlock_2") : "One hundred and twenty-five thousand lives ended without ever seeing the blade."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison") : "POISON — THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_unlock_3") : "Take the vial... and make their veins burn."
+        }
+      ];
+    },
+
+    onFinish(game) {
+      const Storage = window.Killstreak.Storage;
+      const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+      game.saveData.poisonUnlocked = true;
+      Storage.save(game.saveData);
+
+      game.camera.shake(12, 0.5);
+      for (let i = 0; i < 60; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 90 + Math.random() * 200;
+        const color = i % 3 === 0 ? "#22c55e" : (i % 3 === 1 ? "#16a34a" : "#15803d");
+        game.particles.push(
+          new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 4.5, 0.6)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      game.floatingTexts.push(
+        new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.poison_unlocked", { defaultValue: "POISON UNLOCKED!" }) : "POISON UNLOCKED!", "#22c55e", 20)
+      );
+
+      if (game.callbacks.onCutsceneEnd) {
+        game.callbacks.onCutsceneEnd();
+      }
+      if (game.callbacks.onToast) {
+        const tTitle = I18n ? I18n.t("toasts.poison_unlock_title", { defaultValue: "WEAPON UNLOCKED" }) : "WEAPON UNLOCKED";
+        const tDesc = I18n ? I18n.t("toasts.poison_unlock_desc", { defaultValue: "Poison — The Diabolical Assassin is now available!" }) : "Poison — The Diabolical Assassin is now available!";
+        game.callbacks.onToast(tTitle, tDesc, "☠️");
+      }
+      return;
+    }
+  },
+
+  poison_p14: {
+    type: "poison_p14",
+
+    shake: [20, 0.7],
+
+    achieve: "poison_ascended",
+
+    lines() {
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      return [
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison_p14") : "POISON — PHASE 14: THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_p14_1") : "One cut is nothing."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison_p14") : "POISON — PHASE 14: THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_p14_2") : "The poison is everything."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison_p14") : "POISON — PHASE 14: THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_p14_3") : "You don't need to survive the attack."
+        },
+        {
+          speaker: I18n ? I18n.t("cutscene.speaker_poison_p14") : "POISON — PHASE 14: THE DIABOLICAL ASSASSIN",
+          text: I18n ? I18n.t("cutscene.poison_p14_4") : "You only need to survive the poison... and no one ever does."
+        }
+      ];
+    },
+
+    onFinish(game) {
+      const Storage = window.Killstreak.Storage;
+      const { Particle, FloatingText } = (window.Killstreak && window.Killstreak.Entities) || {};
+
+      game.saveData.poisonPhase14CutsceneSeen = true;
+      Storage.save(game.saveData);
+
+      game.camera.shake(20, 0.7);
+      for (let i = 0; i < 80; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 130 + Math.random() * 260;
+        const color = i % 3 === 0 ? "#22c55e" : (i % 3 === 1 ? "#4ade80" : "#14532d");
+        game.particles.push(
+          new Particle(game.player.x, game.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, color, 5.0, 0.7)
+        );
+      }
+
+      const I18n = window.Killstreak && window.Killstreak.I18n;
+      game.floatingTexts.push(
+        new FloatingText(game.player.x, game.player.y - 45, I18n ? I18n.t("floating.poison_p14", { defaultValue: "THE DIABOLICAL ASSASSIN!" }) : "THE DIABOLICAL ASSASSIN!", "#22c55e", 22)
+      );
+
+      if (game.callbacks.onCutsceneEnd) {
+        game.callbacks.onCutsceneEnd();
+      }
+      if (game.callbacks.onToast) {
+        const tTitle = I18n ? I18n.t("toasts.poison_p14_title", { defaultValue: "THE DIABOLICAL ASSASSIN" }) : "THE DIABOLICAL ASSASSIN";
+        const tDesc = I18n ? I18n.t("toasts.poison_p14_desc", { defaultValue: "Poison has reached its final form." }) : "Poison has reached its final form.";
+        game.callbacks.onToast(tTitle, tDesc, "☠️");
+      }
+      return;
+    }
   }
 };
 

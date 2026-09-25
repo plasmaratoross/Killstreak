@@ -36,6 +36,9 @@ import '../data/swords/voltstrike/voltstrike.js';
 import '../data/swords/lumen/lumen.js';
 import '../data/swords/umbra/umbra.js';
 import '../data/swords/sanguine/sanguine.js';
+import '../data/swords/order/order.js';
+import '../data/swords/tremor/tremor.js';
+import '../data/swords/poison/poison.js';
 
 // 3. NPC Data Modules
 import '../data/npcs/normal/normal.js';

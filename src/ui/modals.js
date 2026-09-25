@@ -49,7 +49,6 @@ import {
   closeSettingsBtnBottom,
   closeStatsBtn,
   closeStatsBtnBottom,
-  respawnCombatBtn,
   returnLobbyBtn
 } from './domRefs.js';
 import { isDebugUnlocked, setCogClickCount } from './debugPanel.js';
@@ -253,13 +252,6 @@ export function initModalWiring(game) {
   closeSettingsBtnBottom.addEventListener("click", () => returnFromModal(game));
   closeStatsBtn.addEventListener("click", () => returnFromModal(game));
   closeStatsBtnBottom.addEventListener("click", () => returnFromModal(game));
-
-  // The game-over screen is managed by closeAllModals(), so its two actions
-  // belong with the rest of the screen controls.
-  respawnCombatBtn.addEventListener("click", () => {
-    closeAllModals();
-    game.respawnInCombat();
-  });
 
   returnLobbyBtn.addEventListener("click", () => {
     closeAllModals();

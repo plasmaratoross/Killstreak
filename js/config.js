@@ -24,6 +24,9 @@
   const LUMEN_PHASES = (SWORDS.lumen && SWORDS.lumen.phases) || [];
   const UMBRA_PHASES = (SWORDS.umbra && SWORDS.umbra.phases) || [];
   const SANGUINE_PHASES = (SWORDS.sanguine && SWORDS.sanguine.phases) || [];
+  const ORDER_PHASES = (SWORDS.order && SWORDS.order.phases) || [];
+  const TREMOR_PHASES = (SWORDS.tremor && SWORDS.tremor.phases) || [];
+  const POISON_PHASES = (SWORDS.poison && SWORDS.poison.phases) || [];
 
   // Structured NPC Formation Offsets (Relative to Zone Center)
   const NPC_FORMATION_10_SLOTS = [
@@ -232,6 +235,30 @@
       icon: "🩸",
       description: "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak).",
       killsRequired: 1850000
+    },
+    {
+      id: "order_ascended",
+      title: "The Law",
+      badge: "order_ascended",
+      icon: "⚖️",
+      description: "Unlock when reaching the final phase of Order (966,000 killstreak).",
+      killsRequired: 966000
+    },
+    {
+      id: "tremor_ascended",
+      title: "The Earthquake",
+      badge: "tremor_ascended",
+      icon: "🌋",
+      description: "Unlock when reaching the final phase of Tremor (1,200,000 killstreak).",
+      killsRequired: 1200000
+    },
+    {
+      id: "poison_ascended",
+      title: "The Assassin",
+      badge: "poison_ascended",
+      icon: "☠️",
+      description: "Unlock when reaching the final phase of Poison (1,433,000 killstreak).",
+      killsRequired: 1433000
     }
   ];
 
@@ -400,6 +427,9 @@
     LUMEN_PHASES,
     UMBRA_PHASES,
     SANGUINE_PHASES,
+    ORDER_PHASES,
+    TREMOR_PHASES,
+    POISON_PHASES,
     SWORDS,
     KILLSTREAK_SCALING,
     DEVOURER_SCALING,

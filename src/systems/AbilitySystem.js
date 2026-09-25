@@ -38,6 +38,10 @@ import umbraAbility from '../swords/umbra/umbra.ability.js';
 import umbraErasureAbility from '../swords/umbra/umbra.erasure.ability.js';
 import sanguineAbility from '../swords/sanguine/sanguine.ability.js';
 import sanguineExsanguinateAbility from '../swords/sanguine/sanguine.exsanguinate.ability.js';
+import orderAbility from '../swords/order/order.ability.js';
+import tremorAbility from '../swords/tremor/tremor.ability.js';
+import poisonAbility from '../swords/poison/poison.ability.js';
+import poisonRequiemAbility from '../swords/poison/poison.requiem.ability.js';
 
 /**
  * Primary (Z) ability for the currently equipped sword.
@@ -60,6 +64,9 @@ export function activatePrimary(game) {
   if (swordId === "lumen") return lumenAbility.activate(game);
   if (swordId === "umbra") return umbraAbility.activate(game);
   if (swordId === "sanguine") return sanguineAbility.activate(game);
+  if (swordId === "order") return orderAbility.activate(game);
+  if (swordId === "tremor") return tremorAbility.activate(game);
+  if (swordId === "poison") return poisonAbility.activate(game);
 
   return devourerAbility.activate(game);
 }
@@ -85,6 +92,7 @@ export function activateSecondary(game) {
   if (swordId === "lumen") return lumenRadianceAbility.activate(game);
   if (swordId === "umbra") return umbraErasureAbility.activate(game);
   if (swordId === "sanguine") return sanguineExsanguinateAbility.activate(game);
+  if (swordId === "poison") return poisonRequiemAbility.activate(game);
 
   return devourerEngulfAbility.activate(game);
 }

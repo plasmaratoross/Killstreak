@@ -77,7 +77,19 @@
     "locked_p17": "KHÓA (GĐ17)",
     "locked": "ĐANG KHÓA",
     "active": "ĐANG BẬT",
-    "ready": "SẴN SÀNG"
+    "ready": "SẴN SÀNG",
+    "judgment_label": "[ Z — PHÁN QUYẾT ]",
+    "judgment_title": "Phán Quyết [Z] — Chạm mục tiêu trong 10 giây để khắc dấu, sau đó nhấn [Z] lần nữa để gây 500% sát thương đồng loạt lên tất cả mục tiêu đã khắc dấu (Giai đoạn 4+, Hồi chiêu 45s)",
+    "verdict_ready": "TUYÊN ÁN [Z] ({time}s)",
+    "seismic_wave_label": "[ Z — SÓNG ĐỊA CHẤN ]",
+    "seismic_wave_title": "Sóng Địa Chấn [Z] — Phóng làn sóng chấn động chậm tàn phá trong 3 giây gây 10× sát thương (Giai đoạn 6+, Hồi chiêu 45s)",
+    "locked_p6": "KHÓA (GĐ6)",
+    "toxic_dash_label": "[ Z — LƯỚT ĐỘC TỐ ]",
+    "toxic_dash_title": "Lướt Độc Tố [Z] — Lướt tới trước 300px và gây tổng cộng 1250% sát thương độc trong 5s (Giai đoạn 4+, Hồi chiêu 15s)",
+    "requiem_label": "[ X — KHÚC CHIÊU HỒN ĐỘC ]",
+    "requiem_title": "Khúc Chiêu Hồn Độc [X] — Ghi lại toàn bộ sát thương độc trong 30s, sau đó hành quyết kẻ địch xung quanh với 125% sát thương tích trữ + độc phụ (Giai đoạn 12+, Hồi chiêu 75s)",
+    "requiem_execute": "HÀNH QUYẾT ({dmg})",
+    "requiem_recording": "ĐANG TÍCH TRỮ ({time}s)"
   },
   "floating": {
     "aquatic_unlocked": "ĐÃ MỞ KHÓA THỦY LINH!",
@@ -108,7 +120,13 @@
     "worldroot": "THẾ GIỚI CĂN!",
     "cataclysm": "ĐẠI HỌA!",
     "gluttony": "PHÀM ĂN!",
-    "engulf": "NUỐT CHỬNG!"
+    "engulf": "NUỐT CHỬNG!",
+    "order_unlocked": "ĐÃ MỞ KHÓA TRẬT TỰ!",
+    "order_p12": "PHÁN QUYẾT TUYỆT ĐỐI!",
+    "tremor_unlocked": "ĐÃ MỞ KHÓA TREMOR!",
+    "tremor_p10": "CƠN ĐỊA CHẤN!",
+    "poison_unlocked": "ĐÃ MỞ KHÓA ĐỘC TỐ!",
+    "poison_p14": "SÁT THỦ MA QUÁI!"
   },
   "prompts": {
     "inspect": "Khảo sát {sword} [E]",
@@ -234,6 +252,18 @@
       "sanguine_ascended": {
         "title": "Huyết",
         "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Sanguine (1,850,000 chuỗi hạ gục)."
+      },
+      "order_ascended": {
+        "title": "Luật Pháp",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Trật Tự (966.000 killstreak)."
+      },
+      "tremor_ascended": {
+        "title": "Cơn Địa Chấn",
+        "description": "Mở khóa khi đạt đến giai đoạn cuối cùng của Tremor (1.200.000 killstreak)."
+      },
+      "poison_ascended": {
+        "title": "Sát Thủ",
+        "description": "Mở khóa khi đạt tới giai đoạn cuối của Độc Tố (1.433.000 killstreak)."
       }
     }
   },
@@ -443,7 +473,35 @@
     "sanguine_p16_4": "[Lưỡi kiếm nóng trắng và nhịp đập lại vang lên, mạnh gấp đôi.]\n\nTa đang giữ nó.",
     "sanguine_p16_5": "Dừng lại.",
     "hint": "[PHÍM CÁCH] hoặc Nhấp để tiếp tục",
-    "btn_skip": "BỎ QUA [ESC]"
+    "btn_skip": "BỎ QUA [ESC]",
+    "speaker_order": "TRẬT TỰ — LUẬT PHÁP TUYỆT ĐỐI",
+    "order_unlock_1": "Luật pháp không cuồng nộ. Nó không rượt đuổi.",
+    "order_unlock_2": "Nó chỉ đơn giản quyết định ai phải ngã xuống.",
+    "order_unlock_3": "Một trăm linh năm nghìn linh hồn đã được đặt lên bàn cân và nhận thấy thiếu sót.",
+    "order_unlock_4": "Hãy cầm lấy thanh kiếm... và để sự phán quyết bắt đầu.",
+    "speaker_order_p12": "TRẬT TỰ — GIAI ĐOẠN 12: PHÁN QUYẾT TUYỆT ĐỐI",
+    "order_p12_1": "Điều luật đã viết. Phán quyết đã phong ấn.",
+    "order_p12_2": "Không có kháng cáo. Không có khoan hồng.",
+    "order_p12_3": "Không có luật pháp nào vượt qua điều này.",
+    "order_p12_4": "Bản án đã hoàn tất.",
+    "speaker_tremor": "TREMOR — CƠN ĐỊA CHẤN",
+    "tremor_unlock_1": "Tầng đá nền ghi nhớ từng đòn đánh.",
+    "tremor_unlock_2": "Một trăm mười lăm ngàn linh hồn bị nghiền nát dưới đứt gãy.",
+    "tremor_unlock_3": "Cầm lấy khối đá... và khiến thế giới rung chuyển.",
+    "speaker_tremor_p10": "TREMOR — GIAI ĐOẠN 10: CƠN ĐỊA CHẤN",
+    "tremor_p10_1": "Đường đứt gãy đã mở ra hoàn toàn.",
+    "tremor_p10_2": "Mặt đất không cần xin phép để chuyển dịch.",
+    "tremor_p10_3": "Khi Tremor giáng xuống, chiến trường chính là vũ khí.",
+    "tremor_p10_4": "MẶT ĐẤT ĐÃ ĐÁP LỜI.",
+    "speaker_poison": "ĐỘC TỐ — SÁT THỦ MA QUÁI",
+    "poison_unlock_1": "Chỉ một giọt là quá đủ.",
+    "poison_unlock_2": "Một trăm hai mươi lăm ngàn sinh mạng đã tàn lụi mà không hề nhìn thấy lưỡi đao.",
+    "poison_unlock_3": "Hãy cầm lấy lọ độc... và thiêu rụi mạch máu của chúng.",
+    "speaker_poison_p14": "ĐỘC TỐ — GIAI ĐOẠN 14: SÁT THỦ MA QUÁI",
+    "poison_p14_1": "Một vết chém chẳng là gì.",
+    "poison_p14_2": "Chất độc mới là tất cả.",
+    "poison_p14_3": "Ngươi không cần phải sống sót sau đòn tấn công.",
+    "poison_p14_4": "Ngươi chỉ cần sống sót qua nọc độc... và chưa một ai làm được điều đó."
   },
   "toasts": {
     "entered_combat_title": "Đã Vào Thảo Nguyên Rộng Lớn",
@@ -572,7 +630,29 @@
     "debug_badge_title": "Debug: Đã Cấp Huy Hiệu",
     "debug_badges_title": "Debug: Đã Cấp Nhiều Huy Hiệu",
     "debug_badges_desc": "Đã cấp {count} huy hiệu. Toàn bộ thành tựu đã mở khóa.",
-    "debug_badges_all_unlocked": "Tất cả thành tựu đã được mở khóa từ trước."
+    "debug_badges_all_unlocked": "Tất cả thành tựu đã được mở khóa từ trước.",
+    "order_unlock_title": "ĐÃ MỞ KHÓA VŨ KHÍ",
+    "order_unlock_desc": "Trật Tự — Luật Pháp Tuyệt Đối hiện đã sẵn sàng!",
+    "order_up_title": "LUẬT PHÁP THĂNG HOA",
+    "order_up_desc": "Đã đạt {name}",
+    "order_judgment_title": "BẮT ĐẦU PHÁN QUYẾT",
+    "order_judgment_desc": "Chạm mục tiêu trong 10 giây để khắc dấu, sau đó nhấn [Z] lần nữa để hành quyết.",
+    "order_verdict_title": "PHÁN QUYẾT CUỐI CÙNG",
+    "order_verdict_desc": "{targets} mục tiêu bị hành quyết — {damage} tổng sát thương",
+    "order_p12_title": "PHÁN QUYẾT TUYỆT ĐỐI",
+    "order_p12_desc": "Trật Tự đã đạt hình thái tối thượng.",
+    "tremor_unlock_title": "MỞ KHÓA VŨ KHÍ",
+    "tremor_unlock_desc": "Tremor — Cơn Địa Chấn hiện đã sẵn sàng!",
+    "tremor_up_title": "MẶT ĐẤT RUNG CHUYỂN",
+    "tremor_up_desc": "Đã đạt {name}",
+    "tremor_p10_title": "CƠN ĐỊA CHẤN",
+    "tremor_p10_desc": "Tremor đã đạt hình thái tối thượng.",
+    "poison_unlock_title": "MỞ KHÓA VŨ KHÍ",
+    "poison_unlock_desc": "Độc Tố — Sát Thủ Ma Quái hiện đã sẵn sàng!",
+    "poison_up_title": "ĐỘC TÍNH LAN RỘNG",
+    "poison_up_desc": "Đã đạt {name}",
+    "poison_p14_title": "SÁT THỦ MA QUÁI",
+    "poison_p14_desc": "Độc Tố đã đạt tới hình thái tối thượng."
   },
   "maps": {
     "LOBBY": "Sảnh Thánh Địa",
@@ -958,6 +1038,21 @@
       "name": "Sanguine",
       "tag": "HUYẾT",
       "description": "Một vũ khí máu khởi đầu là thứ yếu nhất trong game và kết thúc là thứ mạnh nhất: suốt sáu giai đoạn nó gần như không giữ nổi mình, rồi nó thôi giữ lại. Sở hữu Bloodletting [Z] và Exsanguinate [X]."
+    },
+    "order": {
+      "name": "Trật Tự",
+      "tag": "LUẬT PHÁP",
+      "description": "Trật Tự đại diện cho quyền năng tuyệt đối của luật pháp. Sức mạnh gia tăng nhanh chóng trước khi trải qua giai đoạn sụp đổ có chủ đích ở Giai đoạn 5. Sau khi hồi phục, thanh kiếm tiến hóa thành khí cụ phán quyết siêu phàm. Kỹ năng đặc trưng, Phán Quyết, cho phép khắc dấu nhiều mục tiêu trước khi đồng loạt hành quyết."
+    },
+    "tremor": {
+      "name": "Tremor",
+      "tag": "ĐỊA CHẤN",
+      "description": "Tremor là thanh kiếm diện rộng mang chủ đề địa chấn được xây dựng xung quanh sức mạnh hủy diệt thô bạo và xung lực áp đảo. Kiếm khởi đầu yếu ớt, trải qua một đợt sụp đổ có chủ đích ở Giai đoạn 6, và tiến hóa thành một vũ khí tàn phá chiến trường ở giai đoạn cuối. Kỹ năng đặc trưng: Sóng Địa Chấn [Z]."
+    },
+    "poison": {
+      "name": "Độc Tố",
+      "tag": "VŨ KHÍ ĐỘC DƯỢC",
+      "description": "Lưỡi kiếm sát thủ mỏng manh đánh đổi sát thương trực tiếp lấy nọc độc chết chóc, độ cơ động tuyệt đối và đòn hành quyết tích trữ sát thương hủy diệt. Sở hữu Lướt Độc Tố [Z] và Khúc Chiêu Hồn Độc [X]."
     }
   },
   "phases": {
@@ -1934,6 +2029,228 @@
         "shortName": "Kẻ Chặn Tim",
         "effects": "BIẾN ĐỔI TỐI HẬU: KẺ CHẶN TIM. Sanguine đã thôi lấy máu và bắt đầu quyết định máu thuộc về ai — mỗi nhịp của lưỡi kiếm thay vào đó chặn đứng một thứ khác. Cơ bản 5,200,000 Sát thương, 15,000,000 Máu và 168 Tốc độ. Dừng lại.",
         "notification": "Mọi thứ từng đập đều phải lấy nó từ đâu đó. Đây là nơi nó quay về."
+      }
+    },
+    "order": {
+      "1": {
+        "name": "Giai đoạn 1: Trát Lệnh",
+        "shortName": "Trát Lệnh",
+        "effects": "Thanh kiếm tư pháp bạc thanh mảnh với chuôi kiếm hình cán cân. Chính xác, thanh khiết và bất khuất. Cơ bản 125.000 DMG và 900.000 HP.",
+        "notification": "Luật pháp đã để mắt đến ngươi."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Điều Luật",
+        "shortName": "Điều Luật",
+        "effects": "Lưỡi kiếm vươn dài, khắc những điều luật hình học. Cơ bản 290.000 DMG và 1.800.000 HP.",
+        "notification": "Điều luật đã được định hình."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Phán Quyết",
+        "shortName": "Phán Quyết",
+        "effects": "Sống kiếm hình học đen neo giữ lưỡi kiếm phát sáng trắng. Ấn chú phán xét lơ lửng sau mỗi đòn đánh. Cơ bản 610.000 DMG và 3.600.000 HP.",
+        "notification": "Phán quyết không còn gì để bàn cãi."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Tàn Lụi",
+        "shortName": "Tàn Lụi",
+        "effects": "Lưỡi kiếm hành quyết vươn dài. Mở khóa Phán Quyết [Z]: chạm để khắc dấu mục tiêu và đồng loạt tuyên án. Cơ bản 850.000 DMG và 4.800.000 HP.",
+        "notification": "Phán quyết sẽ được thực thi."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Kháng Cáo",
+        "shortName": "Kháng Cáo",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH — Quyền uy luật pháp lung lay. Lưỡi kiếm rạn nứt thành kim loại xám xịt giòn gãy. Cơ bản 70.000 DMG và 420.000 HP.",
+        "notification": "Bác đơn kháng cáo."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Cưỡng Chế",
+        "shortName": "Cưỡng Chế",
+        "effects": "Tái tạo lưỡi kiếm hành quyết cùng ấn chú luật pháp xoay quanh. Quyền uy trở lại với sự trừng phạt sắc lẹm. Cơ bản 750.000 DMG và 4.200.000 HP.",
+        "notification": "Phán quyết sẽ được thực thi."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Tuyên Án",
+        "shortName": "Tuyên Án",
+        "effects": "Lưỡi kiếm trắng rạng ngời để lại vệt phán quyết mỏng trong không trung. Cơ bản 1.050.000 DMG và 6.200.000 HP.",
+        "notification": "Bản án của ngươi đã được tuyên."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Định Tội",
+        "shortName": "Định Tội",
+        "effects": "Những mảnh vỡ luật pháp hình chữ nhật xoay quanh người cầm kiếm. Cơ bản 1.450.000 DMG và 9.000.000 HP.",
+        "notification": "Không còn chút nghi ngờ nào."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Quyền Uy",
+        "shortName": "Quyền Uy",
+        "effects": "Kiếm hành quyết nghi lễ đi kèm ấn chú vàng và cán cân vũ trụ trong suốt. Cơ bản 1.950.000 DMG và 12.000.000 HP.",
+        "notification": "Quyền uy không cần sự cho phép."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Thống Trị",
+        "shortName": "Thống Trị",
+        "effects": "Thanh kiếm bạc trắng đồ sộ với điểm hội tụ ánh sáng chói lòa. Cơ bản 2.550.000 DMG và 15.500.000 HP.",
+        "notification": "Luật pháp nay lên tiếng qua ta."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Luật Tuyệt Đối",
+        "shortName": "Luật Tuyệt Đối",
+        "effects": "Lưỡi kiếm vật lý tan biến thành ánh sáng tinh khiết mỏng như dao cạo. Cơ bản 3.250.000 DMG và 20.500.000 HP.",
+        "notification": "Không luật pháp nào vượt qua nơi này."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Phán Quyết Tuyệt Đối",
+        "shortName": "Phán Quyết Tuyệt Đối",
+        "effects": "TIẾN HÓA CUỐI CÙNG — Lưỡi kiếm hành quyết trắng tinh khiết cùng các tia cắt không gian và Đại Cán Cân Vàng Đen Phán Quyết. Đạt đúng 75% sức mạnh tối thượng của Sanguine. Cơ bản 3.900.000 DMG và 22.500.000 HP.",
+        "notification": "Bản án đã hoàn tất."
+      }
+    },
+    "tremor": {
+      "1": {
+        "name": "Giai đoạn 1: Rung Chuyển",
+        "shortName": "Rung Chuyển",
+        "effects": "Thanh kiếm đá và kim loại thô sơ với các vết nứt nhỏ trên bề mặt. Nhát chém chậm, nặng nề cùng những cơn rung chuyển nhỏ trên mặt đất. Cơ bản 30.000 DMG và 300.000 HP.",
+        "notification": "Một thứ gì đó dưới lòng đất đã thức tỉnh."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Địa Chấn",
+        "shortName": "Địa Chấn",
+        "effects": "Lưỡi kiếm đá trở nên đặc quánh với các vết nứt phát sáng nhỏ. Các đòn đánh phát ra sóng xung kích tỏa tròn nhỏ. Cơ bản 85.000 DMG và 850.000 HP.",
+        "notification": "Mặt đất bắt đầu đáp lời."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Đứt Gãy",
+        "shortName": "Đứt Gãy",
+        "effects": "Các vết nứt sâu mở ra dọc theo lõi lưỡi kiếm. Va chạm nặng nề đánh bật kẻ thù ra xa. Cơ bản 180.000 DMG và 1.700.000 HP.",
+        "notification": "Đường đứt gãy hình thành dưới chân bạn."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Vỡ Vụn",
+        "shortName": "Vỡ Vụn",
+        "effects": "Cạnh kiến tạo lởm chởm dẫn dòng magma cam rực lửa. Vòng quét tấn công lớn và va chạm dữ dội. Cơ bản 360.000 DMG và 3.200.000 HP.",
+        "notification": "Tầng đá nền rạn vỡ."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Đại Họa",
+        "shortName": "Đại Họa",
+        "effects": "Lưỡi đá đen khổng lồ với các khe nứt dung nham rực sáng và tàn tro đá lơ lửng. Cơ bản 620.000 DMG và 5.500.000 HP.",
+        "notification": "Áp lực đã chạm đỉnh điểm."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Sụp Đổ",
+        "shortName": "Sụp Đổ",
+        "effects": "SỤP ĐỔ CÓ CHỦ ĐÍCH — Năng lượng địa chấn đột ngột biến mất. Lưỡi kiếm khổng lồ vỡ vụn thành đá xám giòn xốp. Mở khóa Sóng Địa Chấn [Z]. Cơ bản 60.000 DMG và 500.000 HP.",
+        "notification": "Mặt đất đã rơi vào tĩnh lặng."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Dư Chấn",
+        "shortName": "Dư Chấn",
+        "effects": "Năng lượng kiến tạo bùng phát dữ dội trở lại. Đòn đánh kích hoạt làn sóng chấn động thứ hai sau cú chạm. Cơ bản 1.050.000 DMG và 8.500.000 HP.",
+        "notification": "Ngươi tưởng cơn rung chuyển đã dừng lại?"
+      },
+      "8": {
+        "name": "Giai đoạn 8: Xé Rách Đất",
+        "shortName": "Xé Rách Đất",
+        "effects": "Lưỡi kiếm kiến tạo khổng lồ bao quanh bởi các tảng đá bay lơ lửng và khe nứt mặt đất hung hãn. Cơ bản 2.100.000 DMG và 14.000.000 HP.",
+        "notification": "Chính mặt đất đang rạn nứt."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Phá Huỷ Thế Giới",
+        "shortName": "Phá Huỷ Thế Giới",
+        "effects": "Khối đá bazan đen khổng lồ với lõi magma chói lòa. Nhát chém làm rung chuyển cả chiến trường xung quanh. Cơ bản 3.600.000 DMG và 21.000.000 HP.",
+        "notification": "Những ngọn núi chỉ là vật cản cho tới khi chúng vỡ tan."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Cơn Địa Chấn",
+        "shortName": "Cơn Địa Chấn",
+        "effects": "TIẾN HÓA CUỐI CÙNG — Hiện thân tối thượng của sự hủy diệt địa chấn. Mạnh hơn 25% so với thiết kế cũ. Vòng chém khổng lồ, các phiến đá xoay quanh, và sức hất văng cực đại. Cơ bản 7.475.000 DMG và 32.000.000 HP.",
+        "notification": "MẶT ĐẤT ĐÃ ĐÁP LỜI."
+      }
+    },
+    "poison": {
+      "1": {
+        "name": "Giai đoạn 1: Nọc Độc",
+        "shortName": "Nọc Độc",
+        "effects": "Lưỡi đoản kiếm mỏng, tăm tối nhỏ giọt nọc độc tinh vi. Đòn chém trực tiếp chỉ gây 1% sát thương; nọc độc gây 100% sát thương trong 2s. Cơ bản 20.000 ST và 5.250.000 Máu.",
+        "notification": "Chỉ một giọt là quá đủ."
+      },
+      "2": {
+        "name": "Giai đoạn 2: Độc Tố",
+        "shortName": "Độc Tố",
+        "effects": "Lưỡi kiếm cong tẩm độc với các đường gân độc tố phát sáng. Cơ bản 45.000 ST và 5.950.000 Máu.",
+        "notification": "Chất độc đã ngấm vào mạch máu."
+      },
+      "3": {
+        "name": "Giai đoạn 3: Tiêm Nhiễm",
+        "shortName": "Tiêm Nhiễm",
+        "effects": "Lưỡi dao găm thanh mảnh như mũi kim nhỏ giọt nọc độc phát quang. Cơ bản 80.000 ST và 6.650.000 Máu.",
+        "notification": "Chỉ như một vết kim châm. Ngươi sẽ khó lòng cảm nhận được."
+      },
+      "4": {
+        "name": "Giai đoạn 4: Ô Nhiễm",
+        "shortName": "Ô Nhiễm",
+        "effects": "SỤP ĐỔ CHỦ ĐÍCH — Nọc độc loãng dần thành cặn ăn mòn, nhỏ giọt thất thường. Mở khóa Lướt Độc Tố [Z]. Cơ bản 12.000 ST và 3.500.000 Máu.",
+        "notification": "Nọc độc đang phân rã. Nhưng giờ ngươi đã nhanh hơn."
+      },
+      "5": {
+        "name": "Giai đoạn 5: Rắn Lục",
+        "shortName": "Rắn Lục",
+        "effects": "Lưỡi kiếm lượn sóng cuộn quanh bởi hào quang lục xà ngọc bích. Những nhát chém cắn sâu vào dòng sinh mệnh mục tiêu. Cơ bản 180.000 ST và 7.000.000 Máu.",
+        "notification": "Lục xà chỉ cắn một lần. Phần còn lại do nọc độc định đoạt."
+      },
+      "6": {
+        "name": "Giai đoạn 6: Nanh Độc",
+        "shortName": "Nanh Độc",
+        "effects": "Lưỡi kim răng cưa với rãnh dẫn nọc độc phát sáng dọc hai bên mép đao. Cơ bản 320.000 ST và 7.500.000 Máu.",
+        "notification": "Hai vết răng độc. Hàng triệu kẻ ngã xuống."
+      },
+      "7": {
+        "name": "Giai đoạn 7: Độc Thần Kinh",
+        "shortName": "Độc Thần Kinh",
+        "effects": "Kiếm liễu phát quang nhạt quấn quanh làn khói độc điện tích. Cơ bản 550.000 ST và 8.000.000 Máu.",
+        "notification": "Tâm trí tê liệt trước cả khi thể xác sụp đổ."
+      },
+      "8": {
+        "name": "Giai đoạn 8: Độc Tính",
+        "shortName": "Độc Tính",
+        "effects": "Kiếm liễu ngọc bích ăn mòn tỏa ra sương mù axit dai dẳng. Cơ bản 900.000 ST và 8.500.000 Máu.",
+        "notification": "Hãy hít thở sâu. Hãy để nó tràn ngập cơ thể ngươi."
+      },
+      "9": {
+        "name": "Giai đoạn 9: Ô Dịch",
+        "shortName": "Ô Dịch",
+        "effects": "Mũi kim sát thủ tàn nhẫn được bao quanh bởi những đám mây bào tử độc hại. Cơ bản 1.450.000 ST và 9.000.000 Máu.",
+        "notification": "Dịch bệnh không cần quân đội. Nó chỉ cần một vật chủ."
+      },
+      "10": {
+        "name": "Giai đoạn 10: Hiểm Độc",
+        "shortName": "Hiểm Độc",
+        "effects": "Lưỡi đao sắc bén tỏa ra ánh sáng axit đậm đặc chết chóc. Cơ bản 2.200.000 ST và 9.500.000 Máu.",
+        "notification": "Ngươi không chiến đấu với một lưỡi kiếm. Ngươi đang chống lại độc dược."
+      },
+      "11": {
+        "name": "Giai đoạn 11: Ác Tính",
+        "shortName": "Ác Tính",
+        "effects": "Mũi kim xanh thẫm bán trong suốt rung lên với nọc độc xút ăn mòn chí mạng. Cơ bản 3.200.000 ST và 10.000.000 Máu.",
+        "notification": "Nó đã ở bên trong ngươi. Không có thuốc chữa đâu."
+      },
+      "12": {
+        "name": "Giai đoạn 12: Suy Tàn Độc Tố",
+        "shortName": "Suy Tàn Độc Tố",
+        "effects": "SỤP ĐỔ CHỦ ĐÍCH — Vũ khí tan biến thành làn hơi độc thuần khiết. Đòn chém trực diện suy yếu, nhưng mở khóa Khúc Chiêu Hồn Độc [X]. Cơ bản 350.000 ST và 5.600.000 Máu.",
+        "notification": "Lưỡi đao đang tàn lụi. Nhưng từng giọt độc ngươi đã gieo rắc đều được ghi nhớ."
+      },
+      "13": {
+        "name": "Giai đoạn 13: Tử Khí",
+        "shortName": "Tử Khí",
+        "effects": "Mũi kim hắc ám đáng sợ bao bọc trong làn sương tử khí xanh bệnh hoạn. Cơ bản 4.600.000 ST và 10.250.000 Máu.",
+        "notification": "Khi Tử Khí ngấm vào mạch máu, ngay cả linh hồn cũng phải mục rữa."
+      },
+      "14": {
+        "name": "Giai đoạn 14: Độc Tố Tối Thượng",
+        "shortName": "Độc Tố Tối Thượng",
+        "effects": "TIẾN HÓA HOÀN MỸ — Hiện thân tối thượng của sát thủ độc dược chí mạng. Sát thương bằng 120% Sanguine (6,24M) với 10,5M Máu mỏng manh và tốc độ di chuyển kinh hoàng 175 TĐ. Cơ bản 6.240.000 ST và 10.500.000 Máu.",
+        "notification": "Một vết chém chẳng là gì. Chất độc mới là tất cả."
       }
     }
   },

@@ -9,6 +9,7 @@ import * as BloodmoonEventSystem from '../src/systems/BloodmoonEventSystem.js';
 import { getSwordRenderer } from '../src/swords/SwordRegistry.js';
 import * as WorldRenderer from '../src/render/WorldRenderer.js';
 import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
+import { executeVerdict } from '../src/swords/order/order.ability.js';
 
 (function(window) {
   window.Killstreak = window.Killstreak || {};
@@ -165,6 +166,24 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.activeBloodlettings = [];
       this.exsanguinateCooldown = 0;
       this.activeExsanguinates = [];
+
+      // Order Skills (Judgment)
+      this.judgmentCooldown = 0;
+      this.judgmentMarkingTimer = 0;
+      this.judgmentMarkedNpcIds = [];
+
+      // Tremor Skills (Seismic Wave)
+      this.seismicWaveCooldown = 0;
+      this.activeSeismicWaves = [];
+
+      // Poison Skills (Toxic Dash / Venomous Requiem)
+      this.toxicDashCooldown = 0;
+      this.requiemCooldown = 0;
+      this.isRequiemRecording = false;
+      this.isRequiemReadyToRelease = false;
+      this.requiemRecordingTimer = 0;
+      this.requiemStoredDamage = 0;
+      this.activePoisonDots = [];
 
       this.isPaused = false;
 
@@ -579,6 +598,19 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.activeExsanguinates = [];
       }
 
+      // Order skills disabled when not using Order
+      if (swordId !== "order") {
+        this.judgmentCooldown = 0;
+        this.judgmentMarkingTimer = 0;
+        this.judgmentMarkedNpcIds = [];
+      }
+
+      // Tremor skills disabled when not using Tremor
+      if (swordId !== "tremor") {
+        this.seismicWaveCooldown = 0;
+        this.activeSeismicWaves = [];
+      }
+
       this.syncSwordPhase(true);
       if (this.player.isSwordEquipped && typeof this.player.applyKillstreakScaling === "function") {
         this.player.applyKillstreakScaling(this.killstreak);
@@ -612,6 +644,15 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           erasureCooldown: this.erasureCooldown,
           bloodlettingCooldown: this.bloodlettingCooldown,
           exsanguinateCooldown: this.exsanguinateCooldown,
+          judgmentCooldown: this.judgmentCooldown,
+          judgmentMarkingTimer: this.judgmentMarkingTimer,
+          seismicWaveCooldown: this.seismicWaveCooldown,
+          toxicDashCooldown: this.toxicDashCooldown,
+          requiemCooldown: this.requiemCooldown,
+          isRequiemRecording: this.isRequiemRecording,
+          isRequiemReadyToRelease: this.isRequiemReadyToRelease,
+          requiemRecordingTimer: this.requiemRecordingTimer,
+          requiemStoredDamage: this.requiemStoredDamage,
           phase: this.player.phase.phase
         });
       }
@@ -619,59 +660,74 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.callbacks.onPhaseChange(this.player.phase);
       }
 
-      // First time equipping Aquatic -> Play unlock cutscene
-      if (swordId === "aquatic" && !this.saveData.aquaticUnlockCutsceneSeen) {
+      // Equipping Aquatic -> Play unlock cutscene
+      if (swordId === "aquatic") {
         CutsceneSystem.start(this, "aquatic_unlock");
       }
 
-      // First time equipping Soil -> Play unlock cutscene
-      if (swordId === "soil" && !this.saveData.soilUnlockCutsceneSeen) {
+      // Equipping Soil -> Play unlock cutscene
+      if (swordId === "soil") {
         CutsceneSystem.start(this, "soil_unlock");
       }
 
-      // First time equipping Metallic -> Play unlock cutscene
-      if (swordId === "metallic" && !this.saveData.metallicUnlockCutsceneSeen) {
+      // Equipping Metallic -> Play unlock cutscene
+      if (swordId === "metallic") {
         CutsceneSystem.start(this, "metallic_unlock");
       }
 
-      // First time equipping Flora -> Play unlock cutscene
-      if (swordId === "flora" && !this.saveData.floraUnlockCutsceneSeen) {
+      // Equipping Flora -> Play unlock cutscene
+      if (swordId === "flora") {
         CutsceneSystem.start(this, "flora_unlock");
       }
 
-      // First time equipping Hellfire -> Play unlock cutscene
-      if (swordId === "hellfire" && !this.saveData.hellfireUnlockCutsceneSeen) {
+      // Equipping Hellfire -> Play unlock cutscene
+      if (swordId === "hellfire") {
         CutsceneSystem.start(this, "hellfire_unlock");
       }
 
-      // First time equipping Windy -> Play unlock cutscene
-      if (swordId === "windy" && !this.saveData.windyUnlockCutsceneSeen) {
+      // Equipping Windy -> Play unlock cutscene
+      if (swordId === "windy") {
         CutsceneSystem.start(this, "windy_unlock");
       }
 
-      // First time equipping Frostbite -> Play unlock cutscene
-      if (swordId === "frostbite" && !this.saveData.frostbiteUnlockCutsceneSeen) {
+      // Equipping Frostbite -> Play unlock cutscene
+      if (swordId === "frostbite") {
         CutsceneSystem.start(this, "frostbite_unlock");
       }
 
-      // First time equipping Voltstrike -> Play unlock cutscene
-      if (swordId === "voltstrike" && !this.saveData.voltstrikeUnlockCutsceneSeen) {
+      // Equipping Voltstrike -> Play unlock cutscene
+      if (swordId === "voltstrike") {
         CutsceneSystem.start(this, "voltstrike_unlock");
       }
 
-      // First time equipping Lumen -> Play unlock cutscene
-      if (swordId === "lumen" && !this.saveData.lumenUnlockCutsceneSeen) {
+      // Equipping Lumen -> Play unlock cutscene
+      if (swordId === "lumen") {
         CutsceneSystem.start(this, "lumen_unlock");
       }
 
-      // First time equipping Umbra -> Play unlock cutscene
-      if (swordId === "umbra" && !this.saveData.umbraUnlockCutsceneSeen) {
+      // Equipping Umbra -> Play unlock cutscene
+      if (swordId === "umbra") {
         CutsceneSystem.start(this, "umbra_unlock");
       }
 
-      // First time equipping Sanguine -> Play unlock cutscene
-      if (swordId === "sanguine" && !this.saveData.sanguineUnlockCutsceneSeen) {
+      // Equipping Sanguine -> Play unlock cutscene
+      if (swordId === "sanguine") {
         CutsceneSystem.start(this, "sanguine_unlock");
+      }
+
+      // Equipping Order -> Play unlock cutscene
+      if (swordId === "order") {
+        CutsceneSystem.start(this, "order_unlock");
+      }
+
+      // Equipping Tremor -> Play unlock cutscene
+      if (swordId === "tremor") {
+        CutsceneSystem.start(this, "tremor_unlock");
+      }
+
+      // Equipping Poison -> Play unlock cutscene
+      if (swordId === "poison") {
+        CutsceneSystem.start(this, "poison_unlock");
       }
 
       return true;
@@ -696,6 +752,13 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.player.worldrootHealTimer = 0;
         this.activeWorldroots = [];
         this.activeCataclysms = [];
+        this.toxicDashCooldown = 0;
+        this.requiemCooldown = 0;
+        this.isRequiemRecording = false;
+        this.isRequiemReadyToRelease = false;
+        this.requiemRecordingTimer = 0;
+        this.requiemStoredDamage = 0;
+        this.activePoisonDots = [];
       }
       if (this.callbacks.onSkillsUpdate) {
         this.callbacks.onSkillsUpdate({
@@ -717,6 +780,15 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           erasureCooldown: this.erasureCooldown,
           bloodlettingCooldown: this.bloodlettingCooldown,
           exsanguinateCooldown: this.exsanguinateCooldown,
+          judgmentCooldown: this.judgmentCooldown,
+          judgmentMarkingTimer: this.judgmentMarkingTimer,
+          seismicWaveCooldown: this.seismicWaveCooldown,
+          toxicDashCooldown: this.toxicDashCooldown,
+          requiemCooldown: this.requiemCooldown,
+          isRequiemRecording: this.isRequiemRecording,
+          isRequiemReadyToRelease: this.isRequiemReadyToRelease,
+          requiemRecordingTimer: this.requiemRecordingTimer,
+          requiemStoredDamage: this.requiemStoredDamage,
           phase: this.player.phase.phase
         });
       }
@@ -739,7 +811,16 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const isLumen = this.player.swordId === "lumen";
       const isUmbra = this.player.swordId === "umbra";
       const isSanguine = this.player.swordId === "sanguine";
-      const phases = isSanguine
+      const isOrder = this.player.swordId === "order";
+      const isTremor = this.player.swordId === "tremor";
+      const isPoison = this.player.swordId === "poison";
+      const phases = isPoison
+        ? Config.POISON_PHASES
+        : (isTremor
+        ? Config.TREMOR_PHASES
+        : (isOrder
+        ? Config.ORDER_PHASES
+        : (isSanguine
         ? Config.SANGUINE_PHASES
         : (isUmbra
         ? Config.UMBRA_PHASES
@@ -761,7 +842,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
               ? Config.SOIL_PHASES
               : (isAquatic
                 ? Config.AQUATIC_PHASES
-                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))))))))));
+                : (isOverdrive ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))))))))))));
       let matchedPhase = phases[0];
 
       for (let i = phases.length - 1; i >= 0; i--) {
@@ -774,7 +855,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       const previousPhase = this.player.phase;
       const isPhaseUp = Boolean(previousPhase && matchedPhase.phase > previousPhase.phase);
       const prevSwordId = (previousPhase && typeof previousPhase.cssClass === "string")
-        ? (previousPhase.cssClass.startsWith("phase-sg") ? "sanguine" : (previousPhase.cssClass.startsWith("phase-um") ? "umbra" : (previousPhase.cssClass.startsWith("phase-lm") ? "lumen" : (previousPhase.cssClass.startsWith("phase-vs") ? "voltstrike" : (previousPhase.cssClass.startsWith("phase-fb") ? "frostbite" : (previousPhase.cssClass.startsWith("phase-wd") ? "windy" : (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer"))))))))))))
+        ? (previousPhase.cssClass.startsWith("phase-ps") ? "poison" : (previousPhase.cssClass.startsWith("phase-tremor") ? "tremor" : (previousPhase.cssClass.startsWith("phase-order") ? "order" : (previousPhase.cssClass.startsWith("phase-sg") ? "sanguine" : (previousPhase.cssClass.startsWith("phase-um") ? "umbra" : (previousPhase.cssClass.startsWith("phase-lm") ? "lumen" : (previousPhase.cssClass.startsWith("phase-vs") ? "voltstrike" : (previousPhase.cssClass.startsWith("phase-fb") ? "frostbite" : (previousPhase.cssClass.startsWith("phase-wd") ? "windy" : (previousPhase.cssClass.startsWith("phase-hellfire") ? "hellfire" : (previousPhase.cssClass.startsWith("phase-flora") ? "flora" : (previousPhase.cssClass.startsWith("phase-metallic") ? "metallic" : (previousPhase.cssClass.startsWith("phase-soil") ? "soil" : (previousPhase.cssClass.startsWith("phase-aq") ? "aquatic" : (previousPhase.cssClass.startsWith("phase-od") ? "overdrive" : "devourer")))))))))))))))
         : null;
       const isDifferentSword = Boolean(previousPhase && prevSwordId !== this.player.swordId);
       const phaseChanged = Boolean(previousPhase && (matchedPhase.phase !== previousPhase.phase || isDifferentSword));
@@ -783,7 +864,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.player.setPhase(matchedPhase, isPhaseUp);
       }
 
-      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire || isWindy || isFrostbite || isVoltstrike || isLumen || isUmbra || isSanguine) {
+      if (phaseChanged || isOverdrive || isAquatic || isSoil || isMetallic || isFlora || isHellfire || isWindy || isFrostbite || isVoltstrike || isLumen || isUmbra || isSanguine || isOrder || isTremor || isPoison) {
         this.gluttonyCooldown = 0;
         this.engulfCooldown = 0;
         this.isEngulfActive = false;
@@ -796,7 +877,13 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         this.onSwordPhaseUp(matchedPhase);
       }
 
-      if (isSanguine) {
+      if (isPoison) {
+        this.saveData.poisonPhase = matchedPhase.phase;
+      } else if (isTremor) {
+        this.saveData.tremorPhase = matchedPhase.phase;
+      } else if (isOrder) {
+        this.saveData.orderPhase = matchedPhase.phase;
+      } else if (isSanguine) {
         this.saveData.sanguinePhase = matchedPhase.phase;
       } else if (isUmbra) {
         this.saveData.umbraPhase = matchedPhase.phase;
@@ -837,7 +924,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "soil_ascended");
         }
 
-        if (phase.phase === 10 && !this.saveData.soilPhase10CutsceneSeen) {
+        if (phase.phase === 10) {
           CutsceneSystem.start(this, "soil_p10");
           return;
         }
@@ -884,7 +971,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "aquatic_ascended");
         }
 
-        if (phase.phase === 13 && !this.saveData.aquaticPhase13CutsceneSeen) {
+        if (phase.phase === 13) {
           CutsceneSystem.start(this, "aquatic_p13");
           return;
         }
@@ -958,7 +1045,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "metallic_ascended");
         }
 
-        if (phase.phase === 10 && !this.saveData.metallicPhase10CutsceneSeen) {
+        if (phase.phase === 10) {
           CutsceneSystem.start(this, "metallic_p10");
           return;
         }
@@ -997,7 +1084,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "flora_ascended");
         }
 
-        if (phase.phase === 10 && !this.saveData.floraPhase10CutsceneSeen) {
+        if (phase.phase === 10) {
           CutsceneSystem.start(this, "flora_p10");
           return;
         }
@@ -1036,7 +1123,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "hellfire_ascended");
         }
 
-        if (phase.phase === 10 && !this.saveData.hellfirePhase10CutsceneSeen) {
+        if (phase.phase === 10) {
           CutsceneSystem.start(this, "hellfire_p10");
           return;
         }
@@ -1075,7 +1162,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "windy_ascended");
         }
 
-        if (phase.phase === 13 && !this.saveData.windyPhase13CutsceneSeen) {
+        if (phase.phase === 13) {
           CutsceneSystem.start(this, "windy_p13");
           return;
         }
@@ -1114,7 +1201,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "voltstrike_ascended");
         }
 
-        if (phase.phase === 14 && !this.saveData.voltstrikePhase14CutsceneSeen) {
+        if (phase.phase === 14) {
           CutsceneSystem.start(this, "voltstrike_p14");
           return;
         }
@@ -1153,7 +1240,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "frostbite_ascended");
         }
 
-        if (phase.phase === 12 && !this.saveData.frostbitePhase12CutsceneSeen) {
+        if (phase.phase === 12) {
           CutsceneSystem.start(this, "frostbite_p12");
           return;
         }
@@ -1192,7 +1279,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "lumen_ascended");
         }
 
-        if (phase.phase === 14 && !this.saveData.lumenPhase14CutsceneSeen) {
+        if (phase.phase === 14) {
           CutsceneSystem.start(this, "lumen_p14");
           return;
         }
@@ -1231,7 +1318,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "umbra_ascended");
         }
 
-        if (phase.phase === 15 && !this.saveData.umbraPhase15CutsceneSeen) {
+        if (phase.phase === 15) {
           CutsceneSystem.start(this, "umbra_p15");
           return;
         }
@@ -1270,7 +1357,7 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           AchievementSystem.unlockAchievement(this, "sanguine_ascended");
         }
 
-        if (phase.phase === 16 && !this.saveData.sanguinePhase16CutsceneSeen) {
+        if (phase.phase === 16) {
           CutsceneSystem.start(this, "sanguine_p16");
           return;
         }
@@ -1304,7 +1391,124 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
         return;
       }
 
-      if (phase.phase === 17 && !this.saveData.phase17CutsceneSeen) {
+      if (this.player.swordId === "order") {
+        if (phase.phase === 12) {
+          AchievementSystem.unlockAchievement(this, "order_ascended");
+        }
+
+        if (phase.phase === 12) {
+          CutsceneSystem.start(this, "order_p12");
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 12 ? 22 : (phase.phase >= 8 ? 14 : 8), 0.35);
+        }
+
+        const pCount = phase.phase === 12 ? 80 : (phase.phase >= 8 ? 45 : 30);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 240;
+          let pColor = phase.phase === 12 ? (i % 3 === 0 ? "#ffffff" : (i % 3 === 1 ? "#fef08a" : "#cbd5e1")) : (i % 2 === 0 ? (phase.color || "#ffffff") : "#cbd5e1");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("order", phase.phase) : phase;
+        const phaseTitle = `ORDER: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#ffffff", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.order_up_title", { defaultValue: "THE LAW ASCENDS" }) : "THE LAW ASCENDS";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.order_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "⚖️");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "tremor") {
+        if (phase.phase === 10) {
+          AchievementSystem.unlockAchievement(this, "tremor_ascended");
+        }
+
+        if (phase.phase === 10) {
+          CutsceneSystem.start(this, "tremor_p10");
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 10 ? 22 : (phase.phase >= 7 ? 14 : 8), 0.35);
+        }
+
+        const pCount = phase.phase === 10 ? 80 : (phase.phase >= 7 ? 45 : 30);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 240;
+          let pColor = phase.phase === 10 ? (i % 3 === 0 ? "#f97316" : (i % 3 === 1 ? "#ea580c" : "#451a03")) : (i % 2 === 0 ? (phase.color || "#f97316") : "#ea580c");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("tremor", phase.phase) : phase;
+        const phaseTitle = `TREMOR: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#f97316", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.tremor_up_title", { defaultValue: "THE EARTH SHAKES" }) : "THE EARTH SHAKES";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.tremor_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "🌋");
+        }
+        return;
+      }
+
+      if (this.player.swordId === "poison") {
+        if (phase.phase === 14) {
+          AchievementSystem.unlockAchievement(this, "poison_ascended");
+        }
+
+        if (phase.phase === 14) {
+          CutsceneSystem.start(this, "poison_p14");
+          return;
+        }
+
+        if (this.saveData.settings.screenShake) {
+          this.camera.shake(phase.phase === 14 ? 20 : (phase.phase >= 8 ? 12 : 6), 0.35);
+        }
+
+        const pCount = phase.phase === 14 ? 80 : (phase.phase >= 8 ? 45 : 30);
+        for (let i = 0; i < pCount; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 120 + Math.random() * 240;
+          let pColor = phase.phase === 14 ? (i % 3 === 0 ? "#22c55e" : (i % 3 === 1 ? "#4ade80" : "#14532d")) : (i % 2 === 0 ? (phase.color || "#22c55e") : "#16a34a");
+          this.particles.push(
+            new Particle(this.player.x, this.player.y, Math.cos(angle) * speed, Math.sin(angle) * speed, pColor, 4.8, 0.6)
+          );
+        }
+
+        const I18n = window.Killstreak && window.Killstreak.I18n;
+        const pInfo = (I18n && phase) ? I18n.getPhaseInfo("poison", phase.phase) : phase;
+        const phaseTitle = `POISON: ${(pInfo.shortName || phase.shortName).toUpperCase()}!`;
+        this.floatingTexts.push(
+          new FloatingText(this.player.x, this.player.y - 32, phaseTitle, phase.color || "#22c55e", 16)
+        );
+
+        if (this.callbacks.onToast) {
+          const title = I18n ? I18n.t("toasts.poison_up_title", { defaultValue: "THE POISON DEEPENS" }) : "THE POISON DEEPENS";
+          const desc = (pInfo && pInfo.notification) || (I18n ? I18n.t("toasts.poison_up_desc", { name: pInfo.name, defaultValue: `Reached ${phase.name}` }) : `Reached ${phase.name}`);
+          this.callbacks.onToast(title, desc, "☠️");
+        }
+        return;
+      }
+
+      if (phase.phase === 17) {
         CutsceneSystem.start(this, "devourer_p17");
         return;
       }
@@ -1655,15 +1859,31 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
               this.player.timeSinceCombat = 0; // Player engaged in combat
 
               const hitAngle = Math.atan2(npc.y - this.player.y, npc.x - this.player.x);
-              const damage = this.player.damage || this.player.phase.damage;
+              const isPoisonSword = this.player.swordId === "poison";
+              const rawDamage = this.player.damage || this.player.phase.damage;
+              const directDamage = isPoisonSword ? Math.max(1, Math.round(rawDamage * 0.01)) : rawDamage;
               
               // Only attacked NPC takes damage & activates!
-              npc.takeDamage(damage, hitAngle, 180);
+              npc.takeDamage(directDamage, hitAngle, isPoisonSword ? 40 : 180);
 
               if (this.saveData.settings.damageNumbers) {
                 this.floatingTexts.push(
-                  new FloatingText(npc.x, npc.y - 12, `-${damage}`, this.player.phase.color, 14)
+                  new FloatingText(npc.x, npc.y - 12, `-${directDamage}`, this.player.phase.color, 14)
                 );
+              }
+
+              if (isPoisonSword) {
+                // Apply 5-tick passive poison DoT (20% expected damage per tick, 0.4s interval = 2.0s duration = 100% total expected damage)
+                const tickDamage = Math.max(1, Math.round(rawDamage * 0.20));
+                this.activePoisonDots.push({
+                  npc: npc,
+                  tickDamage: tickDamage,
+                  tickInterval: 0.4,
+                  tickTimer: 0,
+                  remainingDuration: 2.0,
+                  color: "#22c55e",
+                  source: "passive"
+                });
               }
 
               if (this.saveData.settings.screenShake) {
@@ -1893,6 +2113,117 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       if (this.erasureCooldown > 0) this.erasureCooldown -= dt;
       if (this.bloodlettingCooldown > 0) this.bloodlettingCooldown -= dt;
       if (this.exsanguinateCooldown > 0) this.exsanguinateCooldown -= dt;
+      if (this.judgmentCooldown > 0) this.judgmentCooldown -= dt;
+      if (this.seismicWaveCooldown > 0) this.seismicWaveCooldown -= dt;
+      if (this.toxicDashCooldown > 0) this.toxicDashCooldown -= dt;
+      if (this.requiemCooldown > 0) this.requiemCooldown -= dt;
+
+      // Requiem Recording countdown
+      if (this.isRequiemRecording) {
+        this.requiemRecordingTimer -= dt;
+        if (this.requiemRecordingTimer <= 0) {
+          this.isRequiemRecording = false;
+          this.isRequiemReadyToRelease = true;
+          if (FloatingText && this.player) {
+            this.floatingTexts.push(new FloatingText(this.player.x, this.player.y - 45, "VENOMOUS REQUIEM READY!", "#22c55e", 20));
+          }
+        }
+      }
+
+      // Poison DoTs ticker (Passive, Toxic Dash, Requiem secondary)
+      if (this.activePoisonDots && this.activePoisonDots.length > 0) {
+        const showNumbers = this.saveData && this.saveData.settings && this.saveData.settings.damageNumbers;
+        for (let i = this.activePoisonDots.length - 1; i >= 0; i--) {
+          const dot = this.activePoisonDots[i];
+          if (!dot.npc || dot.npc.isDead || dot.npc.hp <= 0) {
+            this.activePoisonDots.splice(i, 1);
+            continue;
+          }
+
+          dot.remainingDuration -= dt;
+          dot.tickTimer += dt;
+
+          if (dot.tickTimer >= dot.tickInterval) {
+            dot.tickTimer -= dot.tickInterval;
+            const targetHpBefore = dot.npc.hp;
+            dot.npc.takeDamage(dot.tickDamage, 0, 0); // No knockback on poison ticks
+            const actualDealt = Math.max(0, targetHpBefore - dot.npc.hp);
+
+            if (this.isRequiemRecording) {
+              this.requiemStoredDamage += actualDealt;
+            }
+
+            if (showNumbers && FloatingText) {
+              this.floatingTexts.push(new FloatingText(dot.npc.x, dot.npc.y - 14, `-${dot.tickDamage}`, dot.color || "#22c55e", 14));
+            }
+
+            if (dot.npc.hp <= 0 && !dot.npc.isDead) {
+              this.handleNpcDeath(dot.npc);
+            }
+          }
+
+          if (dot.remainingDuration <= 0) {
+            this.activePoisonDots.splice(i, 1);
+          }
+        }
+      }
+
+      // Tremor Seismic Waves — travelling AoE shockwave
+      if (this.activeSeismicWaves && this.activeSeismicWaves.length > 0) {
+        const showNumbers = this.saveData && this.saveData.settings && this.saveData.settings.damageNumbers;
+        for (let i = this.activeSeismicWaves.length - 1; i >= 0; i--) {
+          const wave = this.activeSeismicWaves[i];
+          wave.timer -= dt;
+          wave.x += wave.vx * dt;
+          wave.y += wave.vy * dt;
+
+          if (this.npcs) {
+            for (let n = this.npcs.length - 1; n >= 0; n--) {
+              const npc = this.npcs[n];
+              if (!npc || npc.isDead || npc.hp <= 0) continue;
+              if (wave.hitNpcIds.includes(npc.id)) continue;
+              const dist = Math.hypot(npc.x - wave.x, npc.y - wave.y);
+              if (dist <= wave.radius + npc.radius) {
+                wave.hitNpcIds.push(npc.id);
+                npc.takeDamage(wave.damage, wave.angle, 550);
+                if (showNumbers && FloatingText) {
+                  this.floatingTexts.push(new FloatingText(npc.x, npc.y - 16, `-${wave.damage}`, "#f97316", 18));
+                }
+                if (npc.hp <= 0 && !npc.isDead) {
+                  this.handleNpcDeath(npc);
+                }
+              }
+            }
+          }
+
+          if (wave.timer <= 0) {
+            this.activeSeismicWaves.splice(i, 1);
+          }
+        }
+      }
+
+      // Order Judgment — 10-second marking window. Touching NPCs marks them.
+      if (this.judgmentMarkingTimer > 0) {
+        this.judgmentMarkingTimer -= dt;
+        if (this.player && this.npcs) {
+          const touchRadius = this.player.radius + (this.player.phase ? this.player.phase.bladeLength : 50);
+          for (let n = this.npcs.length - 1; n >= 0; n--) {
+            const npc = this.npcs[n];
+            if (!npc || npc.isDead || npc.hp <= 0) continue;
+            if (this.judgmentMarkedNpcIds.includes(npc.id)) continue;
+            const dist = Math.hypot(npc.x - this.player.x, npc.y - this.player.y);
+            if (dist <= touchRadius + npc.radius) {
+              this.judgmentMarkedNpcIds.push(npc.id);
+              if (FloatingText) {
+                this.floatingTexts.push(new FloatingText(npc.x, npc.y - 35, "⚖ JUDGED", "#fef08a", 18));
+              }
+            }
+          }
+        }
+        if (this.judgmentMarkingTimer <= 0) {
+          executeVerdict(this);
+        }
+      }
 
       // Flash, Gravity Well, Erasure and Bloodletting are one-shot bursts — they only
       // need to expire; their whole effect was applied at cast time.
@@ -2030,6 +2361,15 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           erasureCooldown: this.erasureCooldown,
           bloodlettingCooldown: this.bloodlettingCooldown,
           exsanguinateCooldown: this.exsanguinateCooldown,
+          judgmentCooldown: this.judgmentCooldown,
+          judgmentMarkingTimer: this.judgmentMarkingTimer,
+          seismicWaveCooldown: this.seismicWaveCooldown,
+          toxicDashCooldown: this.toxicDashCooldown,
+          requiemCooldown: this.requiemCooldown,
+          isRequiemRecording: this.isRequiemRecording,
+          isRequiemReadyToRelease: this.isRequiemReadyToRelease,
+          requiemRecordingTimer: this.requiemRecordingTimer,
+          requiemStoredDamage: this.requiemStoredDamage,
           phase: this.player.phase.phase
         });
       }
@@ -2354,6 +2694,18 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.activeBloodlettings = [];
       this.exsanguinateCooldown = 0;
       this.activeExsanguinates = [];
+      this.judgmentCooldown = 0;
+      this.judgmentMarkingTimer = 0;
+      this.judgmentMarkedNpcIds = [];
+      this.seismicWaveCooldown = 0;
+      this.activeSeismicWaves = [];
+      this.toxicDashCooldown = 0;
+      this.requiemCooldown = 0;
+      this.isRequiemRecording = false;
+      this.isRequiemReadyToRelease = false;
+      this.requiemRecordingTimer = 0;
+      this.requiemStoredDamage = 0;
+      this.activePoisonDots = [];
       if (this.player) {
         this.player.isEngulfActive = false;
         this.player.swordId = "devourer";
@@ -2412,6 +2764,15 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           erasureCooldown: this.erasureCooldown,
           bloodlettingCooldown: this.bloodlettingCooldown,
           exsanguinateCooldown: this.exsanguinateCooldown,
+          judgmentCooldown: this.judgmentCooldown,
+          judgmentMarkingTimer: this.judgmentMarkingTimer,
+          seismicWaveCooldown: this.seismicWaveCooldown,
+          toxicDashCooldown: this.toxicDashCooldown,
+          requiemCooldown: this.requiemCooldown,
+          isRequiemRecording: this.isRequiemRecording,
+          isRequiemReadyToRelease: this.isRequiemReadyToRelease,
+          requiemRecordingTimer: this.requiemRecordingTimer,
+          requiemStoredDamage: this.requiemStoredDamage,
           phase: this.player.phase.phase
         });
       }
@@ -2460,6 +2821,18 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
       this.activeBloodlettings = [];
       this.exsanguinateCooldown = 0;
       this.activeExsanguinates = [];
+      this.judgmentCooldown = 0;
+      this.judgmentMarkingTimer = 0;
+      this.judgmentMarkedNpcIds = [];
+      this.seismicWaveCooldown = 0;
+      this.activeSeismicWaves = [];
+      this.toxicDashCooldown = 0;
+      this.requiemCooldown = 0;
+      this.isRequiemRecording = false;
+      this.isRequiemReadyToRelease = false;
+      this.requiemRecordingTimer = 0;
+      this.requiemStoredDamage = 0;
+      this.activePoisonDots = [];
       if (this.player) {
         this.player.shield = 0;
         this.player.shieldDuration = 0;
@@ -2536,8 +2909,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.player.swordId === sId && this.player.isSwordEquipped) {
             standPhase = this.player.phase;
           } else {
-            const pList = sId === "sanguine" ? Config.SANGUINE_PHASES : (sId === "umbra" ? Config.UMBRA_PHASES : (sId === "lumen" ? Config.LUMEN_PHASES : (sId === "voltstrike" ? Config.VOLTSTRIKE_PHASES : (sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))))))))));
-            const pNum = sId === "sanguine" ? (this.saveData.sanguinePhase || 1) : (sId === "umbra" ? (this.saveData.umbraPhase || 1) : (sId === "lumen" ? (this.saveData.lumenPhase || 1) : (sId === "voltstrike" ? (this.saveData.voltstrikePhase || 1) : (sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))))))))))
+            const pList = sId === "poison" ? Config.POISON_PHASES : (sId === "tremor" ? Config.TREMOR_PHASES : (sId === "order" ? Config.ORDER_PHASES : (sId === "sanguine" ? Config.SANGUINE_PHASES : (sId === "umbra" ? Config.UMBRA_PHASES : (sId === "lumen" ? Config.LUMEN_PHASES : (sId === "voltstrike" ? Config.VOLTSTRIKE_PHASES : (sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))))))))))));
+            const pNum = sId === "poison" ? (this.saveData.poisonPhase || 1) : (sId === "tremor" ? (this.saveData.tremorPhase || 1) : (sId === "order" ? (this.saveData.orderPhase || 1) : (sId === "sanguine" ? (this.saveData.sanguinePhase || 1) : (sId === "umbra" ? (this.saveData.umbraPhase || 1) : (sId === "lumen" ? (this.saveData.lumenPhase || 1) : (sId === "voltstrike" ? (this.saveData.voltstrikePhase || 1) : (sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1)))))))))))))));
             standPhase = pList.find(p => p.phase === pNum) || pList[0];
           }
           stand.draw(this.ctx, standPhase, isLocked, false, Boolean(nearbyStand));
@@ -2552,8 +2925,8 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           if (this.player.swordId === sId && this.player.isSwordEquipped) {
             standPhase = this.player.phase;
           } else {
-            const pList = sId === "sanguine" ? Config.SANGUINE_PHASES : (sId === "umbra" ? Config.UMBRA_PHASES : (sId === "lumen" ? Config.LUMEN_PHASES : (sId === "voltstrike" ? Config.VOLTSTRIKE_PHASES : (sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES)))))))))));
-            const pNum = sId === "sanguine" ? (this.saveData.sanguinePhase || 1) : (sId === "umbra" ? (this.saveData.umbraPhase || 1) : (sId === "lumen" ? (this.saveData.lumenPhase || 1) : (sId === "voltstrike" ? (this.saveData.voltstrikePhase || 1) : (sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1))))))))))))
+            const pList = sId === "poison" ? Config.POISON_PHASES : (sId === "tremor" ? Config.TREMOR_PHASES : (sId === "order" ? Config.ORDER_PHASES : (sId === "sanguine" ? Config.SANGUINE_PHASES : (sId === "umbra" ? Config.UMBRA_PHASES : (sId === "lumen" ? Config.LUMEN_PHASES : (sId === "voltstrike" ? Config.VOLTSTRIKE_PHASES : (sId === "frostbite" ? Config.FROSTBITE_PHASES : (sId === "windy" ? Config.WINDY_PHASES : (sId === "hellfire" ? Config.HELLFIRE_PHASES : (sId === "flora" ? Config.FLORA_PHASES : (sId === "metallic" ? Config.METALLIC_PHASES : (sId === "soil" ? Config.SOIL_PHASES : (sId === "aquatic" ? Config.AQUATIC_PHASES : (sId === "overdrive" ? Config.OVERDRIVE_PHASES : Config.SWORD_PHASES))))))))))))));
+            const pNum = sId === "poison" ? (this.saveData.poisonPhase || 1) : (sId === "tremor" ? (this.saveData.tremorPhase || 1) : (sId === "order" ? (this.saveData.orderPhase || 1) : (sId === "sanguine" ? (this.saveData.sanguinePhase || 1) : (sId === "umbra" ? (this.saveData.umbraPhase || 1) : (sId === "lumen" ? (this.saveData.lumenPhase || 1) : (sId === "voltstrike" ? (this.saveData.voltstrikePhase || 1) : (sId === "frostbite" ? (this.saveData.frostbitePhase || 1) : (sId === "windy" ? (this.saveData.windyPhase || 1) : (sId === "hellfire" ? (this.saveData.hellfirePhase || 1) : (sId === "flora" ? (this.saveData.floraPhase || 1) : (sId === "metallic" ? (this.saveData.metallicPhase || 1) : (sId === "soil" ? (this.saveData.soilPhase || 1) : (sId === "aquatic" ? (this.saveData.aquaticPhase || 1) : (sId === "overdrive" ? (this.saveData.overdrivePhase || 1) : (this.saveData.swordPhase || 1)))))))))))))));
             standPhase = pList.find(p => p.phase === pNum) || pList[0];
           }
           nearbyStand.drawBadge(this.ctx, standPhase, isLocked);
@@ -2870,6 +3243,133 @@ import * as LobbyRenderer from '../src/render/LobbyRenderer.js';
           this.ctx.beginPath();
           this.ctx.arc(ex.x + Math.cos(a) * rr, ex.y + Math.sin(a) * rr, 1.8, 0, Math.PI * 2);
           this.ctx.fill();
+        }
+        this.ctx.restore();
+      }
+
+      // Draw Order Judgment markings on touched targets
+      if (this.judgmentMarkingTimer > 0 && this.judgmentMarkedNpcIds && this.judgmentMarkedNpcIds.length > 0 && this.npcs) {
+        for (let npc of this.npcs) {
+          if (!npc || npc.isDead || !this.judgmentMarkedNpcIds.includes(npc.id)) continue;
+          this.ctx.save();
+          if (this.player) {
+            this.ctx.strokeStyle = "rgba(254, 240, 138, 0.35)";
+            this.ctx.lineWidth = 1.5;
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.player.x, this.player.y);
+            this.ctx.lineTo(npc.x, npc.y);
+            this.ctx.stroke();
+          }
+          this.ctx.strokeStyle = "#fef08a";
+          this.ctx.lineWidth = 2.5;
+          this.ctx.shadowColor = "#fef08a";
+          this.ctx.shadowBlur = 10;
+          this.ctx.beginPath();
+          this.ctx.arc(npc.x, npc.y, npc.radius + 8, 0, Math.PI * 2);
+          this.ctx.stroke();
+          this.ctx.fillStyle = "#ffffff";
+          this.ctx.font = "bold 14px monospace";
+          this.ctx.textAlign = "center";
+          this.ctx.fillText("⚖", npc.x, npc.y - npc.radius - 8);
+          this.ctx.restore();
+        }
+      }
+
+      // Draw Active Tremor Seismic Waves — travelling tectonic shockwave arcs
+      if (this.activeSeismicWaves && this.activeSeismicWaves.length > 0) {
+        for (let wave of this.activeSeismicWaves) {
+          const progress = wave.timer / wave.maxTimer;
+          this.ctx.save();
+          this.ctx.translate(wave.x, wave.y);
+          this.ctx.rotate(wave.angle);
+
+          // Molten crack / ground fissure lines behind wave
+          this.ctx.strokeStyle = `rgba(180, 83, 9, ${progress * 0.7})`;
+          this.ctx.lineWidth = 3;
+          this.ctx.beginPath();
+          this.ctx.moveTo(-wave.radius * 0.4, -wave.radius * 0.5);
+          this.ctx.lineTo(-wave.radius * 0.1, 0);
+          this.ctx.lineTo(-wave.radius * 0.4, wave.radius * 0.5);
+          this.ctx.stroke();
+
+          // Outer shockwave arc
+          this.ctx.strokeStyle = `rgba(249, 115, 22, ${progress * 0.95})`;
+          this.ctx.lineWidth = 6;
+          this.ctx.shadowColor = "#f97316";
+          this.ctx.shadowBlur = 14;
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, wave.radius, -Math.PI * 0.35, Math.PI * 0.35);
+          this.ctx.stroke();
+
+          // Inner compressed air arc
+          this.ctx.strokeStyle = `rgba(254, 215, 170, ${progress * 0.85})`;
+          this.ctx.lineWidth = 3;
+          this.ctx.shadowColor = "#fed7aa";
+          this.ctx.shadowBlur = 6;
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, wave.radius * 0.8, -Math.PI * 0.28, Math.PI * 0.28);
+          this.ctx.stroke();
+
+          // Core molten shock aura
+          this.ctx.fillStyle = `rgba(234, 88, 12, ${progress * 0.25})`;
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, wave.radius, -Math.PI * 0.35, Math.PI * 0.35);
+          this.ctx.lineTo(0, 0);
+          this.ctx.closePath();
+          this.ctx.fill();
+
+          this.ctx.restore();
+        }
+      }
+
+      // Draw Poison DoT rings on afflicted NPCs
+      if (this.activePoisonDots && this.activePoisonDots.length > 0) {
+        for (let dot of this.activePoisonDots) {
+          if (!dot.npc || dot.npc.isDead || dot.npc.hp <= 0) continue;
+          this.ctx.save();
+          this.ctx.strokeStyle = "rgba(34, 197, 94, 0.45)";
+          this.ctx.lineWidth = 1.5;
+          this.ctx.shadowColor = "#22c55e";
+          this.ctx.shadowBlur = 6;
+          this.ctx.beginPath();
+          this.ctx.arc(dot.npc.x, dot.npc.y, dot.npc.radius + 5, 0, Math.PI * 2);
+          this.ctx.stroke();
+
+          // Toxic bubble mark
+          this.ctx.fillStyle = "#4ade80";
+          this.ctx.font = "bold 11px sans-serif";
+          this.ctx.textAlign = "center";
+          this.ctx.fillText("☣", dot.npc.x, dot.npc.y - dot.npc.radius - 4);
+          this.ctx.restore();
+        }
+      }
+
+      // Draw Requiem aura around player when active
+      if (this.player && (this.isRequiemRecording || this.isRequiemReadyToRelease)) {
+        this.ctx.save();
+        this.ctx.translate(this.player.x, this.player.y);
+        if (this.isRequiemReadyToRelease) {
+          // Execution ready: pulsing deep green skull ring
+          this.ctx.strokeStyle = "rgba(74, 222, 128, 0.85)";
+          this.ctx.lineWidth = 2.5;
+          this.ctx.shadowColor = "#22c55e";
+          this.ctx.shadowBlur = 12;
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, this.player.radius + 14, 0, Math.PI * 2);
+          this.ctx.stroke();
+
+          this.ctx.fillStyle = "#86efac";
+          this.ctx.font = "bold 12px sans-serif";
+          this.ctx.textAlign = "center";
+          this.ctx.fillText("☠ EXECUTE", 0, -this.player.radius - 18);
+        } else if (this.isRequiemRecording) {
+          // Storing poison damage: recording ring
+          this.ctx.strokeStyle = "rgba(34, 197, 94, 0.55)";
+          this.ctx.lineWidth = 1.8;
+          this.ctx.setLineDash([4, 4]);
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, this.player.radius + 10, 0, Math.PI * 2);
+          this.ctx.stroke();
         }
         this.ctx.restore();
       }

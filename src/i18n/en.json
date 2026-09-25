@@ -77,7 +77,19 @@
     "locked_p17": "LOCKED (P17)",
     "locked": "LOCKED",
     "active": "ACTIVE",
-    "ready": "READY"
+    "ready": "READY",
+    "judgment_label": "[ Z — JUDGMENT ]",
+    "judgment_title": "Judgment [Z] — Mark targets on touch for 10s, then press [Z] again to execute 500% damage on all marked targets (Phase 4+, 45s CD)",
+    "verdict_ready": "VERDICT [Z] ({time}s)",
+    "seismic_wave_label": "[ Z — SEISMIC WAVE ]",
+    "seismic_wave_title": "Seismic Wave [Z] — Launch a slow-moving devastating shockwave for 3s dealing 10× damage (Phase 6+, 45s CD)",
+    "locked_p6": "LOCKED (P6)",
+    "toxic_dash_label": "[ Z — TOXIC DASH ]",
+    "toxic_dash_title": "Toxic Dash [Z] — Dash forward 300px and inflict 1250% total poison damage over 5s (Phase 4+, 15s CD)",
+    "requiem_label": "[ X — VENOMOUS REQUIEM ]",
+    "requiem_title": "Venomous Requiem [X] — Record all poison damage for 30s, then execute nearby enemies for 125% stored damage + secondary poison (Phase 12+, 75s CD)",
+    "requiem_execute": "EXECUTE ({dmg})",
+    "requiem_recording": "RECORDING ({time}s)"
   },
   "floating": {
     "aquatic_unlocked": "AQUATIC UNLOCKED!",
@@ -108,7 +120,13 @@
     "worldroot": "WORLDROOT!",
     "cataclysm": "CATACLYSM!",
     "gluttony": "GLUTTONY!",
-    "engulf": "ENGULF!"
+    "engulf": "ENGULF!",
+    "order_unlocked": "ORDER UNLOCKED!",
+    "order_p12": "ABSOLUTE JUDGMENT!",
+    "tremor_unlocked": "TREMOR UNLOCKED!",
+    "tremor_p10": "THE EARTHQUAKE!",
+    "poison_unlocked": "POISON UNLOCKED!",
+    "poison_p14": "THE DIABOLICAL ASSASSIN!"
   },
   "prompts": {
     "inspect": "Inspect {sword} [E]",
@@ -234,6 +252,18 @@
       "sanguine_ascended": {
         "title": "The Blood",
         "description": "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak)."
+      },
+      "order_ascended": {
+        "title": "The Law",
+        "description": "Unlock when reaching the final phase of Order (966,000 killstreak)."
+      },
+      "tremor_ascended": {
+        "title": "The Earthquake",
+        "description": "Unlock when reaching the final phase of Tremor (1,200,000 killstreak)."
+      },
+      "poison_ascended": {
+        "title": "The Assassin",
+        "description": "Unlock when reaching the final phase of Poison (1,433,000 killstreak)."
       }
     }
   },
@@ -443,7 +473,35 @@
     "sanguine_p16_4": "[The blade goes white-hot and the beat lands again, twice as hard.]\n\nI was keeping it.",
     "sanguine_p16_5": "Stop.",
     "hint": "[SPACE] or Click to Continue",
-    "btn_skip": "SKIP [ESC]"
+    "btn_skip": "SKIP [ESC]",
+    "speaker_order": "ORDER — THE ABSOLUTE LAW",
+    "order_unlock_1": "The law does not rage. It does not chase.",
+    "order_unlock_2": "It simply decides who must fall.",
+    "order_unlock_3": "One hundred and five thousand souls have been weighed and found wanting.",
+    "order_unlock_4": "Take the blade... and let judgment begin.",
+    "speaker_order_p12": "ORDER — PHASE 12: ABSOLUTE JUDGMENT",
+    "order_p12_1": "The statute is written. The verdict is sealed.",
+    "order_p12_2": "There is no appeal. There is no mercy.",
+    "order_p12_3": "There is no law above this.",
+    "order_p12_4": "The sentence is final.",
+    "speaker_tremor": "TREMOR — THE EARTHQUAKE",
+    "tremor_unlock_1": "The bedrock remembers every blow.",
+    "tremor_unlock_2": "One hundred and fifteen thousand souls crushed beneath the fault.",
+    "tremor_unlock_3": "Take the stone... and make the world shake.",
+    "speaker_tremor_p10": "TREMOR — PHASE 10: THE EARTHQUAKE",
+    "tremor_p10_1": "The fault has opened completely.",
+    "tremor_p10_2": "The earth does not need permission to move.",
+    "tremor_p10_3": "When Tremor strikes, the battlefield becomes the weapon.",
+    "tremor_p10_4": "THE EARTH HAS ANSWERED.",
+    "speaker_poison": "POISON — THE DIABOLICAL ASSASSIN",
+    "poison_unlock_1": "A single drop is enough.",
+    "poison_unlock_2": "One hundred and twenty-five thousand lives ended without ever seeing the blade.",
+    "poison_unlock_3": "Take the vial... and make their veins burn.",
+    "speaker_poison_p14": "POISON — PHASE 14: THE DIABOLICAL ASSASSIN",
+    "poison_p14_1": "One cut is nothing.",
+    "poison_p14_2": "The poison is everything.",
+    "poison_p14_3": "You don't need to survive the attack.",
+    "poison_p14_4": "You only need to survive the poison... and no one ever does."
   },
   "toasts": {
     "entered_combat_title": "Entered Open Grassland",
@@ -572,7 +630,29 @@
     "debug_badge_title": "Debug: Badge Granted",
     "debug_badges_title": "Debug: Badges Granted",
     "debug_badges_desc": "Granted {count} badge(s). All achievements unlocked.",
-    "debug_badges_all_unlocked": "All achievements are already unlocked."
+    "debug_badges_all_unlocked": "All achievements are already unlocked.",
+    "order_unlock_title": "WEAPON UNLOCKED",
+    "order_unlock_desc": "Order — The Absolute Law is now available!",
+    "order_up_title": "THE LAW ASCENDS",
+    "order_up_desc": "Reached {name}",
+    "order_judgment_title": "JUDGMENT BEGINS",
+    "order_judgment_desc": "Touch targets within 10s to mark them, then press [Z] again to execute.",
+    "order_verdict_title": "FINAL VERDICT",
+    "order_verdict_desc": "{targets} target(s) executed — {damage} total damage",
+    "order_p12_title": "ABSOLUTE JUDGMENT",
+    "order_p12_desc": "Order has reached its final form.",
+    "tremor_unlock_title": "WEAPON UNLOCKED",
+    "tremor_unlock_desc": "Tremor — The Earthquake is now available!",
+    "tremor_up_title": "THE EARTH SHAKES",
+    "tremor_up_desc": "Reached {name}",
+    "tremor_p10_title": "THE EARTHQUAKE",
+    "tremor_p10_desc": "Tremor has reached its final form.",
+    "poison_unlock_title": "WEAPON UNLOCKED",
+    "poison_unlock_desc": "Poison — The Diabolical Assassin is now available!",
+    "poison_up_title": "THE POISON DEEPENS",
+    "poison_up_desc": "Reached {name}",
+    "poison_p14_title": "THE DIABOLICAL ASSASSIN",
+    "poison_p14_desc": "Poison has reached its final form."
   },
   "maps": {
     "LOBBY": "Sanctuary Lobby",
@@ -958,6 +1038,21 @@
       "name": "Sanguine",
       "tag": "BLOOD",
       "description": "A blood weapon that starts as the weakest thing in the game and ends as the strongest: for six phases it can barely hold itself together, and then it stops holding back. Features Bloodletting [Z] and Exsanguinate [X]."
+    },
+    "order": {
+      "name": "Order",
+      "tag": "LAW",
+      "description": "Order represents the absolute authority of law. Its power rises rapidly before suffering a deliberate collapse during Phase 5. After recovering from its weakest point, the sword evolves into an increasingly supernatural instrument of judgment. Its signature ability, Judgment, allows the wielder to mark multiple targets before sentencing them all simultaneously."
+    },
+    "tremor": {
+      "name": "Tremor",
+      "tag": "EARTHQUAKE",
+      "description": "Tremor is a massive earthquake-themed AoE sword built around raw destructive force and overwhelming impact. It starts deliberately weak, suffers a deliberate collapse at Phase 6, and evolves into a battlefield-shattering endgame weapon. Features Seismic Wave [Z]."
+    },
+    "poison": {
+      "name": "Poison",
+      "tag": "DIABOLICAL WEAPON",
+      "description": "A fragile assassin sword that sacrifices direct damage for lethal poison, precise mobility, and devastating stored-damage executions. Features Toxic Dash [Z] and Venomous Requiem [X]."
     }
   },
   "phases": {
@@ -1934,6 +2029,228 @@
         "shortName": "Heartstopper",
         "effects": "FINAL TRANSFORMATION: HEARTSTOPPER. Sanguine has stopped taking blood and started deciding whose it is — every beat of the blade stops something else instead. Base 5,200,000 DMG, 15,000,000 HP and 168 SPD. Stop.",
         "notification": "Everything that ever beat had to get it from somewhere. This is where it comes back to."
+      }
+    },
+    "order": {
+      "1": {
+        "name": "Phase 1: Citation",
+        "shortName": "Citation",
+        "effects": "A slim silver judicial blade with a small scale-shaped guard. Precise, clean, and unyielding. Base 125,000 DMG and 900,000 HP.",
+        "notification": "The law has noticed you."
+      },
+      "2": {
+        "name": "Phase 2: Statute",
+        "shortName": "Statute",
+        "effects": "The blade elongates, etched with geometric legal statutes. Base 290,000 DMG and 1,800,000 HP.",
+        "notification": "The statute is written."
+      },
+      "3": {
+        "name": "Phase 3: Verdict",
+        "shortName": "Verdict",
+        "effects": "A black geometric spine anchors a luminous white edge. Floating judgment seals mark every strike. Base 610,000 DMG and 3,600,000 HP.",
+        "notification": "The verdict is no longer in question."
+      },
+      "4": {
+        "name": "Phase 4: Ruin",
+        "shortName": "Ruin",
+        "effects": "Long execution-style blade. Unlocks Judgment [Z]: mark targets on touch and sentence them simultaneously. Base 850,000 DMG and 4,800,000 HP.",
+        "notification": "The verdict will be enforced."
+      },
+      "5": {
+        "name": "Phase 5: Appeal",
+        "shortName": "Appeal",
+        "effects": "DELIBERATE COLLAPSE — The authority of law falters. The blade cracks and dims into brittle gray metal. Base 70,000 DMG and 420,000 HP.",
+        "notification": "Appeal denied."
+      },
+      "6": {
+        "name": "Phase 6: Enforcement",
+        "shortName": "Enforcement",
+        "effects": "Reconstructed execution blade with orbiting legal seals. Authority returns with sharp retribution. Base 750,000 DMG and 4,200,000 HP.",
+        "notification": "The verdict will be enforced."
+      },
+      "7": {
+        "name": "Phase 7: Sentence",
+        "shortName": "Sentence",
+        "effects": "A radiant white edge leaves thin judgment lines hanging in the air. Base 1,050,000 DMG and 6,200,000 HP.",
+        "notification": "Your sentence has been passed."
+      },
+      "8": {
+        "name": "Phase 8: Conviction",
+        "shortName": "Conviction",
+        "effects": "Floating rectangular law fragments circle the wielder. Base 1,450,000 DMG and 9,000,000 HP.",
+        "notification": "There is no doubt left."
+      },
+      "9": {
+        "name": "Phase 9: Authority",
+        "shortName": "Authority",
+        "effects": "A ceremonial execution blade accompanied by golden law seals and a translucent cosmic scale. Base 1,950,000 DMG and 12,000,000 HP.",
+        "notification": "Authority requires no permission."
+      },
+      "10": {
+        "name": "Phase 10: Dominion",
+        "shortName": "Dominion",
+        "effects": "Monumental silver-white execution blade with blinding focal points. Base 2,550,000 DMG and 15,500,000 HP.",
+        "notification": "The law now speaks through me."
+      },
+      "11": {
+        "name": "Phase 11: Absolute Law",
+        "shortName": "Absolute Law",
+        "effects": "The physical edge dissolves into razor-thin pure light. Base 3,250,000 DMG and 20,500,000 HP.",
+        "notification": "There is no law above this."
+      },
+      "12": {
+        "name": "Phase 12: Absolute Judgment",
+        "shortName": "Absolute Judgment",
+        "effects": "FINAL TRANSFORMATION — Pure-white execution blade with spatial cutting rays and the grand Golden-Black Scale of Judgment. Exactly 75% of Sanguine's final power. Base 3,900,000 DMG and 22,500,000 HP.",
+        "notification": "The sentence is final."
+      }
+    },
+    "tremor": {
+      "1": {
+        "name": "Phase 1: Rumble",
+        "shortName": "Rumble",
+        "effects": "A crude stone-and-metal sword with small surface cracks. Slow, heavy swings with minor ground rumbles. Base 30,000 DMG and 300,000 HP.",
+        "notification": "Something beneath the earth has awakened."
+      },
+      "2": {
+        "name": "Phase 2: Quake",
+        "shortName": "Quake",
+        "effects": "The stone blade densifies with small glowing cracks. Attacks emit small radial shockwaves. Base 85,000 DMG and 850,000 HP.",
+        "notification": "The ground begins to answer."
+      },
+      "3": {
+        "name": "Phase 3: Fault",
+        "shortName": "Fault",
+        "effects": "Deep fissures open along the blade's core. Heavy impacts knock enemies outward. Base 180,000 DMG and 1,700,000 HP.",
+        "notification": "A fault line forms beneath your feet."
+      },
+      "4": {
+        "name": "Phase 4: Rupture",
+        "shortName": "Rupture",
+        "effects": "Jagged tectonic edges channel intense orange magma. Large attack arc and violent impacts. Base 360,000 DMG and 3,200,000 HP.",
+        "notification": "The bedrock fractures."
+      },
+      "5": {
+        "name": "Phase 5: Cataclysm",
+        "shortName": "Cataclysm",
+        "effects": "Massive dark stone blade with molten glowing fissures and floating rock embers. Base 620,000 DMG and 5,500,000 HP.",
+        "notification": "The pressure reaches its peak."
+      },
+      "6": {
+        "name": "Phase 6: Collapse",
+        "shortName": "Collapse",
+        "effects": "DELIBERATE COLLAPSE — The earthquake energy suddenly vanishes. The massive blade shatters into brittle, crumbly stone. Unlocks Seismic Wave [Z]. Base 60,000 DMG and 500,000 HP.",
+        "notification": "The earth has fallen silent."
+      },
+      "7": {
+        "name": "Phase 7: Aftershock",
+        "shortName": "Aftershock",
+        "effects": "The tectonic energy violently re-ignites. Attacks trigger a delayed second shockwave. Base 1,050,000 DMG and 8,500,000 HP.",
+        "notification": "You thought the shaking had stopped?"
+      },
+      "8": {
+        "name": "Phase 8: Earthshatter",
+        "shortName": "Earthshatter",
+        "effects": "Enormous tectonic blade surrounded by floating boulders and violent ground fissures. Base 2,100,000 DMG and 14,000,000 HP.",
+        "notification": "The earth itself is breaking."
+      },
+      "9": {
+        "name": "Phase 9: Worldbreaker",
+        "shortName": "Worldbreaker",
+        "effects": "Gigantic black basalt slab with a blinding magma core. Swings shake the entire surrounding battlefield. Base 3,600,000 DMG and 21,000,000 HP.",
+        "notification": "Mountains are only obstacles until they break."
+      },
+      "10": {
+        "name": "Phase 10: Tremor",
+        "shortName": "Tremor",
+        "effects": "FINAL TRANSFORMATION — The ultimate embodiment of seismic annihilation. 25% stronger than previous design. Huge attack arcs, orbiting rock slabs, and massive knockback. Base 7,475,000 DMG and 32,000,000 HP.",
+        "notification": "THE EARTH HAS ANSWERED."
+      }
+    },
+    "poison": {
+      "1": {
+        "name": "Phase 1: Venom",
+        "shortName": "Venom",
+        "effects": "A thin, dark dagger-like blade dripping with subtle venom. Direct attacks deal 1% damage; venom inflicts 100% damage over 2s. Base 20,000 DMG and 5,250,000 HP.",
+        "notification": "A single drop is enough."
+      },
+      "2": {
+        "name": "Phase 2: Toxin",
+        "shortName": "Toxin",
+        "effects": "Curved venomous edge lined with glowing toxic veins. Base 45,000 DMG and 5,950,000 HP.",
+        "notification": "The poison enters the bloodstream."
+      },
+      "3": {
+        "name": "Phase 3: Injection",
+        "shortName": "Injection",
+        "effects": "Slender needle-like stiletto dripping luminescent venom. Base 80,000 DMG and 6,650,000 HP.",
+        "notification": "Just a prick. You will hardly feel it."
+      },
+      "4": {
+        "name": "Phase 4: Contamination",
+        "shortName": "Contamination",
+        "effects": "DELIBERATE COLLAPSE — The venom thins into corrosive residue, dripping erratically. Unlocks Toxic Dash [Z]. Base 12,000 DMG and 3,500,000 HP.",
+        "notification": "The poison is breaking down. But you are faster now."
+      },
+      "5": {
+        "name": "Phase 5: Viper",
+        "shortName": "Viper",
+        "effects": "Curved kris blade coiled in emerald serpent aura. Strikes bite deep into the target's vital flow. Base 180,000 DMG and 7,000,000 HP.",
+        "notification": "The viper strikes once. The venom does the rest."
+      },
+      "6": {
+        "name": "Phase 6: Venomfang",
+        "shortName": "Venomfang",
+        "effects": "Serrated needle blade with venom canals glowing along both edges. Base 320,000 DMG and 7,500,000 HP.",
+        "notification": "Two puncture wounds. Millions dead."
+      },
+      "7": {
+        "name": "Phase 7: Neurotoxin",
+        "shortName": "Neurotoxin",
+        "effects": "Pale glowing rapier wrapped in electric toxic fumes. Base 550,000 DMG and 8,000,000 HP.",
+        "notification": "The mind shuts down before the body falls."
+      },
+      "8": {
+        "name": "Phase 8: Toxicity",
+        "shortName": "Toxicity",
+        "effects": "Corrosive emerald rapier shedding a persistent acidic fog. Base 900,000 DMG and 8,500,000 HP.",
+        "notification": "Breathe. Let it fill you."
+      },
+      "9": {
+        "name": "Phase 9: Plague",
+        "shortName": "Plague",
+        "effects": "Cruel assassin needle surrounded by toxic spore clouds. Base 1,450,000 DMG and 9,000,000 HP.",
+        "notification": "The plague needs no army. Only a host."
+      },
+      "10": {
+        "name": "Phase 10: Venomous",
+        "shortName": "Venomous",
+        "effects": "Razor-thin stiletto radiating concentrated acidic luminescence. Base 2,200,000 DMG and 9,500,000 HP.",
+        "notification": "You are not fighting a sword. You are fighting poison."
+      },
+      "11": {
+        "name": "Phase 11: Malignant",
+        "shortName": "Malignant",
+        "effects": "Translucent dark-green needle pulsing with fatal caustic venom. Base 3,200,000 DMG and 10,000,000 HP.",
+        "notification": "It is inside you now. There is no cure."
+      },
+      "12": {
+        "name": "Phase 12: Poisoned Collapse",
+        "shortName": "Poisoned Collapse",
+        "effects": "DELIBERATE COLLAPSE — The weapon dissolves into pure venomous vapor. Direct strike fails, but unlocks Venomous Requiem [X]. Base 350,000 DMG and 5,600,000 HP.",
+        "notification": "The weapon is dying. But every drop of poison you dealt was remembered."
+      },
+      "13": {
+        "name": "Phase 13: Deathblight",
+        "shortName": "Deathblight",
+        "effects": "A dreadful dark-needle wrapped in sickly green deathblight mists. Base 4,600,000 DMG and 10,250,000 HP.",
+        "notification": "When Deathblight enters the veins, even the soul decays."
+      },
+      "14": {
+        "name": "Phase 14: Poison",
+        "shortName": "Poison",
+        "effects": "FINAL TRANSFORMATION — The ultimate embodiment of lethal assassination. 120% Sanguine damage (6.24M) with frail 10.5M HP and blisteringly fast 175 SPD. Base 6,240,000 DMG and 10,500,000 HP.",
+        "notification": "One cut is nothing. The poison is everything."
       }
     }
   },

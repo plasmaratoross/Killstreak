@@ -31,8 +31,8 @@ export function updateSkillsUI(game, skillsData) {
 
   const swordId = (skillsData && skillsData.swordId) || (game && game.player && game.player.swordId) || "devourer";
 
-  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy, Frostbite, Voltstrike, Lumen, Umbra or Sanguine is equipped
-  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite" && swordId !== "voltstrike" && swordId !== "lumen" && swordId !== "umbra" && swordId !== "sanguine")) {
+  // Skills bar only visible when Devourer, Aquatic, Soil, Metallic, Flora, Hellfire, Windy, Frostbite, Voltstrike, Lumen, Umbra, Sanguine, Order, Tremor or Poison is equipped
+  if (!isEquipped || (swordId !== "devourer" && swordId !== "aquatic" && swordId !== "soil" && swordId !== "metallic" && swordId !== "flora" && swordId !== "hellfire" && swordId !== "windy" && swordId !== "frostbite" && swordId !== "voltstrike" && swordId !== "lumen" && swordId !== "umbra" && swordId !== "sanguine" && swordId !== "order" && swordId !== "tremor" && swordId !== "poison")) {
     if (hudSkillsBar) hudSkillsBar.classList.add("hidden");
     skillGluttonyBtn.disabled = true;
     skillEngulfBtn.disabled = true;
@@ -447,6 +447,139 @@ export function updateSkillsUI(game, skillsData) {
       skillEngulfBtn.className = "skill-btn skill-cooldown";
       skillEngulfBtn.disabled = true;
       skillEngulfVal.textContent = `${exCd.toFixed(1)}s`;
+    } else {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // ORDER SKILL: Judgment (Z)
+  if (swordId === "order") {
+    skillEngulfBtn.classList.add("hidden");
+    skillGluttonyBtn.classList.remove("hidden");
+
+    const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+    if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.judgment_label") : "[ Z — JUDGMENT ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.judgment_title") : "Judgment [Z] — Mark targets on touch for 10s, then press [Z] again to execute 500% damage on all marked targets (Phase 4+, 45s CD)";
+
+    const jCd = (skillsData && typeof skillsData.judgmentCooldown === "number")
+      ? skillsData.judgmentCooldown
+      : (game && typeof game.judgmentCooldown === "number" ? game.judgmentCooldown : 0);
+    const jTimer = (skillsData && typeof skillsData.judgmentMarkingTimer === "number")
+      ? skillsData.judgmentMarkingTimer
+      : (game && typeof game.judgmentMarkingTimer === "number" ? game.judgmentMarkingTimer : 0);
+
+    if (phase < 4) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+    } else if (jTimer > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.verdict_ready", { time: jTimer.toFixed(1) }) : `VERDICT [Z] (${jTimer.toFixed(1)}s)`;
+    } else if (jCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${jCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // TREMOR SKILL: Seismic Wave (Z)
+  if (swordId === "tremor") {
+    skillEngulfBtn.classList.add("hidden");
+    skillGluttonyBtn.classList.remove("hidden");
+
+    const labelEl = skillGluttonyBtn.querySelector(".skill-btn-label");
+    if (labelEl) labelEl.textContent = I18n ? I18n.t("skills.seismic_wave_label") : "[ Z — SEISMIC WAVE ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.seismic_wave_title") : "Seismic Wave [Z] — Launch a slow-moving devastating shockwave for 3s dealing 10× damage (Phase 6+, 45s CD)";
+
+    const swCd = (skillsData && typeof skillsData.seismicWaveCooldown === "number")
+      ? skillsData.seismicWaveCooldown
+      : (game && typeof game.seismicWaveCooldown === "number" ? game.seismicWaveCooldown : 0);
+
+    if (phase < 6) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p6") : "LOCKED (P6)";
+    } else if (swCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${swCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+    return;
+  }
+
+  // POISON SKILLS: Toxic Dash (Z) + Venomous Requiem (X)
+  if (swordId === "poison") {
+    skillGluttonyBtn.classList.remove("hidden");
+    skillEngulfBtn.classList.remove("hidden");
+
+    const zLabel = skillGluttonyBtn.querySelector(".skill-btn-label");
+    const xLabel = skillEngulfBtn.querySelector(".skill-btn-label");
+    if (zLabel) zLabel.textContent = I18n ? I18n.t("skills.toxic_dash_label") : "[ Z — TOXIC DASH ]";
+    if (xLabel) xLabel.textContent = I18n ? I18n.t("skills.requiem_label") : "[ X — VENOMOUS REQUIEM ]";
+    skillGluttonyBtn.title = I18n ? I18n.t("skills.toxic_dash_title") : "Toxic Dash [Z] — Dash forward 300px and inflict 1250% total poison damage over 5s (Phase 4+, 15s CD)";
+    skillEngulfBtn.title = I18n ? I18n.t("skills.requiem_title") : "Venomous Requiem [X] — Record all poison damage for 30s, then execute nearby enemies for 125% stored damage + secondary poison (Phase 12+, 75s CD)";
+
+    const tdCd = (skillsData && typeof skillsData.toxicDashCooldown === "number")
+      ? skillsData.toxicDashCooldown
+      : (game && typeof game.toxicDashCooldown === "number" ? game.toxicDashCooldown : 0);
+    const rqCd = (skillsData && typeof skillsData.requiemCooldown === "number")
+      ? skillsData.requiemCooldown
+      : (game && typeof game.requiemCooldown === "number" ? game.requiemCooldown : 0);
+    const isRecording = Boolean(skillsData ? skillsData.isRequiemRecording : (game && game.isRequiemRecording));
+    const isReadyRelease = Boolean(skillsData ? skillsData.isRequiemReadyToRelease : (game && game.isRequiemReadyToRelease));
+    const recTimer = (skillsData && typeof skillsData.requiemRecordingTimer === "number")
+      ? skillsData.requiemRecordingTimer
+      : (game && typeof game.requiemRecordingTimer === "number" ? game.requiemRecordingTimer : 0);
+    const storedDmg = (skillsData && typeof skillsData.requiemStoredDamage === "number")
+      ? skillsData.requiemStoredDamage
+      : (game && typeof game.requiemStoredDamage === "number" ? game.requiemStoredDamage : 0);
+
+    // Z — Toxic Dash (Phase 4+, 15s CD)
+    if (phase < 4) {
+      skillGluttonyBtn.className = "skill-btn skill-locked";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.locked_p4") : "LOCKED (P4)";
+    } else if (tdCd > 0) {
+      skillGluttonyBtn.className = "skill-btn skill-cooldown";
+      skillGluttonyBtn.disabled = true;
+      skillGluttonyVal.textContent = `${tdCd.toFixed(1)}s`;
+    } else {
+      skillGluttonyBtn.className = "skill-btn skill-ready";
+      skillGluttonyBtn.disabled = false;
+      skillGluttonyVal.textContent = I18n ? I18n.t("skills.ready") : "READY";
+    }
+
+    // X — Venomous Requiem (Phase 12+, 75s CD)
+    if (phase < 12) {
+      skillEngulfBtn.className = "skill-btn skill-locked";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.locked_p12") : "LOCKED (P12)";
+    } else if (isReadyRelease) {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      const fmtStored = window.Killstreak && window.Killstreak.formatNumber ? window.Killstreak.formatNumber(storedDmg).short : storedDmg;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.requiem_execute", { dmg: fmtStored, defaultValue: `EXECUTE (${fmtStored})` }) : `EXECUTE (${fmtStored})`;
+    } else if (isRecording) {
+      skillEngulfBtn.className = "skill-btn skill-ready";
+      skillEngulfBtn.disabled = false;
+      skillEngulfVal.textContent = I18n ? I18n.t("skills.requiem_recording", { time: Math.ceil(recTimer), defaultValue: `RECORDING (${Math.ceil(recTimer)}s)` }) : `RECORDING (${Math.ceil(recTimer)}s)`;
+    } else if (rqCd > 0) {
+      skillEngulfBtn.className = "skill-btn skill-cooldown";
+      skillEngulfBtn.disabled = true;
+      skillEngulfVal.textContent = `${rqCd.toFixed(1)}s`;
     } else {
       skillEngulfBtn.className = "skill-btn skill-ready";
       skillEngulfBtn.disabled = false;

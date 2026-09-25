@@ -157,6 +157,39 @@
         title: "WEAPON PEDESTAL",
         subtitle: "SANGUINE",
         unlockKills: 100000
+      },
+      {
+        id: "order_stand",
+        swordId: "order",
+        x: 1167.5,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "ORDER",
+        unlockKills: 105000
+      },
+      {
+        id: "tremor_stand",
+        swordId: "tremor",
+        x: 1225,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "TREMOR",
+        unlockKills: 115000
+      },
+      {
+        id: "poison_stand",
+        swordId: "poison",
+        x: 1282.5,
+        y: 250,
+        radius: 20,
+        interactRadius: 48,
+        title: "WEAPON PEDESTAL",
+        subtitle: "POISON",
+        unlockKills: 125000
       }
     ],
     // Backwards-compatible single reference

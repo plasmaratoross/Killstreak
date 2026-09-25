@@ -24,6 +24,9 @@ import voltstrikeData from './voltstrike/voltstrike.data.json';
 import lumenData      from './lumen/lumen.data.json';
 import umbraData      from './umbra/umbra.data.json';
 import sanguineData   from './sanguine/sanguine.data.json';
+import orderData      from './order/order.data.json';
+import tremorData     from './tremor/tremor.data.json';
+import poisonData     from './poison/poison.data.json';
 
 import devourerRender  from './devourer/devourer.render.js';
 import overdriveRender from './overdrive/overdrive.render.js';
@@ -32,11 +35,15 @@ import soilRender      from './soil/soil.render.js';
 import metallicRender  from './metallic/metallic.render.js';
 import floraRender     from './flora/flora.render.js';
 import hellfireRender  from './hellfire/hellfire.render.js';
-import windyRender     from './windy/windy.render.js';import frostbiteRender from './frostbite/frostbite.render.js';
+import windyRender     from './windy/windy.render.js';
+import frostbiteRender from './frostbite/frostbite.render.js';
 import voltstrikeRender from './voltstrike/voltstrike.render.js';
 import lumenRender     from './lumen/lumen.render.js';
 import umbraRender     from './umbra/umbra.render.js';
 import sanguineRender  from './sanguine/sanguine.render.js';
+import orderRender     from './order/order.render.js';
+import tremorRender    from './tremor/tremor.render.js';
+import poisonRender    from './poison/poison.render.js';
 // Ability modules are deliberately NOT imported here — see the header. They are
 // imported by src/systems/AbilitySystem.js, which owns the dispatch.
 
@@ -52,6 +59,8 @@ import sanguineRender  from './sanguine/sanguine.render.js';
  *   lumen     → Flash (Z) + Radiance (X)
  *   umbra     → Gravity Well (Z) + Erasure (X)
  *   sanguine  → Bloodletting (Z) + Exsanguinate (X)
+ *   order     → Judgment (Z)
+ *   tremor    → Seismic Wave (Z)
  *
  * @type {Record<string, { data: object, render: object }>}
  */
@@ -69,6 +78,9 @@ const SwordRegistry = {
   lumen:     { data: lumenData,     render: lumenRender },
   umbra:     { data: umbraData,     render: umbraRender },
   sanguine:  { data: sanguineData,  render: sanguineRender },
+  order:     { data: orderData,     render: orderRender },
+  tremor:    { data: tremorData,    render: tremorRender },
+  poison:    { data: poisonData,    render: poisonRender },
 };
 
 export default SwordRegistry;
@@ -84,4 +96,4 @@ export function getSwordRenderer(swordId) {
 }
 
 /** All valid sword IDs in progression order */
-export const SWORD_IDS = ['devourer', 'overdrive', 'aquatic', 'soil', 'metallic', 'flora', 'hellfire', 'windy', 'frostbite', 'voltstrike', 'lumen', 'umbra', 'sanguine'];
+export const SWORD_IDS = ['devourer', 'overdrive', 'aquatic', 'soil', 'metallic', 'flora', 'hellfire', 'windy', 'frostbite', 'voltstrike', 'lumen', 'umbra', 'sanguine', 'order', 'tremor', 'poison'];

@@ -36,6 +36,9 @@ import {
   libTabLumen,
   libTabUmbra,
   libTabSanguine,
+  libTabOrder,
+  libTabTremor,
+  libTabPoison,
   libSwordTag,
   libSwordName,
   libSwordDesc
@@ -393,6 +396,21 @@ export function renderLibrarySwords(game) {
     if (sId === "sanguine") libTabSanguine.classList.add("active");
     else libTabSanguine.classList.remove("active");
   }
+  if (libTabOrder) {
+    libTabOrder.textContent = I18n ? I18n.getSwordInfo("order").name.toUpperCase() : "ORDER";
+    if (sId === "order") libTabOrder.classList.add("active");
+    else libTabOrder.classList.remove("active");
+  }
+  if (libTabTremor) {
+    libTabTremor.textContent = I18n ? I18n.getSwordInfo("tremor").name.toUpperCase() : "TREMOR";
+    if (sId === "tremor") libTabTremor.classList.add("active");
+    else libTabTremor.classList.remove("active");
+  }
+  if (libTabPoison) {
+    libTabPoison.textContent = I18n ? I18n.getSwordInfo("poison").name.toUpperCase() : "POISON";
+    if (sId === "poison") libTabPoison.classList.add("active");
+    else libTabPoison.classList.remove("active");
+  }
 
   const phases = swordDef.phases;
   libraryPhasesContainer.innerHTML = "";
@@ -421,14 +439,20 @@ export function renderLibrarySwords(game) {
     const isWeakLm = sId === "lumen" && (p.phase === 7 || p.phase === 12);
     const isWeakUm = sId === "umbra" && (p.phase === 7 || p.phase === 12);
     const isWeakSg = sId === "sanguine" && p.phase === 7;
+    // Order has exactly ONE weak phase: Phase 5 (Appeal), tagged DELIBERATE COLLAPSE.
+    const isWeakOrder = sId === "order" && p.phase === 5;
+    // Tremor has exactly ONE weak phase: Phase 6 (Collapse), tagged DELIBERATE COLLAPSE.
+    const isWeakTremor = sId === "tremor" && p.phase === 6;
+    // Poison has TWO weak phases: Phase 4 (Contamination) and Phase 12 (Poisoned Collapse).
+    const isWeakPoison = sId === "poison" && (p.phase === 4 || p.phase === 12);
     // metallic p8, flora p7 and hellfire p7 were flagged here too, so they carried a
     // DELIBERATE COLLAPSE badge. They are not weak phases: their stats rise normally
     // (e.g. hellfire p7 9,072 DMG -> p8 18,144 DMG) and none of their render modules
     // has a collapse variant, unlike aquatic p8 and soil p9 whose data carries
     // weaponType "collapse" plus a cracked/weakened visual. A weak badge on them was
     // simply wrong, so they were dropped rather than relabelled TRANSITIONAL HURDLE.
-    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg;
-    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg;
+    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg || isWeakOrder || isWeakTremor || isWeakPoison;
+    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg || isWeakOrder || isWeakTremor || isWeakPoison;
 
     let scaledRow = null;
     if (isCurrent && game.player.isSwordEquipped) {
@@ -651,6 +675,27 @@ export function initLibraryWiring(game) {
   if (libTabSanguine) {
     libTabSanguine.addEventListener("click", () => {
       setSelectedLibrarySword("sanguine");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabOrder) {
+    libTabOrder.addEventListener("click", () => {
+      setSelectedLibrarySword("order");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabTremor) {
+    libTabTremor.addEventListener("click", () => {
+      setSelectedLibrarySword("tremor");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabPoison) {
+    libTabPoison.addEventListener("click", () => {
+      setSelectedLibrarySword("poison");
       renderLibrarySwords(game);
     });
   }
