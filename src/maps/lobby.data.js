@@ -19,7 +19,13 @@ const LOBBY_MAP = {
     { id: "hellfire_stand",  swordId: "hellfire",  x: 765,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "HELLFIRE",  unlockKills: 18125 },
     { id: "windy_stand",     swordId: "windy",     x: 822.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "WINDY",     unlockKills: 24000 },
     { id: "frostbite_stand", swordId: "frostbite", x: 880,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "FROSTBITE", unlockKills: 32500 },
-    { id: "voltstrike_stand", swordId: "voltstrike", x: 937.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "VOLTSTRIKE", unlockKills: 45000 }
+    { id: "voltstrike_stand", swordId: "voltstrike", x: 937.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "VOLTSTRIKE", unlockKills: 45000 },
+    { id: "lumen_stand",     swordId: "lumen",     x: 995,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "LUMEN",     unlockKills: 50000 },
+    { id: "umbra_stand",     swordId: "umbra",     x: 1052.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "UMBRA",     unlockKills: 70000 },
+    { id: "sanguine_stand",  swordId: "sanguine",  x: 1110,  y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "SANGUINE",  unlockKills: 100000 },
+    { id: "order_stand",     swordId: "order",     x: 1167.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "ORDER",     unlockKills: 105000 },
+    { id: "tremor_stand",    swordId: "tremor",    x: 1225,   y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "TREMOR",    unlockKills: 115000 },
+    { id: "poison_stand",    swordId: "poison",    x: 1282.5, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "POISON",    unlockKills: 125000 }
   ],
   swordStand: { x: 420, y: 250, radius: 20, interactRadius: 48, title: "WEAPON PEDESTAL", subtitle: "DEVOURER" },
   portalToCombat: { x: 1980, y: 650, width: 36, height: 160, label: "ENTER GRASSLAND", interactRadius: 75 },

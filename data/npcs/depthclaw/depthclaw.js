@@ -1,0 +1,30 @@
+/**
+ * Depthclaw NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.depthclaw = {
+    "id": "depthclaw",
+    "name": "Depthclaw",
+    "description": "Gigantic trench crab wielding obsidian-crushing claws.",
+    "radius": 34,
+    "speed": 140,
+    "maxHp": 8000000000,
+    "damage": 78000000,
+    "attackRate": 0.55,
+    "attackRange": 36,
+    "killsAwarded": 31,
+    "killstreakAwarded": 435000,
+    "respawnDelay": 8,
+    "color": "#d946ef",
+    "neutralColor": "#4a044e",
+    "glowColor": "rgba(217, 70, 239, 0.60)",
+    "massScale": 0.3,
+    "shoveRatio": 0.35,
+    "barWidth": 58,
+    "barColor": "#d946ef"
+};
+})(window);

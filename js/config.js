@@ -21,6 +21,12 @@
   const WINDY_PHASES = (SWORDS.windy && SWORDS.windy.phases) || [];
   const FROSTBITE_PHASES = (SWORDS.frostbite && SWORDS.frostbite.phases) || [];
   const VOLTSTRIKE_PHASES = (SWORDS.voltstrike && SWORDS.voltstrike.phases) || [];
+  const LUMEN_PHASES = (SWORDS.lumen && SWORDS.lumen.phases) || [];
+  const UMBRA_PHASES = (SWORDS.umbra && SWORDS.umbra.phases) || [];
+  const SANGUINE_PHASES = (SWORDS.sanguine && SWORDS.sanguine.phases) || [];
+  const ORDER_PHASES = (SWORDS.order && SWORDS.order.phases) || [];
+  const TREMOR_PHASES = (SWORDS.tremor && SWORDS.tremor.phases) || [];
+  const POISON_PHASES = (SWORDS.poison && SWORDS.poison.phases) || [];
 
   // Structured NPC Formation Offsets (Relative to Zone Center)
   const NPC_FORMATION_10_SLOTS = [
@@ -107,6 +113,13 @@
     { x: 0,   y: 0 },   // Slot 2: Center
     { x: -55, y: 38 },  // Slot 3: Row 2 Left
     { x: 55,  y: 38 }   // Slot 4: Row 2 Right
+  ];
+
+  const NPC_FORMATION_4_SLOTS = [
+    { x: -50, y: -38 }, // Slot 0: Row 1 Left
+    { x: 50,  y: -38 }, // Slot 1: Row 1 Right
+    { x: -50, y: 38 },  // Slot 2: Row 2 Left
+    { x: 50,  y: 38 }   // Slot 3: Row 2 Right
   ];
 
   // Achievements: Getting Started, All Devourer, Overdrive Ascended, and Aquatic Ascended
@@ -198,6 +211,54 @@
       icon: "⚡",
       description: "Unlock when reaching the final phase of Voltstrike (699,999 killstreak).",
       killsRequired: 699999
+    },
+    {
+      id: "lumen_ascended",
+      title: "The Radiant",
+      badge: "lumen_ascended",
+      icon: "✨",
+      description: "Unlock when reaching the final phase of Lumen (950,000 killstreak).",
+      killsRequired: 950000
+    },
+    {
+      id: "umbra_ascended",
+      title: "The Void",
+      badge: "umbra_ascended",
+      icon: "🕳️",
+      description: "Unlock when reaching the final phase of Umbra (1,400,000 killstreak).",
+      killsRequired: 1400000
+    },
+    {
+      id: "sanguine_ascended",
+      title: "The Blood",
+      badge: "sanguine_ascended",
+      icon: "🩸",
+      description: "Unlock when reaching the final phase of Sanguine (1,850,000 killstreak).",
+      killsRequired: 1850000
+    },
+    {
+      id: "order_ascended",
+      title: "The Law",
+      badge: "order_ascended",
+      icon: "⚖️",
+      description: "Unlock when reaching the final phase of Order (966,000 killstreak).",
+      killsRequired: 966000
+    },
+    {
+      id: "tremor_ascended",
+      title: "The Earthquake",
+      badge: "tremor_ascended",
+      icon: "🌋",
+      description: "Unlock when reaching the final phase of Tremor (1,200,000 killstreak).",
+      killsRequired: 1200000
+    },
+    {
+      id: "poison_ascended",
+      title: "The Assassin",
+      badge: "poison_ascended",
+      icon: "☠️",
+      description: "Unlock when reaching the final phase of Poison (1,433,000 killstreak).",
+      killsRequired: 1433000
     }
   ];
 
@@ -363,6 +424,12 @@
     WINDY_PHASES,
     FROSTBITE_PHASES,
     VOLTSTRIKE_PHASES,
+    LUMEN_PHASES,
+    UMBRA_PHASES,
+    SANGUINE_PHASES,
+    ORDER_PHASES,
+    TREMOR_PHASES,
+    POISON_PHASES,
     SWORDS,
     KILLSTREAK_SCALING,
     DEVOURER_SCALING,
@@ -374,6 +441,7 @@
     NPC_FORMATION_7_BUFF_SLOTS,
     NPC_FORMATION_6_SLOTS,
     NPC_FORMATION_5_SLOTS,
+    NPC_FORMATION_4_SLOTS,
     ACHIEVEMENTS,
     MAPS,
     GAME_CONFIG,

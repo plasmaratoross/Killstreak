@@ -49,7 +49,10 @@ for (const m of read('src/ui/domRefs.js')
 // — every other ref still has to survive the move and be imported somewhere. The
 // `staleRemoved` check below fails if one of these names comes back, so this
 // allowance cannot quietly mask a genuine regression.
-const REMOVED_AFTER_HOIST = new Map([['menuLobbyBtn', 'menu-lobby-btn']]);
+const REMOVED_AFTER_HOIST = new Map([
+  ['menuLobbyBtn', 'menu-lobby-btn'],
+  ['respawnCombatBtn', 'respawn-combat-btn']
+]);
 // Refs ADDED after the hoist, for features that did not exist then. Same reasoning in
 // reverse: listed explicitly rather than relaxing the counts, and the guard below
 // proves each added name really has its element in index.html.
@@ -57,6 +60,12 @@ const ADDED_AFTER_HOIST = new Map([
   ['libTabWindy', 'lib-tab-windy'],
   ['libTabFrostbite', 'lib-tab-frostbite'],
   ['libTabVoltstrike', 'lib-tab-voltstrike'],
+  ['libTabLumen', 'lib-tab-lumen'],
+  ['libTabUmbra', 'lib-tab-umbra'],
+  ['libTabSanguine', 'lib-tab-sanguine'],
+  ['libTabOrder', 'lib-tab-order'],
+  ['libTabTremor', 'lib-tab-tremor'],
+  ['libTabPoison', 'lib-tab-poison'],
 ]);
 
 console.log('--- fidelity ---');

@@ -1,0 +1,30 @@
+/**
+ * Reefmaw NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.reefmaw = {
+    "id": "reefmaw",
+    "name": "Reefmaw",
+    "description": "Ferocious predatory beast roaming the shallow reefs of Atlantis.",
+    "radius": 20,
+    "speed": 140,
+    "maxHp": 30000000,
+    "damage": 1400000,
+    "attackRate": 0.75,
+    "attackRange": 22,
+    "killsAwarded": 9,
+    "killstreakAwarded": 30000,
+    "respawnDelay": 6,
+    "color": "#06b6d4",
+    "neutralColor": "#0e3a4e",
+    "glowColor": "rgba(6, 182, 212, 0.45)",
+    "massScale": 0.65,
+    "shoveRatio": 0.65,
+    "barWidth": 36,
+    "barColor": "#06b6d4"
+};
+})(window);

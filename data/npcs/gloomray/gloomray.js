@@ -1,0 +1,30 @@
+/**
+ * Gloomray NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.gloomray = {
+    "id": "gloomray",
+    "name": "Gloomray",
+    "description": "Ethereal abyssal ray gliding silently on wings of violet dusk.",
+    "radius": 34,
+    "speed": 170,
+    "maxHp": 12500000000,
+    "damage": 105000000,
+    "attackRate": 0.46,
+    "attackRange": 36,
+    "killsAwarded": 33,
+    "killstreakAwarded": 540000,
+    "respawnDelay": 8,
+    "color": "#c084fc",
+    "neutralColor": "#2e1065",
+    "glowColor": "rgba(192, 132, 252, 0.60)",
+    "massScale": 0.28,
+    "shoveRatio": 0.35,
+    "barWidth": 58,
+    "barColor": "#c084fc"
+};
+})(window);

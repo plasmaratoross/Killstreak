@@ -1,0 +1,21 @@
+{
+  "id": "tidescale",
+  "name": "Tidescale",
+  "description": "Sleek marine hunter clad in shimmering hydro-resonant scales.",
+  "radius": 22,
+  "speed": 145,
+  "maxHp": 78000000,
+  "damage": 2900000,
+  "attackRate": 0.62,
+  "attackRange": 24,
+  "killsAwarded": 11,
+  "killstreakAwarded": 44000,
+  "respawnDelay": 6,
+  "color": "#38bdf8",
+  "neutralColor": "#0c4a6e",
+  "glowColor": "rgba(56, 189, 248, 0.45)",
+  "massScale": 0.55,
+  "shoveRatio": 0.6,
+  "barWidth": 40,
+  "barColor": "#38bdf8"
+}

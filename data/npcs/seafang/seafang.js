@@ -1,0 +1,30 @@
+/**
+ * Seafang NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.seafang = {
+    "id": "seafang",
+    "name": "Seafang",
+    "description": "Deep-sea apex carnivore with razor-sharp crystalline teeth.",
+    "radius": 24,
+    "speed": 150,
+    "maxHp": 125000000,
+    "damage": 4000000,
+    "attackRate": 0.7,
+    "attackRange": 26,
+    "killsAwarded": 13,
+    "killstreakAwarded": 58000,
+    "respawnDelay": 6.5,
+    "color": "#0284c7",
+    "neutralColor": "#082f49",
+    "glowColor": "rgba(2, 132, 199, 0.45)",
+    "massScale": 0.5,
+    "shoveRatio": 0.55,
+    "barWidth": 42,
+    "barColor": "#0284c7"
+};
+})(window);

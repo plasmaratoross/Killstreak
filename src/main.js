@@ -33,6 +33,12 @@ import '../data/swords/hellfire/hellfire.js';
 import '../data/swords/windy/windy.js';
 import '../data/swords/frostbite/frostbite.js';
 import '../data/swords/voltstrike/voltstrike.js';
+import '../data/swords/lumen/lumen.js';
+import '../data/swords/umbra/umbra.js';
+import '../data/swords/sanguine/sanguine.js';
+import '../data/swords/order/order.js';
+import '../data/swords/tremor/tremor.js';
+import '../data/swords/poison/poison.js';
 
 // 3. NPC Data Modules
 import '../data/npcs/normal/normal.js';
@@ -57,12 +63,39 @@ import '../data/npcs/gloomscale/gloomscale.js';
 import '../data/npcs/wildtusk/wildtusk.js';
 import '../data/npcs/moonmane/moonmane.js';
 import '../data/npcs/crimsonhide/crimsonhide.js';
+import '../data/npcs/reefmaw/reefmaw.js';
+import '../data/npcs/coralback/coralback.js';
+import '../data/npcs/tidescale/tidescale.js';
+import '../data/npcs/seafang/seafang.js';
+import '../data/npcs/abyssfin/abyssfin.js';
+import '../data/npcs/deepclaw/deepclaw.js';
+import '../data/npcs/reefstalker/reefstalker.js';
+import '../data/npcs/dreadscale/dreadscale.js';
+import '../data/npcs/tideborn/tideborn.js';
+import '../data/npcs/leviathan/leviathan.js';
+import '../data/npcs/abysswalker/abysswalker.js';
+import '../data/npcs/trenchmaw/trenchmaw.js';
+import '../data/npcs/depthclaw/depthclaw.js';
+import '../data/npcs/gloomray/gloomray.js';
+import '../data/npcs/abyssal/abyssal.js';
+import '../data/npcs/sirenborn/sirenborn.js';
+import '../data/npcs/stormscale/stormscale.js';
+import '../data/npcs/dreadtide/dreadtide.js';
+import '../data/npcs/trenchborn/trenchborn.js';
+import '../data/npcs/deepwarden/deepwarden.js';
+import '../data/npcs/abysslord/abysslord.js';
+import '../data/npcs/tidebreaker/tidebreaker.js';
+import '../data/npcs/depthforged/depthforged.js';
+import '../data/npcs/oceanbane/oceanbane.js';
+import '../data/npcs/abyssforged/abyssforged.js';
 
 // 4. Map Data Modules
 import '../data/maps/lobby.js';
 import '../data/maps/grassland.js';
+import '../data/maps/atlantis.js';
 
 // 5. Core Systems (in dependency order)
+import './render/AtlantisNpcRenderer.js';
 import '../js/config.js';
 import '../js/storage.js';
 import '../js/entities.js';

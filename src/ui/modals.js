@@ -49,7 +49,6 @@ import {
   closeSettingsBtnBottom,
   closeStatsBtn,
   closeStatsBtnBottom,
-  respawnCombatBtn,
   returnLobbyBtn
 } from './domRefs.js';
 import { isDebugUnlocked, setCogClickCount } from './debugPanel.js';
@@ -128,6 +127,7 @@ export function openScreen(game, screenName, origin = "MENU") {
       break;
 
     case "SETTINGS":
+      if (game && origin === "GAME") game.setPaused(true);
       mainMenu.classList.add("hidden");
       if (debugKillstreakHud) debugKillstreakHud.classList.add("hidden");
       if (isDebugUnlocked) {
@@ -233,6 +233,13 @@ export function initModalWiring(game) {
     openScreen(game, "MENU");
   });
 
+  const hudSettingsBtn = document.getElementById("hud-settings-btn");
+  if (hudSettingsBtn) {
+    hudSettingsBtn.addEventListener("click", () => {
+      openScreen(game, "SETTINGS", "GAME");
+    });
+  }
+
   hudLibraryBtn.addEventListener("click", () => {
     openScreen(game, "LIBRARY", "GAME");
   });
@@ -245,13 +252,6 @@ export function initModalWiring(game) {
   closeSettingsBtnBottom.addEventListener("click", () => returnFromModal(game));
   closeStatsBtn.addEventListener("click", () => returnFromModal(game));
   closeStatsBtnBottom.addEventListener("click", () => returnFromModal(game));
-
-  // The game-over screen is managed by closeAllModals(), so its two actions
-  // belong with the rest of the screen controls.
-  respawnCombatBtn.addEventListener("click", () => {
-    closeAllModals();
-    game.respawnInCombat();
-  });
 
   returnLobbyBtn.addEventListener("click", () => {
     closeAllModals();

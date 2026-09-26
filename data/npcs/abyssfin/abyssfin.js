@@ -1,0 +1,30 @@
+/**
+ * Abyssfin NPC Data
+ */
+(function(window) {
+  window.Killstreak = window.Killstreak || {};
+  window.Killstreak.Data = window.Killstreak.Data || {};
+  window.Killstreak.Data.NPCs = window.Killstreak.Data.NPCs || {};
+
+  window.Killstreak.Data.NPCs.abyssfin = {
+    "id": "abyssfin",
+    "name": "Abyssfin",
+    "description": "Swift pelagic terror guided by glowing bioluminescent fins.",
+    "radius": 24,
+    "speed": 155,
+    "maxHp": 200000000,
+    "damage": 5700000,
+    "attackRate": 0.6,
+    "attackRange": 26,
+    "killsAwarded": 15,
+    "killstreakAwarded": 72000,
+    "respawnDelay": 6.5,
+    "color": "#22d3ee",
+    "neutralColor": "#164e63",
+    "glowColor": "rgba(34, 211, 238, 0.50)",
+    "massScale": 0.5,
+    "shoveRatio": 0.55,
+    "barWidth": 44,
+    "barColor": "#22d3ee"
+};
+})(window);

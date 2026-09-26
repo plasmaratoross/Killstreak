@@ -137,7 +137,7 @@ export function initInputWiring(game) {
       case "Space":
         if (game.isGameOver) {
           closeAllModals();
-          game.respawnInCombat();
+          game.returnToLobby();
         } else if (game.state === "COMBAT") {
           game.handleAttackInput();
         }

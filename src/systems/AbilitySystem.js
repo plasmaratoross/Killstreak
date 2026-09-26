@@ -32,6 +32,16 @@ import windyAbility from '../swords/windy/windy.ability.js';
 import frostbiteAbility from '../swords/frostbite/frostbite.ability.js';
 import frostbiteBlizzardAbility from '../swords/frostbite/frostbite.blizzard.ability.js';
 import voltstrikeAbility from '../swords/voltstrike/voltstrike.ability.js';
+import lumenAbility from '../swords/lumen/lumen.ability.js';
+import lumenRadianceAbility from '../swords/lumen/lumen.radiance.ability.js';
+import umbraAbility from '../swords/umbra/umbra.ability.js';
+import umbraErasureAbility from '../swords/umbra/umbra.erasure.ability.js';
+import sanguineAbility from '../swords/sanguine/sanguine.ability.js';
+import sanguineExsanguinateAbility from '../swords/sanguine/sanguine.exsanguinate.ability.js';
+import orderAbility from '../swords/order/order.ability.js';
+import tremorAbility from '../swords/tremor/tremor.ability.js';
+import poisonAbility from '../swords/poison/poison.ability.js';
+import poisonRequiemAbility from '../swords/poison/poison.requiem.ability.js';
 
 /**
  * Primary (Z) ability for the currently equipped sword.
@@ -51,6 +61,12 @@ export function activatePrimary(game) {
   if (swordId === "windy") return windyAbility.activate(game);
   if (swordId === "frostbite") return frostbiteAbility.activate(game);
   if (swordId === "voltstrike") return voltstrikeAbility.activate(game);
+  if (swordId === "lumen") return lumenAbility.activate(game);
+  if (swordId === "umbra") return umbraAbility.activate(game);
+  if (swordId === "sanguine") return sanguineAbility.activate(game);
+  if (swordId === "order") return orderAbility.activate(game);
+  if (swordId === "tremor") return tremorAbility.activate(game);
+  if (swordId === "poison") return poisonAbility.activate(game);
 
   return devourerAbility.activate(game);
 }
@@ -59,19 +75,24 @@ export function activatePrimary(game) {
  * Secondary (X) ability.
  *
  * Originally this called `activateEngulf` unconditionally, with no swordId test.
- * Frostbite is the first sword to bring its own secondary (Blizzard), so the
- * chain now has exactly one branch; every other sword still falls through to
- * Engulf and is rejected by its `swordId !== "devourer"` guard, exactly as before.
+ * Frostbite was the first sword to bring its own secondary (Blizzard); Lumen,
+ * Umbra and Sanguine each add one more. Every sword without a branch here still
+ * falls through to Engulf and is rejected by its `swordId !== "devourer"` guard,
+ * exactly as before.
  *
  * @param {object} game
  */
 export function activateSecondary(game) {
   const swordId = game.player && game.player.swordId;
 
-  // Frostbite is the only sword with its own secondary. Everything else falls
-  // through to Engulf, whose `swordId !== "devourer"` guard then rejects it —
-  // which is exactly the pre-existing behaviour for those swords.
+  // Everything without a branch here falls through to Engulf, whose
+  // `swordId !== "devourer"` guard then rejects it — which is exactly the
+  // pre-existing behaviour for those swords.
   if (swordId === "frostbite") return frostbiteBlizzardAbility.activate(game);
+  if (swordId === "lumen") return lumenRadianceAbility.activate(game);
+  if (swordId === "umbra") return umbraErasureAbility.activate(game);
+  if (swordId === "sanguine") return sanguineExsanguinateAbility.activate(game);
+  if (swordId === "poison") return poisonRequiemAbility.activate(game);
 
   return devourerEngulfAbility.activate(game);
 }

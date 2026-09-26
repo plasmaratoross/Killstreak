@@ -33,6 +33,12 @@ import {
   libTabWindy,
   libTabFrostbite,
   libTabVoltstrike,
+  libTabLumen,
+  libTabUmbra,
+  libTabSanguine,
+  libTabOrder,
+  libTabTremor,
+  libTabPoison,
   libSwordTag,
   libSwordName,
   libSwordDesc
@@ -117,7 +123,32 @@ export function renderLibraryNpcs() {
     gloomscale: "🐉",
     wildtusk: "🐗",
     moonmane: "🌙",
-    crimsonhide: "👑"
+    crimsonhide: "👑",
+    reefmaw: "🦈",
+    coralback: "🦀",
+    tidescale: "🐍",
+    seafang: "🦑",
+    abyssfin: "🐟",
+    deepclaw: "🦞",
+    reefstalker: "🐊",
+    dreadscale: "🐉",
+    tideborn: "🌊",
+    leviathan: "🐋",
+    abysswalker: "👤",
+    trenchmaw: "🐡",
+    depthclaw: "🦂",
+    gloomray: "🪼",
+    abyssal: "👁️",
+    sirenborn: "🧜",
+    stormscale: "⛈️",
+    dreadtide: "🌀",
+    trenchborn: "🌋",
+    deepwarden: "🔱",
+    abysslord: "👑",
+    tidebreaker: "🌊",
+    depthforged: "⚙️",
+    oceanbane: "☠️",
+    abyssforged: "🔮"
   };
 
   const NPC_ZONES = {
@@ -146,10 +177,10 @@ export function renderLibraryNpcs() {
   };
 
   function getTierBadge(rank) {
-    if (rank <= 4) return { cls: "tier-novice", label: I18n ? I18n.t("library.tier_1") : "TIER I • NOVICE", border: "#64748b" };
-    if (rank <= 8) return { cls: "tier-adept", label: I18n ? I18n.t("library.tier_2") : "TIER II • ADEPT", border: "#10b981" };
-    if (rank <= 12) return { cls: "tier-elite", label: I18n ? I18n.t("library.tier_3") : "TIER III • ELITE", border: "#0284c7" };
-    if (rank <= 17) return { cls: "tier-dread", label: I18n ? I18n.t("library.tier_4") : "TIER IV • DREAD", border: "#f59e0b" };
+    if (rank <= 9) return { cls: "tier-novice", label: I18n ? I18n.t("library.tier_1") : "TIER I • NOVICE", border: "#64748b" };
+    if (rank <= 18) return { cls: "tier-adept", label: I18n ? I18n.t("library.tier_2") : "TIER II • ADEPT", border: "#10b981" };
+    if (rank <= 27) return { cls: "tier-elite", label: I18n ? I18n.t("library.tier_3") : "TIER III • ELITE", border: "#0284c7" };
+    if (rank <= 37) return { cls: "tier-dread", label: I18n ? I18n.t("library.tier_4") : "TIER IV • DREAD", border: "#f59e0b" };
     return { cls: "tier-apex", label: I18n ? I18n.t("library.tier_5") : "TIER V • APEX", border: "#ef4444" };
   }
 
@@ -350,6 +381,36 @@ export function renderLibrarySwords(game) {
     if (sId === "voltstrike") libTabVoltstrike.classList.add("active");
     else libTabVoltstrike.classList.remove("active");
   }
+  if (libTabLumen) {
+    libTabLumen.textContent = I18n ? I18n.getSwordInfo("lumen").name.toUpperCase() : "LUMEN";
+    if (sId === "lumen") libTabLumen.classList.add("active");
+    else libTabLumen.classList.remove("active");
+  }
+  if (libTabUmbra) {
+    libTabUmbra.textContent = I18n ? I18n.getSwordInfo("umbra").name.toUpperCase() : "UMBRA";
+    if (sId === "umbra") libTabUmbra.classList.add("active");
+    else libTabUmbra.classList.remove("active");
+  }
+  if (libTabSanguine) {
+    libTabSanguine.textContent = I18n ? I18n.getSwordInfo("sanguine").name.toUpperCase() : "SANGUINE";
+    if (sId === "sanguine") libTabSanguine.classList.add("active");
+    else libTabSanguine.classList.remove("active");
+  }
+  if (libTabOrder) {
+    libTabOrder.textContent = I18n ? I18n.getSwordInfo("order").name.toUpperCase() : "ORDER";
+    if (sId === "order") libTabOrder.classList.add("active");
+    else libTabOrder.classList.remove("active");
+  }
+  if (libTabTremor) {
+    libTabTremor.textContent = I18n ? I18n.getSwordInfo("tremor").name.toUpperCase() : "TREMOR";
+    if (sId === "tremor") libTabTremor.classList.add("active");
+    else libTabTremor.classList.remove("active");
+  }
+  if (libTabPoison) {
+    libTabPoison.textContent = I18n ? I18n.getSwordInfo("poison").name.toUpperCase() : "POISON";
+    if (sId === "poison") libTabPoison.classList.add("active");
+    else libTabPoison.classList.remove("active");
+  }
 
   const phases = swordDef.phases;
   libraryPhasesContainer.innerHTML = "";
@@ -369,14 +430,29 @@ export function renderLibrarySwords(game) {
     const isWeakFb = sId === "frostbite" && (p.phase === 7 || p.phase === 11);
     // Voltstrike's single deliberate collapse, plus the 250-KS gap to Surge.
     const isWeakVs = sId === "voltstrike" && p.phase === 5;
+    // Lumen and Umbra each carry the same pair Frostbite does: one collapse at phase 7
+    // (which unlocks their Z) and a second at phase 12 (which unlocks X). Both are
+    // still dips — p12 damage and HP sit below p11 in both swords.
+    // Sanguine is the exception: its p12 was lifted out of collapse territory so the
+    // sword can actually fight Duskhorn/Mirewalker/Thunderhoof-tier enemies, so p12 is
+    // now the top of its curve and must NOT carry the collapse badge. Its p7 still does.
+    const isWeakLm = sId === "lumen" && (p.phase === 7 || p.phase === 12);
+    const isWeakUm = sId === "umbra" && (p.phase === 7 || p.phase === 12);
+    const isWeakSg = sId === "sanguine" && p.phase === 7;
+    // Order has exactly ONE weak phase: Phase 5 (Appeal), tagged DELIBERATE COLLAPSE.
+    const isWeakOrder = sId === "order" && p.phase === 5;
+    // Tremor has exactly ONE weak phase: Phase 6 (Collapse), tagged DELIBERATE COLLAPSE.
+    const isWeakTremor = sId === "tremor" && p.phase === 6;
+    // Poison has TWO weak phases: Phase 4 (Contamination) and Phase 12 (Poisoned Collapse).
+    const isWeakPoison = sId === "poison" && (p.phase === 4 || p.phase === 12);
     // metallic p8, flora p7 and hellfire p7 were flagged here too, so they carried a
     // DELIBERATE COLLAPSE badge. They are not weak phases: their stats rise normally
     // (e.g. hellfire p7 9,072 DMG -> p8 18,144 DMG) and none of their render modules
     // has a collapse variant, unlike aquatic p8 and soil p9 whose data carries
     // weaponType "collapse" plus a cracked/weakened visual. A weak badge on them was
     // simply wrong, so they were dropped rather than relabelled TRANSITIONAL HURDLE.
-    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs;
-    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs;
+    const showWeakBadge = isWeakDev || isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg || isWeakOrder || isWeakTremor || isWeakPoison;
+    const weakIsCollapse = isWeakAq || isWeakSoil || isWeakFb || isWeakVs || isWeakLm || isWeakUm || isWeakSg || isWeakOrder || isWeakTremor || isWeakPoison;
 
     let scaledRow = null;
     if (isCurrent && game.player.isSwordEquipped) {
@@ -578,6 +654,48 @@ export function initLibraryWiring(game) {
   if (libTabVoltstrike) {
     libTabVoltstrike.addEventListener("click", () => {
       setSelectedLibrarySword("voltstrike");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabLumen) {
+    libTabLumen.addEventListener("click", () => {
+      setSelectedLibrarySword("lumen");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabUmbra) {
+    libTabUmbra.addEventListener("click", () => {
+      setSelectedLibrarySword("umbra");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabSanguine) {
+    libTabSanguine.addEventListener("click", () => {
+      setSelectedLibrarySword("sanguine");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabOrder) {
+    libTabOrder.addEventListener("click", () => {
+      setSelectedLibrarySword("order");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabTremor) {
+    libTabTremor.addEventListener("click", () => {
+      setSelectedLibrarySword("tremor");
+      renderLibrarySwords(game);
+    });
+  }
+
+  if (libTabPoison) {
+    libTabPoison.addEventListener("click", () => {
+      setSelectedLibrarySword("poison");
       renderLibrarySwords(game);
     });
   }

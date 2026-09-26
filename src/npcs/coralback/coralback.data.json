@@ -1,0 +1,21 @@
+{
+  "id": "coralback",
+  "name": "Coralback",
+  "description": "Armored crustacean encrusted with dense bioluminescent coral plates.",
+  "radius": 22,
+  "speed": 130,
+  "maxHp": 48000000,
+  "damage": 2000000,
+  "attackRate": 0.68,
+  "attackRange": 24,
+  "killsAwarded": 10,
+  "killstreakAwarded": 36000,
+  "respawnDelay": 6,
+  "color": "#f43f5e",
+  "neutralColor": "#4c0519",
+  "glowColor": "rgba(244, 63, 94, 0.45)",
+  "massScale": 0.55,
+  "shoveRatio": 0.6,
+  "barWidth": 38,
+  "barColor": "#f43f5e"
+}

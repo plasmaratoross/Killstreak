@@ -59,6 +59,12 @@ export const NPC_FORMATION_5_SLOTS = [
   { x: -55, y: 38  }, { x: 55, y: 38  }
 ];
 
+/** 4-slot formation */
+export const NPC_FORMATION_4_SLOTS = [
+  { x: -50, y: -38 }, { x: 50, y: -38 },
+  { x: -50, y: 38 },  { x: 50, y: 38 }
+];
+
 /**
  * Returns the appropriate formation slot array for a given NPC count.
  * @param {number} count
@@ -71,5 +77,6 @@ export function getFormationSlots(count, isBuff = false) {
   if (count === 8)  return NPC_FORMATION_8_SLOTS;
   if (count === 7)  return isBuff ? NPC_FORMATION_7_BUFF_SLOTS : NPC_FORMATION_7_SLOTS;
   if (count === 6)  return NPC_FORMATION_6_SLOTS;
-  return NPC_FORMATION_5_SLOTS;
+  if (count === 5)  return NPC_FORMATION_5_SLOTS;
+  return NPC_FORMATION_4_SLOTS;
 }
